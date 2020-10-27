@@ -1,0 +1,133 @@
+name: Policy Sample V.0
+type: ast
+expr:
+  rule: main
+rules:
+
+  main:
+    or:
+      - and:
+          - rule: isReadAudioVideo
+          - rule: permittedOfferings
+      - and:
+          - rule: isReadFiles
+          - rule: permittedFiles
+      - and:
+          - rule: isReadMeta
+          - rule: permittedMeta
+      - and:
+          - rule: publicContent
+          - and:
+              - not:
+                  - rule: isReadAudioVideo
+              - not:
+                  - rule: isReadFiles
+              - not:
+                  - rule: isReadMeta
+      - rule: isContentDecrypt
+
+  isReadFiles:
+    eq:
+      - env: api_call/action
+      - q.read.files.read
+
+  permittedFiles:
+    or:
+      - in:
+          - env: call/meta_path
+          - - /files/assets/birds.jpg # hard-coded file path !
+      - in:
+          - env: call/meta_path
+          - env: token/ctx/authorized_files
+
+  isReadMeta:
+    eq:
+      - env: api_call/action
+      - q.read.meta
+
+  permittedMeta:
+    in:
+      - env: call/meta_path
+      - env: token/ctx/authorized_meta
+
+  # bc call path as path object to prevent path formatting issues
+  bcCallPath:
+    fn.data.ToPath:
+      - env: call/bc_call/path
+
+  isReadAudioVideo:
+    and:
+      - eq:
+          - env: api_call/action
+          - q.read.bccall
+      - fn.strings.StartsWith:
+          - env: call/bc_call/path
+          - "/playout/"
+
+  isContentDecrypt:
+    and:
+      - eq:
+          - env: api_call/action
+          - q.read.decrypt
+      - eq:
+          - env: api_call/subject
+          - env: api_call/node_id
+
+  publicContent:
+    and:
+      - or:
+          - rule: isBcRead
+          - rule: isPublicMeta
+      - not:
+          or:
+            - rule: isEncryptedData
+            - rule: isCryptRead
+            - in:
+                - env: api_call/action
+                - - q.read.versions
+                  - q.read.decrypt
+
+  isBcRead:
+    and:
+      - eq:
+          - env: api_call/action
+          - q.read.bccall
+      - not:
+          rule: isReadAudioVideo
+
+  permittedOfferings:
+    in:
+      # the asset name is the last segment of the path
+      # path is playout/offering/...
+      - rule: bcCallPath/1
+      - env: token/ctx/authorized_offerings
+
+  isPublicMeta:
+    and:
+      - eq:
+          - env: api_call/action
+          - q.read.meta
+      - or:
+          - fn.strings.StartsWith:
+              - env: call/meta_path
+              - /public
+          - not:
+              env: call/is_entry_point
+
+  isEncryptedData:
+    and:
+      - in:
+          - env: api_call/action
+          - - q.read.part.read
+            - q.read.files.read
+      - env: call/is_encrypted_data
+
+  isCryptRead:
+    and:
+      - in:
+          - env: api_call/action
+          - q.read.crypt
+      - env: call/is_entry_point
+      - eq:
+          - env: call/grant
+          - read-crypt

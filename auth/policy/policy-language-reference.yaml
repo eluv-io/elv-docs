@@ -1,0 +1,568 @@
+# name of the policy - purely informational
+name: test-policy
+
+# description - informational
+desc: |
+  An optional policy description. Informational as well.
+
+# the policy type - "ast" is currently the only type supported
+type: ast
+
+# The expression that gets evaluated when enforcing the policy.
+# The policy evaluation succeeds if the return value is a boolean "true".
+# Otherwise it fails and the corresponding API request is refused with an HTTP
+# return code 403 Forbidden.
+expr:
+  rule: main # invocation of a named rule called "main"
+
+# Named rules
+#
+# Rules are special parameter-less functions that get evaluated only once.
+# Subsequent invocations of the same rule will just return the cached result
+# of the first evaluation.
+rules:
+
+  # Rule names consist of letters, numbers and the underscore character "_".
+  # They must start with a letter or underscore.
+  main:
+    # The body of the rule is any valid expression, for example boolean
+    # expressions or the invocation of another rule.
+    #
+    # Other expressions are:
+    #   literals
+    #     constant values defined in the policy (strings, numbers, etc.)
+    #   boolean expressions
+    #     and, or, not
+    #   comparisons
+    #     nil, empty, equal, less, lessOrEqual, greater, greaterOrEqual
+    #   operations on collections
+    #     in, any, all, collect
+    #   env / var references
+    #     retrieve data from the policy context (e.g. API action, user ID, etc.)
+    #     or variables
+    #   function calls
+    #     built-in functions
+    #     policy functions
+    and:
+      - eq:
+          - fn.data.Invert: [ 1,2,3 ]
+          - [ 3,2,1 ]
+      - rule: literals
+      - rule: boolean_logic
+      - rule: comparisons
+      - rule: collections
+      - rule: variables
+      - rule: references
+      - rule: function_invocation
+      - rule: built_in_functions
+      - rule: policy_function_invocation
+      - rule: environment_function_invocation
+      - rule: miscellanous
+
+  # Literals are arbitrary, constant values
+  literals:
+    not:
+      empty:
+        - true      # boolean true
+        - false     # boolean false
+        - "Alice"   # string
+        - Bob       # another string
+        - 1         # integer
+        - 3.14159   # float
+        - [ 1,2,3 ] # array (of integers)
+        - literal: # an arbitrary YAML/JSON structure
+            a: 1
+            b: 2
+            c: [ 1,2,3 ]
+            d:
+              - 1
+              - 2
+              - 3
+
+  boolean_logic:
+    and:
+      # "and" combines all nested boolean expressions in a boolean "and"
+      # operation: if all of them evaluate to true, its result is true.
+      # Otherwise the result is false.
+      # "and" accepts a list (YAML array) of expressions that it evaluates one
+      # after the other. If an expression evaluates to false, the remaining
+      # expressions are not evaluated.
+      - and:
+          - true
+          - not: false
+
+      # "or" combines all nested boolean expressions in a boolean "or"
+      # operation: if any one of them evaluates to true, its result is true. If
+      # all evaluate to false, the result is false.
+      # "or" accepts a list (YAML array) of expressions that it evaluates one
+      # after the other. If an expression evaluates to true, the remaining
+      # expressions are not evaluated.
+      - or: [ false, false, true, false, true ]
+
+      # "not" applies a boolean "not" operation on its nested boolean
+      # expression.
+      - not: false
+      - not:
+          not: true
+
+      # If a nested expression does not evaluate to a boolean value, it is
+      # replaced with "false"!
+      - not: 0      # the integer 0 is converted to a boolean "false"
+      - not: "true" # the string "true" is converted to a boolean "false"
+
+      # Switch expressions provide the equivalent of if/elseif/else or
+      # switch/case/default structures in traditional flow-controlled languages.
+      # If none of the cases match and there is no default clause, then the
+      # switch expression evaluates to false.
+      - switch:
+          - case: # first condition
+              not:
+                func: fnTrue
+            then: # if condition was true the result of is_public_content would be returned...
+              rule: is_public_content
+          - case:
+              func: fnTrue
+            then:
+              true  # that's the actual result of this example
+          - default:
+              false
+
+  # Comparisons compare two nested expressions. The exact comparison method
+  # depends on the nested expressions, but mostly "just work" in an intuitive
+  # way.
+  comparisons:
+    and:
+      - equal:
+          - joe@doe.com
+          - joe@doe.com
+      - less: [ 1, 2 ]
+      - lessOrEqual: [ "alpha","beta" ]
+      - greater: [ 2.66, 2.65 ]
+      - greaterOrEqual:
+          - 2000-01-01T00:00:00.000Z
+          - 1999-12-31T23:59:59.999Z
+      - eq: # shorthand for equal
+          - a
+          - a
+      - lt: # shorthand for less
+          - 1.35
+          - 2.66
+      - le: # shorthand for lessOrEqual
+          - 3.1415926
+          - 3.1415926
+      - gt: # shorthand for greater
+          - 2.66
+          - 1.35
+      - ge: # shorthand for greaterOrEqual
+          - 3.1415926
+          - 3.1415926
+      # If the the data types of the nested expressions differ, then a best
+      # effort of converting the second expression to the type of the first
+      # expression is performed.
+      - eq: [ "1", 1 ]        # conversion of int to string
+      - eq: [ "1.1", 1.1 ]    # conversion of float to string
+      - eq: [ "true", true ]  # conversion of bool to string
+      - eq: [ 1, "1" ]        # conversion of string to int
+      - eq: [ 1.1, "1.1" ]    # conversion of string to float
+      - eq: [ true, "true" ]  # conversion of string to bool
+      # collections can be compared, too!
+      - eq:
+          - [ 1,2,3,4,5,6,7,8 ]
+          - [ 1,2,3,4,5,6,7,8 ]
+      # elements differ at 4th position (4 <> 9)
+      - not:
+          eq:
+            - [ 1,2,3,4,9,6,7,8 ]
+            - [ 1,2,3,4,5,6,7,8 ]
+      # lt, le, gt, ge first compare the size of their nested collections
+      - gt:
+          - [ 1,2,3,4,5,6,7,8 ]
+          - [ 1,2,3,5 ]
+      # if they are of equal size, all elements of the nested collections are
+      # compared one to one until they differ (4 < 9)
+      - lt:
+          - [ 1,2,3,4,5,6,7,8 ]
+          - [ 1,2,3,9,5,6,7,8 ]
+
+  collections:
+    and:
+      # "in" evaluates to true if the first expression is contained in the
+      # collection of values in the second expression, false otherwise
+      - in:
+          - 4
+          - [ 1,2,3,4,5,6,7,8 ]
+
+      # "any" allows evaluating an arbitrary expression for all elements in its
+      # source collection and combines the corresponding results in a logical
+      # "or".
+      #
+      # In its simplest form, it is equivalent to a boolean "or" of all elements
+      # of its source collection:
+      #   or: [ false, false, true, true ]
+      - any:
+          # the source collection
+          src: [ false, false, true, true ]
+          # the name of the "iteration" variable, holding the current source
+          # element for each iteration
+          var: allowed
+          # the expression that is evaluated in each iteration
+          expr:
+            # here we simply use the source element as is
+            var: allowed
+      # However, "any" is much more powerful, as it allows applying additional
+      # logic on the elements of the source collection.
+      # This example evaluates to true if the "name" attribute of any object in
+      # a map is "A great movie"
+      - any:
+          # source is a map from environment data:
+          # extra:
+          #  resources:
+          #    iq__111:
+          #      name: "A good movie"
+          #    iq__222:
+          #      name: "A great movie"
+          #    iq__333:
+          #      name: "An awesome movie"
+          src:
+            env: extra/resources
+          # since the source is a map, the iteration occurs on its keys, so res
+          # will contain "iq__111", "iq__222", "iq__333"
+          var: res
+          expr:
+            eq:
+              - env: extra/resources/${res}/name
+              - "A great movie"
+
+      # "each" is similar to "any", but combines the results with a logical
+      # "and" operation.
+      - each:
+          src: [ "a", "b", "abba", "baba" ]
+          var: candidate
+          expr:
+            fn.regex.Matches:
+              - var: candidate
+              - "^[ab]+$"
+
+      # "collect" evaluates a nested expression for all elements in its source
+      # collection and adds the corresponding results to a list.
+      #
+      # /extra/data is the map:
+      #    a: 1
+      #    b: 2
+      #    c: 3
+      #    d: 4
+      #    e: 5
+      - eq:
+          - [ 1,5,3 ]
+          - collect:
+              src:
+                literal: [ a,e,c ]
+              var: key
+              expr:
+                env: /extra/data/${key}
+
+  variables:
+    and:
+      # Variables are declared and assigned with a "let" statement inside an
+      # expression. They are scoped to that expression and nested expressions
+      # (including potential rule or function invocations).
+      - let:
+          myVar: true
+        var: myVar # this is a reference to the variable - see rule:references below
+      # This variable is different from the variable above (different scope)
+      - let:
+          myVar: "seven"
+        eq:
+          - var: myVar
+          - "seven"
+      # Variables are immutable: once assigned, they cannot be changed. However,
+      # they can be re-declared with a different value, which will be available
+      # in the new variable's scope.
+      - let:
+          myVar: "seven"
+        and:
+          - eq:
+              - var: myVar
+              - "seven"
+          - let:
+              myVar: "eight"
+            eq:
+              - var: myVar
+              - "eight"
+      # A variable's value can be the result of an expression, for example
+      # retrieved from the environment data
+      - let:
+          aVariable:
+            env: primitives/true
+        var: aVariable
+
+  # There are 3 kinds of references: variable, environment and rule references.
+  #
+  # Variable references (var refs) are expressions that read the value of a
+  # variable defined in the policy.
+  #
+  # Environment references (env refs) are expressions that read data "that is
+  # available in the policy's context"
+  #
+  # Rule references (rule refs) are expressions that read the result of the
+  # evaluation of a rule.
+  references:
+    and:
+      # the simplest reference is a reference to a variable name
+      - let:
+          myVar: true
+        var: myVar # simply read the value of myVar (true)
+
+      # variables may store structured data...
+      - let:
+          myVar:
+            literal:
+              resources:
+                title1:
+                  name: "Title 1"
+                  authors: [ A1, A2, A3, A4 ]
+                title2:
+                  name: "Title 2"
+                  hasSubTitles: true
+                title3:
+                  name: "Title 3"
+        and:
+          # ... in which case the var ref can extract a subtree or single
+          # elements at a path
+          - var: myVar/resources/title2/hasSubTitles
+          # a reference can also retrieve array elements, e.g. the first element
+          - eq:
+              - var: myVar/resources/title1/authors/0
+              - "A1"
+          # or the last element
+          - eq:
+              - var: myVar/resources/title1/authors/-1
+              - "A4"
+          # a reference can also include other references, wrapped in ${...}
+          - let:
+              resource: title2
+            eq:
+              - var: myVar/resources/${resource}/name
+              - "Title 2"
+      # and all these features are also available for env refs...
+      - let:
+          title:
+            env: /extra/resources/${call/resource_id}
+        eq:
+          - var: title/name
+          - "A great movie"
+      # ... and rule refs!
+      - rule: is_group
+      - rule: is_public_content
+      - eq:
+          - "v2"
+          - rule: constantData/arbitrary/k2
+
+  function_invocation:
+    and:
+      # compact call format:
+      - fn.time.After:
+          - fn.time.Now:
+          - 1999-12-31Z
+      # full call format:
+      - func:
+          name: time.Before
+          params:
+            - 1999-12-31Z
+            - 2000-01-01Z
+      # function names can be expressions
+      - let:
+          fnName: time.Before
+        func:
+          name:
+            var: fnName     # function name is retrieved from var:fnName
+          params:
+            - 1999-12-31Z
+            - fn.time.Now:
+      # function names can be expressions also for short format
+      - not:
+          nil:
+            let:
+              fnName: time.Now
+            func:
+              var: fnName
+      # function calls can have their parameter set calculated by another
+      # function or expression
+      - eq:
+          - fn.data.Merge:
+              fn.data.Invert:
+                - literal:
+                    b: 2
+                - literal:
+                    c: 3
+                - literal:
+                    a: 1
+                    b: 1
+                    c: 1
+          - literal:
+              a: 1
+              b: 2
+              c: 3
+
+  built_in_functions:
+    and:
+
+      # time functions
+      - fn.time.Before:
+          - 1999-12-31Z
+          - fn.time.Now:
+      - fn.time.After:
+          - fn.time.Now:
+          - 1999-12-31Z
+      - fn.time.Between:
+          - fn.time.Now:
+          - env: validity/start
+          - env: validity/end
+      - fn.time.In:
+          - fn.time.Now:
+          - env: validity/start
+          - env: validity/end
+
+      # regular expression matching
+      - fn.regex.Matches:
+          - candidate
+          - "^.and.*id[a-et]{3}$"
+
+      # string functions
+      - fn.strings.StartsWith:
+          - candidate
+          - cand
+      - fn.strings.EndsWith:
+          - candidate
+          - ate
+      - fn.strings.Contains:
+          - candidate
+          - did
+
+      # data functions
+
+      # "merge" merges the data structures in the parameter set. In case of
+      # conflicts (same element paths), the last instance wins and overwrites
+      # previous instances.
+      - eq:
+          - fn.data.Merge:
+              - literal:
+                  a: 1
+                  b: 1
+                  c: 1
+              - literal:
+                  b: 2
+                  c: 2
+              - literal:
+                  c: 3
+          - literal:
+              a: 1
+              b: 2
+              c: 3
+      # "invert" inverts the elements of an array
+      - eq:
+          - fn.data.Invert: [ 1,2,3 ]
+          - [ 3,2,1 ]
+
+  # Policy functions are functions that are defined within the policy itself, in
+  # a separate "functions" element (see at the bottom). They are invoked just
+  # like built-in functions. However, they may not contain a dot "." in their
+  # name, which is reserved for name-spacing built-in functions.
+  policy_function_invocation:
+    and:
+      # Call the check data policy function - short format
+      - fn.checkDate:
+          - 2020-09-16
+          - literal:
+              start: 2020-09-16
+              end: 2020-09-16
+      # same as above with full format
+      - func:
+          name: checkDate
+          params:
+            - 2020-09-16
+            - literal:
+                start: 2020-09-16
+                end: 2020-09-16
+      # functions without params can be called like a rule
+      - func: fnTrue
+      # function names can be expressions
+      - let:
+          fnName: fnTrue
+        func:
+          var: fnName
+      # function names can be expressions, full format with params
+      - let:
+          fnName: checkDate
+        func:
+          name:
+            var: fnName
+          params:
+            - 2020-09-16
+            - 2020-09-16
+            - 2020-09-16
+
+  # env functions work like policy functions, but are only available in
+  # certain environments, e.g. when invoked from custom bitcode.
+  environment_function_invocation:
+    eq:
+      - fn.exampleEnvFunction:
+          - true
+      - func:
+          name: exampleEnvFunction
+          params:
+            - true
+      - not:
+          func: exampleEnvFunction
+
+
+  miscellanous:
+    and:
+      # inline rule - do not use - might be removed in future versions!
+      - rule:
+          name: is_group-inline
+          expr:
+            in:
+              - reviewers
+              - env: groups
+      # unnamed inline rule - do not use - might be removed in future versions!
+      - rule:
+          expr:
+            in:
+              - viewers
+              - env: groups
+
+  is_group:
+    in:
+      - reviewers
+      - env: groups
+  is_public_content:
+    true
+
+  # a rule can also return arbitrary data - since a rule is invoked only once
+  # a subsequent invocations simply return the cached value, they can be used
+  # as global constants
+  constantData:
+    literal:
+      arbitrary:
+        k1: v1
+        k2: v2
+
+# policy functions are like rules, but
+# * do not cache their results and hence re-evaluate the result for each
+#   invocation
+# * accept parameters, which can be retrieved from a "param" array
+functions:
+  checkDate:
+    fn.time.In:
+      # retrieves the 1st parameter
+      - param: 0
+      # retrieves a sub-element of the 2nd param's data structure
+      - param: 1/start
+      # another sub-element of the 2nd param, but optional if it doesn't exist,
+      # it will not trigger an error, but instead use nil as the end date (which
+      # in turn is interpreted as maximum date in fn.time.In)
+      - opt: 1/end
+
+  # a policy function that simply returns true
+  fnTrue: true
