@@ -6,9 +6,7 @@ rules:
 
   main:
     or:
-      - and:
-          - rule: isReadAudioVideo
-          - rule: permittedOfferings
+      - rule: allowOffering
       - and:
           - rule: isReadFiles
           - rule: permittedFiles
@@ -32,13 +30,9 @@ rules:
       - q.read.files.read
 
   permittedFiles:
-    or:
-      - in:
-          - env: call/meta_path
-          - - /files/assets/birds.jpg # hard-coded file path !
-      - in:
-          - env: call/meta_path
-          - env: token/ctx/authorized_files
+    in:
+      - env: call/meta_path
+      - env: token/ctx/authorized_files
 
   isReadMeta:
     eq:
@@ -63,6 +57,23 @@ rules:
       - fn.strings.StartsWith:
           - env: call/bc_call/path
           - "/playout/"
+
+  isInternalCall:
+    and:
+      - not:
+          env: call/is_entry_point
+          def: true
+      - in: # other "public" actions
+          - env: api_call/action
+          - - q.read.info
+            - q.read.part.read
+            - q.read.part.list
+            - q.read.part.info
+            - q.read.part.proofs
+            - q.read.files.read
+            - q.read.files.list
+            - q.read.files.link
+            - q.read.blob.link
 
   isContentDecrypt:
     and:
@@ -96,11 +107,15 @@ rules:
           rule: isReadAudioVideo
 
   permittedOfferings:
-    in:
-      # the asset name is the last segment of the path
-      # path is playout/offering/...
-      - rule: bcCallPath/1
-      - env: token/ctx/authorized_offerings
+    or:
+      - eq:
+          - env: call/bc_call/path
+          - "/playout/options.json"
+      - in:
+          # the asset name is the last segment of the path
+          # path is playout/offering/...
+          - rule: bcCallPath/1
+          - env: token/ctx/authorized_offerings
 
   isPublicMeta:
     and:
@@ -131,3 +146,14 @@ rules:
       - eq:
           - env: call/grant
           - read-crypt
+
+  # ----------------------------------------------------------------------------
+  # Bitcode rules
+  # ----------------------------------------------------------------------------
+
+  allowOffering:
+    or:
+      - and:
+          - rule: isReadAudioVideo
+          - rule: permittedOfferings
+      - rule: isInternalCall
