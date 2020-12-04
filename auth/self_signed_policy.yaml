@@ -1,4 +1,13 @@
-name: Policy Sample V.0
+name: Policy Sample v1.0
+desc: |
+  Sample policy for editor signed tokens that checks authorized_meta,
+  authorized_files and authorized_offerings values in the token/ctx
+
+  Changelog:
+
+  v1.0
+    * add version, description and change log
+
 type: ast
 expr:
   rule: main
@@ -112,8 +121,10 @@ rules:
           - env: call/bc_call/path
           - "/playout/options.json"
       - in:
-          # the asset name is the last segment of the path
-          # path is playout/offering/...
+          # the offering name is the second segment in the bcCallPath:
+          #   /rep/playout/offering/...
+          # /rep is not part of bcCallPath (it's mapped to the "content" bitcode
+          # function)
           - rule: bcCallPath/1
           - env: token/ctx/authorized_offerings
 
