@@ -123,5 +123,48 @@ qfab_cli content token sign ilib1234 iq__1234 --ctx @ctx.json --policy iq__4567 
 }
 ```
 
+### Allowing multiple contents within a unique token
+
+Multiple contents may be authorised with a unique token by adding the ids of the additional contents in the `ctx` map of the token under key `authorized_qids`. The command line offers a `--authorized-qids` flag for convenience.
+
+The signer of the token must also be an editor of the additional contents.
+
+
+```
+qfab_cli content token sign ilib1234 iq__1234 --ctx @ctx.json --policy iq__4567 --authorized-qids 'iq__5678,iq__1291' | jq .
+{
+  "token": {
+    "EthAddr": "0x65419c9f653703ed7fb6cc636cf9fda6cc024e2e",
+    "AFGHPublicKey": "",
+    "QPHash": null,
+    "SID": "ispcfpv2HnWnarY3MJQ1huLo2hjPL3V",
+    "LID": "ilib1234",
+    "QID": "iq__1234",
+    "Subject": "iusr2QpVishg9QSGU4TW3Nn4g6gYw6TP",
+    "Grant": "read",
+    "IssuedAt": "2021-05-12T20:06:12.757Z",
+    "Expires": "2021-05-13T00:06:12.757Z",
+    "Ctx": {
+      "authorized_files": [
+        "/files/assets/birds2.jpg"
+      ],
+      "authorized_meta": [
+        "/preferences"
+      ],
+      "authorized_offerings": [
+        "default",
+        "special"
+      ],
+      "authorized_qids": [
+        "iq__5678",
+        "iq__1291"
+      ],
+      "elv:delegation-id": "iq__4567"
+    }
+  },
+  "bearer": "aessjc2iuFSnERGbErMyEqKJk7yVZyQov9w4xqy1KStHCgWcLdZ58Uv83xACJndwwqvzFQ2oHmtRkkzvjmwMFHXr9hHuNt8ewVjnPJ9ZPKcGRUApqv24Ur767jNxrBp6hdMrsTf9muX5LXZ65yLUs2StRN3oaooxrzcAstk9xVTPRJNEm5VtNEauMwAWYx7pqGoqvL1K9Y455JW6S65jEAA8iZdzvyCHHVxC6PRLEFwSBV3rshjTWLiWs1Frz5sfgMms4Dt6nJaQubmKBWqxtyVXtdTESzPvgJCZjvZzqCm8smz31X4rYbTbisTv3JXPhGCok6LsvffeiHxjg8rVtxSmv8rLXqBm1uL69FuF94R3yHaQuRwZRwBnnQWqCpXHJSgMgGhgwvJYHkxXsqRB6YtYG4WFwWeqBwiZFZr9LZbZ9oPpJCvqUtRjEGiPekhnMXZMFPGxEhWXTBnw3zV5oydVyRbpfBpHeE8aPhYoE4AYbx"
+}
+```
+
 
  
