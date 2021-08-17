@@ -1,10 +1,12 @@
-name: Policy Sample v1.0
+name: Policy Sample v1.1
 desc: |
   Sample policy for editor signed tokens that checks authorized_meta,
   authorized_files and authorized_offerings values in the token/ctx
 
   Changelog:
 
+  v1.1
+    * fix isContentDecrypt to use call/subject
   v1.0
     * add version, description and change log
 
@@ -90,8 +92,8 @@ rules:
           - env: api_call/action
           - q.read.decrypt
       - eq:
-          - env: api_call/subject
-          - env: api_call/node_id
+          - env: call/subject
+          - env: call/node_id
 
   publicContent:
     and:
