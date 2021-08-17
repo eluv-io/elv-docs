@@ -287,3 +287,10 @@ bitcode. A specific policy rule can be evaluated with a simple function call.
 The function accepts an arbitrary data structure that will be added to the
 [Policy Evaluation Context](#policy-evaluation-context) and exposed by the
 `call` key to the policy.
+
+By default bitcode execution maps `urlType` to a policy rule:
+
+* DashManifest, HLSManifest, Options, AudioVideo to `allowOffering`
+* MediaDownload to: `allowMediaDownload`
+
+**Note**: bitcode execution does not fail - and accepts the user's request - if no policy is used or if the policy does not contain the expected rule. 

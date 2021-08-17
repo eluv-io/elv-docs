@@ -1,10 +1,13 @@
-name: Policy Sample v1.1
+name: Policy Sample v1.2
 desc: |
   Sample policy for editor signed tokens that checks authorized_meta,
-  authorized_files and authorized_offerings values in the token/ctx
+  authorized_files, authorized_reps and authorized_offerings values in
+  the token/ctx
 
   Changelog:
 
+  v1.2
+    * add allowMediaDownload and permittedRep
   v1.1
     * fix isContentDecrypt to use call/subject
   v1.0
@@ -117,18 +120,28 @@ rules:
       - not:
           rule: isReadAudioVideo
 
+  permittedRep:
+    in:
+      # the rep name is the first segment in the bcCallPath:
+      #   /rep/playout/offering/...
+      #   /rep/media_download/offering/...
+      # /rep is not part of bcCallPath (it's mapped to the "content" bitcode function)
+      - rule: bcCallPath/0
+      - env: token/ctx/authorized_reps
+
   permittedOfferings:
-    or:
-      - eq:
-          - env: call/bc_call/path
-          - "/playout/options.json"
-      - in:
-          # the offering name is the second segment in the bcCallPath:
-          #   /rep/playout/offering/...
-          # /rep is not part of bcCallPath (it's mapped to the "content" bitcode
-          # function)
-          - rule: bcCallPath/1
-          - env: token/ctx/authorized_offerings
+    and:
+       - rule: permittedRep
+       - or:
+          - eq:
+              - env: call/bc_call/path
+              - "/playout/options.json"
+          - in:
+              # the offering name is the second segment in the bcCallPath:
+              #   /rep/playout/offering/...
+              # /rep is not part of bcCallPath (it's mapped to the "content" bitcode function)
+              - rule: bcCallPath/1
+              - env: token/ctx/authorized_offerings
 
   isPublicMeta:
     and:
@@ -170,3 +183,6 @@ rules:
           - rule: isReadAudioVideo
           - rule: permittedOfferings
       - rule: isInternalCall
+
+  allowMediaDownload:
+    rule: permittedRep

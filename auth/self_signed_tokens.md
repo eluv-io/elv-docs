@@ -53,6 +53,7 @@ In the example below the `bearer` value is used as the authorization to access t
 ### Write an Authorization Policy
 
 * write the policy: see [general policy documentation](policy/policy-auth.md)
+* example: [self signed policy](self_signed_policy.yaml)
 
 ### Create a Policy Object
 
