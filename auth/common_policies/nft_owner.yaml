@@ -1,0 +1,13 @@
+name: policy nft-owner v1.0
+desc: |
+  policy for testing access to contract cft. The main rule returns:
+  - true if the user is owner of a nft linked in the content contract metadata
+
+type: ast
+expr:
+  rule: main
+rules:
+
+  main:
+    fn.isOwnerOfLinkedNft:
+      - env: call/subject
