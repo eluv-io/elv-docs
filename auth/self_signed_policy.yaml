@@ -1,10 +1,17 @@
-name: Policy Sample v1.3
+name: Policy Sample v1.4
 desc: |
   Sample policy for editor signed tokens that checks authorized_meta,
   authorized_files, authorized_reps and authorized_offerings values in
   the token/ctx
 
   Changelog:
+  v1.4
+    * when token does not have authorized_xxxx accept rather than refusing any value:
+      * accept offering if nil authorized_offerings
+      * accept rep if nil authorized_reps
+      * acept file if nil authorized_files
+      * acept meta if nil authorized_meta
+    * handle 'channel' in the same way as 'playout'
   v1.3
     * revert 1.1 (isContentDecrypt using call/subject)
   v1.2
@@ -45,9 +52,12 @@ rules:
       - q.read.files.read
 
   permittedFiles:
-    in:
-      - env: call/meta_path
-      - env: token/ctx/authorized_files
+    or:
+      - nil:
+          env: token/ctx/authorized_files
+      - in:
+          - env: call/meta_path
+          - env: token/ctx/authorized_files
 
   isReadMeta:
     eq:
@@ -55,23 +65,30 @@ rules:
       - q.read.meta
 
   permittedMeta:
-    in:
-      - env: call/meta_path
-      - env: token/ctx/authorized_meta
+    or:
+      - nil:
+          env: token/ctx/authorized_meta
+      - in:
+          - env: call/meta_path
+          - env: token/ctx/authorized_meta
 
   # bc call path as path object to prevent path formatting issues
   bcCallPath:
     fn.data.ToPath:
       - env: call/bc_call/path
 
+  isPlayout:
+    in:
+      - rule: bcCallPath/0
+      - - playout
+        - channel
+
   isReadAudioVideo:
     and:
       - eq:
           - env: api_call/action
           - q.read.bccall
-      - fn.strings.StartsWith:
-          - env: call/bc_call/path
-          - "/playout/"
+      - rule: isPlayout
 
   isInternalCall:
     and:
@@ -122,27 +139,35 @@ rules:
           rule: isReadAudioVideo
 
   permittedRep:
-    in:
-      # the rep name is the first segment in the bcCallPath:
-      #   /rep/playout/offering/...
-      #   /rep/media_download/offering/...
-      # /rep is not part of bcCallPath (it's mapped to the "content" bitcode function)
-      - rule: bcCallPath/0
-      - env: token/ctx/authorized_reps
+    or:
+      - nil:
+          env: token/ctx/authorized_reps
+      - in:
+        # the rep name is the first segment in the bcCallPath:
+        #   /rep/playout/offering/...
+        #   /rep/media_download/offering/...
+        # /rep is not part of bcCallPath (it's mapped to the "content" bitcode function)
+        - rule: bcCallPath/0
+        - env: token/ctx/authorized_reps
 
   permittedOfferings:
     and:
        - rule: permittedRep
        - or:
-          - eq:
-              - env: call/bc_call/path
-              - "/playout/options.json"
-          - in:
-              # the offering name is the second segment in the bcCallPath:
-              #   /rep/playout/offering/...
-              # /rep is not part of bcCallPath (it's mapped to the "content" bitcode function)
-              - rule: bcCallPath/1
-              - env: token/ctx/authorized_offerings
+          - and:
+              - rule: isPlayout
+              - eq:
+                - rule: bcCallPath/1
+                - "options.json"
+          - or:
+              - nil:
+                  env: token/ctx/authorized_offerings
+              - in:
+                  # the offering name is the second segment in the bcCallPath:
+                  #   /rep/playout/offering/...
+                  # /rep is not part of bcCallPath (it's mapped to the "content" bitcode function)
+                  - rule: bcCallPath/1
+                  - env: token/ctx/authorized_offerings
 
   isPublicMeta:
     and:
