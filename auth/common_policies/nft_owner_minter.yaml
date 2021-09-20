@@ -1,4 +1,4 @@
-name: policy nft-owner-minter v1.0
+name: policy nft-owner-minter v1.1
 desc: |
   policy for testing access to contract cft. The main rule returns:
   - true if the user is owner of a nft linked in the content contract metadata
@@ -12,7 +12,6 @@ rules:
     or:
       - fn.isOwnerOfLinkedNft:
         - env: call/subject
-      - fn.isContentPublic:
       - eq:
         - "iusr27hsDr6QtmWnJKVFkNzroSGEgjjq" 
         - env: call/subject
