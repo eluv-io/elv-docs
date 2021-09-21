@@ -1,8 +1,6 @@
 name: policy nft-owner v1.0
 desc: |
-  policy for testing access to contract cft. The main rule returns:
-  - true if the user is owner of a nft linked in the content contract metadata
-
+  Contract policy for access control based on NFT ownership. The policy permits any read operation if the user is the owner of a non-fungible token governed by a linked ERC-721 smart contract.
 type: ast
 expr:
   rule: main
