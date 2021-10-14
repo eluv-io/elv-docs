@@ -1,15 +1,28 @@
-# Self-signed Tokens & Policies
+# Editor-signed Tokens & Policies
 
 ## Description
 
-Users who have `edit` rights on a content can issue self-signed tokens for this content.
-Self-signed tokens expire after a default duration of `4 hours`. The creator of the token can extend this duration up to 24 hours.
+Users who have `edit` rights on a content can issue editor-signed tokens for this content.
+Editor-signed tokens expire after a default duration of `4 hours`. The creator of the token can extend this duration up to 24 hours.
 
 If no additional information is added - such as the context described below - the token provides a default set of permissions - to the _public area_ - when accessing the content.
 
-// **PENDING**: describe the _public area_
+_Public area_ and object visibility:
 
-The user can also take the control on the permissions granted to the token by using a `policy` and embedding contextual information in the token. This requires the user who creates (and signs) the token to: 
+```
+Content objects have a public area and a private area.
+
+* metadata: the public area is metadata under the "public" key subtree
+* parts (and files): the public area is all unencrypted parts (and files)
+ 
+Content objects have a visibility flag (int):
+
+0  - the object is private (only accessible to groups and individuals specifically permitted)
+1  - the object is 'published' - everybody can access its public area using an unauthenticated token
+10 - the object is publicly accessible - everybody can access its public and private areas (including encrypted parts)
+```
+
+The user can also take the control on the permissions granted to the token by using a `policy` and embedding contextual information in the token. This requires the user who creates (and signs) the token to:
 
 * be an editor of the content
 * be the signer of the policy
@@ -17,15 +30,15 @@ The user can also take the control on the permissions granted to the token by us
 The steps to create such a token are:
 
 * write a policy for the content
-* sign the policy 
+* sign the policy
 * create a policy object and store the signed policy under the `auth_policy` key in the meta-data of the policy object
-* create a self-signed token that embeds - as contextual information - the ID of policy object as well as other values that might be used in the evaluation of the policy.
+* create a editor-signed token that embeds - as contextual information - the ID of policy object as well as other values that might be used in the evaluation of the policy.
 
-## Simple Self-signed token 
+## Simple Editor-signed token
 
-In this simple form self-signed tokens provide default permissions to their users.
+In this simple form editor-signed tokens provide default permissions to their users.
 
-In the example below the `bearer` value is used as the authorization to access the content `iq__1234`: 
+In the example below the `bearer` value is used as the authorization to access the content `iq__1234`:
 
 ```
  ./qfab_cli content token sign ilib1234 iq__1234 --expires-in 2h | jq .
@@ -48,12 +61,12 @@ In the example below the `bearer` value is used as the authorization to access t
 
 ```
 
-## Self-signed token with finer grained permission
+## Editor-signed token with finer grained permission
 
 ### Write an Authorization Policy
 
 * write the policy: see [general policy documentation](policy/policy-auth.md)
-* example: [self signed policy](self_signed_policy.yaml)
+* example: [editor signed policy](common_policies/editor_signed_policy.yaml)
 
 ### Create a Policy Object
 
@@ -87,7 +100,7 @@ and store the policy created in previous step. This:
 
 ```
 
-### Create a Self-Signed Token with Permissions
+### Create an Editor-Signed Token with Permissions
 
 
 ```
@@ -166,6 +179,3 @@ qfab_cli content token sign ilib1234 iq__1234 --ctx @ctx.json --policy iq__4567 
   "bearer": "aessjc2iuFSnERGbErMyEqKJk7yVZyQov9w4xqy1KStHCgWcLdZ58Uv83xACJndwwqvzFQ2oHmtRkkzvjmwMFHXr9hHuNt8ewVjnPJ9ZPKcGRUApqv24Ur767jNxrBp6hdMrsTf9muX5LXZ65yLUs2StRN3oaooxrzcAstk9xVTPRJNEm5VtNEauMwAWYx7pqGoqvL1K9Y455JW6S65jEAA8iZdzvyCHHVxC6PRLEFwSBV3rshjTWLiWs1Frz5sfgMms4Dt6nJaQubmKBWqxtyVXtdTESzPvgJCZjvZzqCm8smz31X4rYbTbisTv3JXPhGCok6LsvffeiHxjg8rVtxSmv8rLXqBm1uL69FuF94R3yHaQuRwZRwBnnQWqCpXHJSgMgGhgwvJYHkxXsqRB6YtYG4WFwWeqBwiZFZr9LZbZ9oPpJCvqUtRjEGiPekhnMXZMFPGxEhWXTBnw3zV5oydVyRbpfBpHeE8aPhYoE4AYbx"
 }
 ```
-
-
- 
