@@ -48,6 +48,7 @@ rules:
           - fn.data.Invert: [ 1,2,3 ]
           - [ 3,2,1 ]
       - rule: literals
+      - rule: literals2
       - rule: boolean_logic
       - rule: comparisons
       - rule: collections
@@ -70,7 +71,7 @@ rules:
         - 1         # integer
         - 3.14159   # float
         - [ 1,2,3 ] # array (of integers)
-        - literal: # an arbitrary YAML/JSON structure
+        - literal:  # an arbitrary YAML/JSON structure
             a: 1
             b: 2
             c: [ 1,2,3 ]
@@ -78,6 +79,17 @@ rules:
               - 1
               - 2
               - 3
+
+  literals2:
+    and:
+      - nil:
+          env: groups_not_defined
+      - not:
+          nil:
+            env: empty_groups
+      - not:
+          nil:
+            env: groups
 
   boolean_logic:
     and:
@@ -109,6 +121,35 @@ rules:
       # replaced with "false"!
       - not: 0      # the integer 0 is converted to a boolean "false"
       - not: "true" # the string "true" is converted to a boolean "false"
+
+      # "nil" checks whether the nested expression is nil or produces an error
+      - nil:
+      - nil:
+          env: a-key-that-does-not-exist
+      - not:
+          nil: ""
+      - not:
+          nil: []
+      - not:
+          nil:
+            env: extra/resources
+
+      # "empty" checks whether the nested expression is empty (empty string,
+      # empty collection) or is nil
+      - empty:
+      - empty: ""
+      - empty: []
+      - empty: {}
+      - empty:
+          env: a-key-that-does-not-exist
+      - not:
+          empty: [nil]
+      - not:
+          empty:
+            -
+      - not:
+          empty:
+            env: extra/resources
 
       # Switch expressions provide the equivalent of if/elseif/else or
       # switch/case/default structures in traditional flow-controlled languages.
@@ -438,6 +479,10 @@ rules:
       - fn.strings.Contains:
           - candidate
           - did
+      - eq:
+          - /the/path/to/enlightenment
+          - fn.strings.ToString:
+              - fn.data.ToPath: the/path/to/enlightenment
 
       # data functions
 
@@ -463,6 +508,15 @@ rules:
       - eq:
           - fn.data.Invert: [ 1,2,3 ]
           - [ 3,2,1 ]
+
+      # ID functions
+
+      # Equivalent compares two IDs, ignoring their prefix
+      - fn.ids.Equivalent:
+          - iusr7zNaN4pwUHNuCHDpawHLEz
+          - inod7zNaN4pwUHNuCHDpawHLEz
+
+
 
   # Policy functions are functions that are defined within the policy itself, in
   # a separate "functions" element (see at the bottom). They are invoked just
