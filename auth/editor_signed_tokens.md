@@ -9,18 +9,19 @@ If no additional information is added - such as the context described below - th
 
 _Public area_ and object visibility:
 
-```
+
 Content objects have a public area and a private area.
 
 * metadata: the public area is metadata under the "public" key subtree
 * parts (and files): the public area is all unencrypted parts (and files)
  
 Content objects have a visibility flag (int):
+|visibility|description|
+|-|-|
+| 0  | the object is private (only accessible to groups and individuals specifically permitted) |
+| 1  | the object is 'published' - everybody can access its public area using an unauthenticated token |
+| 10 | the object is publicly accessible - everybody can access its public and private areas (including encrypted parts) |
 
-0  - the object is private (only accessible to groups and individuals specifically permitted)
-1  - the object is 'published' - everybody can access its public area using an unauthenticated token
-10 - the object is publicly accessible - everybody can access its public and private areas (including encrypted parts)
-```
 
 The user can also take the control on the permissions granted to the token by using a `policy` and embedding contextual information in the token. This requires the user who creates (and signs) the token to:
 
@@ -32,9 +33,9 @@ The steps to create such a token are:
 * write a policy for the content
 * sign the policy
 * create a policy object and store the signed policy under the `auth_policy` key in the meta-data of the policy object
-* create a editor-signed token that embeds - as contextual information - the ID of policy object as well as other values that might be used in the evaluation of the policy.
+* create a editor-signed token that embeds - as contextual information - the ID of the policy object as well as other values that might be used in the evaluation of the policy.
 
-## Simple Editor-signed token
+## Simple Editor-Signed Token
 
 In this simple form editor-signed tokens provide default permissions to their users.
 
@@ -61,7 +62,7 @@ In the example below the `bearer` value is used as the authorization to access t
 
 ```
 
-## Editor-signed token with finer grained permission
+## Editor-Signed Token with Finer-Grained Permission
 
 ### Write an Authorization Policy
 
