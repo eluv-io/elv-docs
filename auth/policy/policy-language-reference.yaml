@@ -48,7 +48,6 @@ rules:
           - fn.data.Invert: [ 1,2,3 ]
           - [ 3,2,1 ]
       - rule: literals
-      - rule: literals2
       - rule: boolean_logic
       - rule: comparisons
       - rule: collections
@@ -79,17 +78,6 @@ rules:
               - 1
               - 2
               - 3
-
-  literals2:
-    and:
-      - nil:
-          env: groups_not_defined
-      - not:
-          nil:
-            env: empty_groups
-      - not:
-          nil:
-            env: groups
 
   boolean_logic:
     and:
