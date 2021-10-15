@@ -7,15 +7,16 @@ Editor-signed tokens expire after a default duration of `4 hours`. The creator o
 
 If no additional information is added - such as the context described below - the token provides a default set of permissions - to the _public area_ - when accessing the content.
 
-_Public area_ and object visibility:
+**_Public area_ and object visibility**
 
 
-Content objects have a public area and a private area.
+* Content objects have a public area and a private area.
 
-* metadata: the public area is metadata under the "public" key subtree
-* parts (and files): the public area is all unencrypted parts (and files)
+  * metadata: the public area is metadata under the "public" key subtree
+  * parts (and files): the public area is all unencrypted parts (and files)
  
-Content objects have a visibility flag (int):
+* Content objects have a visibility flag (int)
+
 |visibility|description|
 |-|-|
 | 0  | the object is private (only accessible to groups and individuals specifically permitted) |
