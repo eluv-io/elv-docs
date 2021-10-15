@@ -7,7 +7,7 @@ Editor-signed tokens expire after a default duration of `4 hours`. The creator o
 
 If no additional information is added - such as the context described below - the token provides a default set of permissions - to the _public area_ - when accessing the content.
 
-**_Public area_ and object visibility**
+**_Public Area_ and Object Visibility**
 
 
 * Content objects have a public area and a private area.
