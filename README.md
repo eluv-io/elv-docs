@@ -13,5 +13,5 @@ Documentation
 
 ### Tokens
 
-* [Self-Signed Tokens](auth/self_signed_tokens.md)
-* [Self-Signed Tokens Example Policy](auth/self_signed_policy.yaml)
+* [Editor-Signed Tokens](auth/editor_signed_tokens.md)
+* [Editor-Signed Tokens Example Policy](auth/common_policies/editor_signed_policy.yaml)

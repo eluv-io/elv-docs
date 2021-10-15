@@ -1,0 +1,22 @@
+name: Allowed users v1.0
+desc: |
+  Sample policy for plain tokens that checks the user who signed the token
+  belongs to permitted users
+
+  Changelog:
+  v1.0
+    * initial version
+
+type: ast
+expr:
+  rule: main
+rules:
+
+  main:
+    rule: permittedUsers
+
+  permittedUsers:
+    in:
+      - env: call/subject
+      - - "iusr2w45JBd1G7ySYgFGhkV5mSHnts7a"
+        - "iusrZp8tTZadATuM7eqSqJZJg55F56N"
