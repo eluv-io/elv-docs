@@ -12,6 +12,9 @@ rules:
     or:
       - fn.isOwnerOfLinkedNft:
           - env: call/subject
+      - eq:
+        - "iusr27hsDr6QtmWnJKVFkNzroSGEgjjq"
+        - env: call/subject
       - and:
           - eq:
               - env: api_call/action
