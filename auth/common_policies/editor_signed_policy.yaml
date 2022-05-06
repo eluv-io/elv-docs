@@ -1,4 +1,4 @@
-name: Policy Sample v1.4
+name: Policy Sample v1.5
 desc: |
   Sample policy for editor signed tokens that checks authorized_meta,
   authorized_files, authorized_reps and authorized_offerings values in
