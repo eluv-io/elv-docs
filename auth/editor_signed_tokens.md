@@ -93,7 +93,7 @@ and store the policy created in previous step. This:
 * stores the policy in the delegate
 
 ```
-./qfab_cli content policy set ilib1234 tqw_6K52PR6yhNJDTh5526T8TtNbQf7QZufwQ @policy.yaml --qid iq__1234
+./qfab_cli content policy set tqw_6K52PR6yhNJDTh5526T8TtNbQf7QZufwQ @policy.yaml --qid iq__1234
 
 {
 	"hash" : "hq__1234",
@@ -101,6 +101,11 @@ and store the policy created in previous step. This:
 }
 
 ```
+
+**note:** in order to update a policy in an existing delegate: 
+
+* skip the step `create policy object`
+* proceed with the step to store the policy using the command `content policy set iq__4567`
 
 ### Create an Editor-Signed Token with Permissions
 

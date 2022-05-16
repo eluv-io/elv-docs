@@ -1,10 +1,14 @@
-name: Policy Sample v1.4
+name: Policy Sample v1.5
 desc: |
   Sample policy for editor signed tokens that checks authorized_meta,
   authorized_files, authorized_reps and authorized_offerings values in
   the token/ctx
 
   Changelog:
+  v1.5
+    * fix isContentDecrypt 
+       * comparison of call/subject and call/node_id
+       * allow read part
   v1.4
     * when token does not have authorized_xxxx accept rather than refusing any value:
       * accept offering if nil authorized_offerings
@@ -109,12 +113,13 @@ rules:
 
   isContentDecrypt:
     and:
-      - eq:
+      - in:
           - env: api_call/action
-          - q.read.decrypt
-      - eq:
-          - env: api_call/subject
-          - env: api_call/node_id
+          - - q.read.part.read
+            - q.read.decrypt
+      - fn.ids.Equivalent:
+          - env: call/subject
+          - env: call/node_id
 
   publicContent:
     and:
@@ -143,22 +148,22 @@ rules:
       - nil:
           env: token/ctx/authorized_reps
       - in:
-        # the rep name is the first segment in the bcCallPath:
-        #   /rep/playout/offering/...
-        #   /rep/media_download/offering/...
-        # /rep is not part of bcCallPath (it's mapped to the "content" bitcode function)
-        - rule: bcCallPath/0
-        - env: token/ctx/authorized_reps
+          # the rep name is the first segment in the bcCallPath:
+          #   /rep/playout/offering/...
+          #   /rep/media_download/offering/...
+          # /rep is not part of bcCallPath (it's mapped to the "content" bitcode function)
+          - rule: bcCallPath/0
+          - env: token/ctx/authorized_reps
 
   permittedOfferings:
     and:
-       - rule: permittedRep
-       - or:
+      - rule: permittedRep
+      - or:
           - and:
               - rule: isPlayout
               - eq:
-                - rule: bcCallPath/1
-                - "options.json"
+                  - rule: bcCallPath/1
+                  - "options.json"
           - or:
               - nil:
                   env: token/ctx/authorized_offerings
