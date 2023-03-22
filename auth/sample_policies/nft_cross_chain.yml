@@ -1,0 +1,46 @@
+name: policy nft-cross-chain
+desc: |
+  policy for testing access to cross-chain contract nft.
+  The main rule has to be called 'validateTokenEval':
+  - validateToken: validate the token signer and xcmsg in the context
+  - eval is a place holder for more useful verification. In this policy
+    it verifies a few action for the purpose of the tests.
+type: ast
+expr:
+  rule: authorize
+rules:
+
+  settings:
+    literal:
+      authorizedSigners:
+        - "0xdD0402bb72FA5554BB79a84ABC8a59E1b8Df4F45"
+      authorizedAssets:
+        - "eip155:1/erc721:0x3097E2b7b4E670f0366e78eCD39eF940e876f74f"
+        - "eip155:137/erc721:0x3097E2b7b4E670f0366e78eCD39eF940e876f74f"
+        - "solana:4sGjMW1sUnHzSxGspuhpqLDx6wiyjNtZ/nonfungibletoken:Ag3m1p1B6FMWKunTQwDW98fLEpcPaobmuthx1u9xLP9q"
+        - "flow:mainnet/nonfungibletoken:0x329feb3ab062d289:CNN_NFT"
+        - "eip155:955210/erc721:0xc21ea77699666e2bb6b96dd20157db08f22cb9c3"
+
+
+  # entry point - mandatory for client-signed tokens
+  authorize:
+    rule: validateToken
+
+  isValidTokenSigner:
+    in:
+      - env: token/adr
+      - rule: settings/authorizedSigners
+
+  isValidXcmsg:
+    and:
+      - in:
+          - env: token/ctx/xc_msg/asset
+          - rule: settings/authorizedAssets
+      - ge:
+          - env: token/ctx/xc_msg/results/balance
+          - 1
+
+  validateToken:
+    and:
+      - rule: isValidTokenSigner
+      - rule: isValidXcmsg
