@@ -1,10 +1,10 @@
 name: policy nft-cross-chain
 desc: |
-  policy for testing access to cross-chain contract nft.
-  The main rule has to be called 'validateTokenEval':
+  Contract policy for access control based on a cross-chain oracle view call.
+  The policy permits read operations if the user owns at least one of any of the
+  tokens defined in the 'authorizedAssets' list.
   - validateToken: validate the token signer and xcmsg in the context
-  - eval is a place holder for more useful verification. In this policy
-    it verifies a few action for the purpose of the tests.
+
 type: ast
 expr:
   rule: authorize
