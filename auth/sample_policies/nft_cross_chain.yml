@@ -1,7 +1,7 @@
 name: policy nft-cross-chain
 desc: |
-  Contract policy for access control based on a cross-chain oracle view call.
-  The policy permits read operations if the user owns at least one of any of the
+  Sample policy for access control based on a cross-chain oracle view call.
+  The policy permits read operations if the user owns one or more of any of the
   tokens defined in the 'authorizedAssets' list.
   - validateToken: validate the token signer and xcmsg in the context
 
