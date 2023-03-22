@@ -17,10 +17,9 @@ rules:
       authorizedAssets:
         - "eip155:1/erc721:0x3097E2b7b4E670f0366e78eCD39eF940e876f74f"
         - "eip155:137/erc721:0x3097E2b7b4E670f0366e78eCD39eF940e876f74f"
+        - "eip155:955305/erc721:0xddca2448a13b26986da0a934386277759ac0e412"
         - "solana:4sGjMW1sUnHzSxGspuhpqLDx6wiyjNtZ/nonfungibletoken:Ag3m1p1B6FMWKunTQwDW98fLEpcPaobmuthx1u9xLP9q"
         - "flow:mainnet/nonfungibletoken:0x329feb3ab062d289:CNN_NFT"
-        - "eip155:955210/erc721:0xc21ea77699666e2bb6b96dd20157db08f22cb9c3"
-
 
   # entry point - mandatory for client-signed tokens
   authorize:
