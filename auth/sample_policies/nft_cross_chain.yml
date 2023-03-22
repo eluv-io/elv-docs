@@ -1,0 +1,45 @@
+name: policy nft-cross-chain
+desc: |
+  Sample policy for access control based on a cross-chain oracle view call.
+  The policy permits read operations if the user owns one or more of any of the
+  tokens defined in the 'authorizedAssets' list.
+  - validateToken: validate the token signer and xcmsg in the context
+
+type: ast
+expr:
+  rule: authorize
+rules:
+
+  settings:
+    literal:
+      authorizedSigners:
+        - "0xdD0402bb72FA5554BB79a84ABC8a59E1b8Df4F45"
+      authorizedAssets:
+        - "eip155:1/erc721:0x3097E2b7b4E670f0366e78eCD39eF940e876f74f"
+        - "eip155:137/erc721:0x3097E2b7b4E670f0366e78eCD39eF940e876f74f"
+        - "eip155:955305/erc721:0xddca2448a13b26986da0a934386277759ac0e412"
+        - "solana:4sGjMW1sUnHzSxGspuhpqLDx6wiyjNtZ/nonfungibletoken:Ag3m1p1B6FMWKunTQwDW98fLEpcPaobmuthx1u9xLP9q"
+        - "flow:mainnet/nonfungibletoken:0x329feb3ab062d289:CNN_NFT"
+
+  # entry point - mandatory for client-signed tokens
+  authorize:
+    rule: validateToken
+
+  isValidTokenSigner:
+    in:
+      - env: token/adr
+      - rule: settings/authorizedSigners
+
+  isValidXcmsg:
+    and:
+      - in:
+          - env: token/ctx/xc_msg/asset
+          - rule: settings/authorizedAssets
+      - ge:
+          - env: token/ctx/xc_msg/results/balance
+          - 1
+
+  validateToken:
+    and:
+      - rule: isValidTokenSigner
+      - rule: isValidXcmsg
