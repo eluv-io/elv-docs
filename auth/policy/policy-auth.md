@@ -28,7 +28,7 @@ bitcode functions.
 
 Authorization policies are written in a YAML syntax that represents the Abstract
 Syntax Tree (AST) of the policy logic. See
-[policy-language-reference.yaml](../../../../auth/policy/ast/testdata/policy-language-reference.yaml)
+[policy-language-reference.yaml](policy-language-reference.yaml)
 for details.
 
 A specialized higher-level policy language is planned for the future.
