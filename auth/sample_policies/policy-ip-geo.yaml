@@ -1,0 +1,103 @@
+name: policy ip-geo
+desc: |
+  policy for testing ip-geo based authorization. 
+  The main rule has to be called 'authorize':
+  - validateToken: validate the token signer in the context
+  - access: is a place holder for more useful verification. In this policy
+    it uses ip-geo for the purpose of the tests.
+  The policy includes example rules for confirmation token, ip geo location or user agent.
+
+type: ast
+expr:
+  rule: authorize
+rules:
+
+  settings:
+    literal:
+      authorizedSigners:
+        - "$SIGNER_ADDR"                               # filled by test code
+      authorizedLocations:
+        - "eu-west-north"
+        - "na-west-north"
+      authorizedCountryCodes:
+        - "GB"
+        - "US"
+      authorizedClientIps:
+        - "192.168.1.10"
+        - "192.168.1.11"
+      authorizedClientIpsRegex: "^192.168.*$"
+      authorizedUserAgents:
+        - "Go-http-client/1.1"
+      authorizedUserAgentsRegex: "^Go.*$"
+
+  # entry point - mandatory for client-signed tokens
+  authorize:
+    and:
+      - rule: validateToken
+      - rule: access
+
+  # isConfirmationRequired is an example rule to verify that a confirmation token is required
+  isConfirmationRequired:
+    env: token/cnf/required
+
+  isValidTokenSigner:
+    in:
+      - env: token/adr
+      - rule: settings/authorizedSigners
+
+  # fn.ipGeoLocationProps returns an ip-geo location property for the current user.
+  # It expects one arg:the name of the property. That is one of:
+  # - location        string
+  # - country_code    string
+  # - country_name    string
+  # - continent_code  string
+  # - continent_name  string
+  # - region_code     string
+  # - region_name     string
+  # - connection_type string
+  # - latitude        float
+  # - longitude       float
+  # - city            string
+  # - zip             string
+  isValidIpGeo:
+    in:
+      - fn.ipGeoLocationProps:
+          - "country_code"
+      - rule: settings/authorizedCountryCodes
+
+  validateToken:
+    rule: isValidTokenSigner
+
+  access: # could just return isValidIpGeo. Here 2 actions checked for tests.
+    and:
+      - rule: isValidIpGeo
+      - in:
+          - env: api_call/action
+          - - q.read.bccall
+            - q.read.meta
+
+  isAuthorizedLocation: # example rule for authorizing ip geo location
+    in:
+      - fn.ipGeoLocationProps:
+          - "location"
+      - rule: settings/authorizedLocations
+
+  isAuthorizedClientIp: # example rule for authorizing client ip
+    in:
+      - fn.clientIp:
+      - rule: settings/authorizedClientIps
+
+  matchesAuthorizedClientIp: # example rule for authorizing client ip via a regex
+    fn.regex.Matches:
+      - fn.clientIp:
+      - rule: settings/authorizedClientIpsRegex
+
+  isAuthorizedUserAgent: # example rule for authorizing user agent in request
+    in:
+      - fn.userAgent:
+      - rule: settings/authorizedUserAgents
+
+  matchesAuthorizedUserAgent: # example rule for authorizing user agent in request via regex
+    fn.regex.Matches:
+      - fn.userAgent:
+      - rule: settings/authorizedUserAgentsRegex
