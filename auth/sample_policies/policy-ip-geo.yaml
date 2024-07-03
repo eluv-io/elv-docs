@@ -5,7 +5,6 @@ desc: |
   - validateToken: validate the token signer in the context
   - access: is a place holder for more useful verification. In this policy
     it uses ip-geo for the purpose of the tests.
-  The policy includes example rules for confirmation token, ip geo location or user agent.
 
 type: ast
 expr:
