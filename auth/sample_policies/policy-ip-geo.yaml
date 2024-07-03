@@ -36,10 +36,6 @@ rules:
       - rule: validateToken
       - rule: access
 
-  # isConfirmationRequired is an example rule to verify that a confirmation token is required
-  isConfirmationRequired:
-    env: token/cnf/required
-
   isValidTokenSigner:
     in:
       - env: token/adr
