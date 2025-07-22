@@ -6,7 +6,7 @@ desc: |
 
   Changelog:
   v1.6
-    * add isAuthorizedReadInfo for q/<qid>?details=true&profile=true
+    * add isReadInfo for reading content info with q/<qid>?details=true&profile=true
   v1.5
     * fix isContentDecrypt 
        * comparison of call/subject and call/node_id
@@ -51,7 +51,7 @@ rules:
               - not:
                   - rule: isReadMeta
       - rule: isContentDecrypt
-      - rule: isAuthorizedReadInfo
+      - rule: isReadInfo
 
   isReadFiles:
     eq:
@@ -78,6 +78,11 @@ rules:
       - in:
           - env: call/meta_path
           - env: token/ctx/authorized_meta
+
+  isReadInfo:
+    eq:
+      - env: api_call/action
+      - q.read.info
 
   # bc call path as path object to prevent path formatting issues
   bcCallPath:
@@ -206,15 +211,6 @@ rules:
       - eq:
           - env: call/grant
           - read-crypt
-
-  isAuthorizedReadInfo:
-    and:
-      - in:
-          - env: call/resource_id
-          - env: token/ctx/authorized_qids
-      - eq:
-          - env: api_call/action
-          - q.read.info
 
   # ----------------------------------------------------------------------------
   # Bitcode rules
