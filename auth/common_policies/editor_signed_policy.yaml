@@ -2,8 +2,9 @@ name: Policy Sample v1.6
 desc: |
   Sample policy for editor signed tokens that checks authorized_meta,
   authorized_files, authorized_reps, and authorized_offerings values in the
-  token/ctx.  Using authorized_qids in the token/ctx is also supported implictly
-  via the base auth layer object checks.
+  token/ctx. Using authorized_qids in the token/ctx is also supported implictly
+  via the base auth layer object checks. It's not necessary to check the 
+  authorized_qids in the policy.
 
   Changelog:
   v1.6
