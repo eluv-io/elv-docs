@@ -1,10 +1,12 @@
-name: Policy Sample v1.5
+name: Policy Sample v1.6
 desc: |
   Sample policy for editor signed tokens that checks authorized_meta,
-  authorized_files, authorized_reps and authorized_offerings values in
-  the token/ctx
+  authorized_files, authorized_reps, authorized_offerings, and authorized_qids
+  values in the token/ctx
 
   Changelog:
+  v1.6
+    * add isAuthorizedReadInfo for q/<qid>?details=true&profile=true
   v1.5
     * fix isContentDecrypt 
        * comparison of call/subject and call/node_id
@@ -13,8 +15,8 @@ desc: |
     * when token does not have authorized_xxxx accept rather than refusing any value:
       * accept offering if nil authorized_offerings
       * accept rep if nil authorized_reps
-      * acept file if nil authorized_files
-      * acept meta if nil authorized_meta
+      * accept file if nil authorized_files
+      * accept meta if nil authorized_meta
     * handle 'channel' in the same way as 'playout'
   v1.3
     * revert 1.1 (isContentDecrypt using call/subject)
@@ -49,6 +51,7 @@ rules:
               - not:
                   - rule: isReadMeta
       - rule: isContentDecrypt
+      - rule: isAuthorizedReadInfo
 
   isReadFiles:
     eq:
@@ -203,6 +206,15 @@ rules:
       - eq:
           - env: call/grant
           - read-crypt
+
+  isAuthorizedReadInfo:
+    and:
+      - in:
+          - env: call/resource_id
+          - env: token/ctx/authorized_qids
+      - eq:
+          - env: api_call/action
+          - q.read.info
 
   # ----------------------------------------------------------------------------
   # Bitcode rules
