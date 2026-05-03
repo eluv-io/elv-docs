@@ -1,0 +1,671 @@
+
+Summary with Personalization Prompt and Scene-wise Descriptions:
+
+curl -s 'https://ai.contentfabric.io/ml/summary/q/iq__3WoyB8QDVkLUT5JtyjFEXfdKQrKw/rep/summarize?start_time=0&end_time=4200000&scene=true&regenerate=true&engine=summary_v3&scene=true&personal_prompt=Write+the+summary+in+sales+style&authorization=atxsjc5jcpP9zKbQSv6jYdyHBVwJZJ7ooWMnFVckqRa5EvTa4LkTcF9VXVxcFrvMPb8JFbroVkNk9w41RhzULKZK853rL2EWzLy1kAR7g7Rj7vqJAS4YwBad89pEu9tmbpaALEa3gjw3aRd9iqw4hYwa2eyYfiHo8PtuYZbqpUq6P8dhLbsEgAZWvby283ciYw5sBymdyX1zVQ4xaZFZvCMBtamXbe9gWzCyc6BkHmwyAsVjGkp957ymxgwK62yYP2sz6oX98xFjjn3AP9g9Aa3y3mwLRCTjMrbUXemVAYitYQYKZB1pE9uuGfKAq4oAqTMAe4zzhpHJMvzd6kq3pGdetEYuN6SEkvLwfw8eDJmner1w6Urd44Xnq3PYbAuH8kCXPUM1SsVGm7NfKyKzTaDRKQiKd6tSSGATedSkooih72defn7Bx3omxRgcMfnCtCX2PVbw1UEX9riXWSz9vWdEHdF7J2shnHpi6s5yVrzh9ZTdHX9tFPbbZ6fuQznBxofkrQFZrrY533Fety6FKmbscp1tUxu9iVVhC2wCci1kHhXtoynvZ562J' | jq .
+
+{
+  "summary": "Dive into the high-stakes mystery of 'Killian's Game,' where Michael Marcel uncovers a deadly secret: his murdered partner Niko was actually a man named Daniel, a revelation that shatters the truth behind a decade-old smuggling disaster. As paranoia mounts and a critical warning emerges that 'Killian must not go to Silver,' the line between past and present blurs in a tense race to expose who really knows what. Witness the moment a simple funeral turns into a life-or-death confrontation where every hidden identity could be the key to survival.",
+  "title": "The Deadly Secret of Niko and Daniel",
+  "hashtags": [
+    "#KilliansGame",
+    "#NoirMystery",
+    "#PlotTwist"
+  ],
+  "scenes": [
+    {
+      "start_time": 11886,
+      "end_time": 379753,
+      "tag": "scene_0000",
+      "scene": {
+        "brand": [
+          {
+            "end_time": 22814,
+            "start_time": 11886,
+            "tag": "Porsche 911"
+          },
+          {
+            "end_time": 11845,
+            "start_time": 4963,
+            "tag": "Sony"
+          }
+        ],
+        "intExt": "BOTH",
+        "keywords": [
+          "Michael Marcel",
+          "Lilah Richcreek Estrada",
+          "Porsche 911",
+          "rural road",
+          "smuggling",
+          "murder",
+          "identity reveal",
+          "funeral"
+        ],
+        "location": "street",
+        "memorable": [
+          "Michael Marcel narrates the backstory of his partner Niko, revealing that Niko was murdered ten years after a failed smuggling job in Japan. He explains that both he and Niko disappeared following the loss of a valuable package, but hints that the past is not truly over. This monologue establishes the central mystery and the history driving the current conflict.",
+          "Michael Marcel meets with Lilah Richcreek Estrada in an office setting, where they discuss his arrival and her paranoia about being followed. The conversation shifts to a funeral, where Lilah reveals a critical identity twist: her deceased husband Nico was actually Daniel, also known as Daniel right Sylvia Torres. This revelation recontextualizes the relationship between the characters and the deceased."
+        ],
+        "setting": [
+          "wooden interior",
+          "vintage decor"
+        ],
+        "theme": [
+          "The inescapable past",
+          "Identity and deception",
+          "Consequences of betrayal"
+        ],
+        "timeOfDay": "day",
+        "tone": [
+          "tense",
+          "cinematic",
+          "neutral",
+          "reflective",
+          "formal",
+          "somber"
+        ]
+      }
+    },
+    {
+      "start_time": 402443,
+      "end_time": 406614,
+      "tag": "scene_0001",
+      "scene": {
+        "brand": [
+          {
+            "end_time": 22814,
+            "start_time": 11886,
+            "tag": "Porsche 911"
+          },
+          {
+            "end_time": 11845,
+            "start_time": 4963,
+            "tag": "Sony"
+          }
+        ],
+        "intExt": "INT",
+        "keywords": [
+          "whiskey",
+          "water",
+          "table",
+          "dimly lit room",
+          "yellow walls",
+          "doorway"
+        ],
+        "location": "a dimly lit room with yellow walls",
+        "memorable": [
+          "An unidentified person stands in a dimly lit room, looking down at a table holding water and whiskey. The individual says 'Salute,' creating a brief moment of atmosphere. This scene establishes a quiet, possibly contemplative mood without advancing a specific plot point."
+        ],
+        "setting": [
+          "dimly lit"
+        ],
+        "theme": [
+          "solitude",
+          "contemplation",
+          "melancholy"
+        ],
+        "timeOfDay": "night",
+        "tone": [
+          "tense",
+          "tender"
+        ]
+      }
+    },
+    {
+      "start_time": 410159,
+      "end_time": 435809,
+      "tag": "scene_0002",
+      "scene": {
+        "brand": [
+          {
+            "end_time": 22814,
+            "start_time": 11886,
+            "tag": "Porsche 911"
+          },
+          {
+            "end_time": 11845,
+            "start_time": 4963,
+            "tag": "Sony"
+          }
+        ],
+        "intExt": "BOTH",
+        "keywords": [
+          "Michael Marcel",
+          "vintage car",
+          "escape",
+          "rural road",
+          "dimly lit room",
+          "phone",
+          "dark coat and hat"
+        ],
+        "location": "street",
+        "memorable": [
+          "Michael Marcel narrates a past event where he and an unnamed woman realized they needed to leave immediately, prompting her to depart that very night. He reveals that their pursuers arrived the following day, implying her escape was narrowly successful. This narration, paired with visuals of a vintage car and men walking in the dark, establishes a history of danger and a close call for the characters."
+        ],
+        "setting": [
+          "dimly lit",
+          "dark",
+          "nighttime",
+          "vintage decor"
+        ],
+        "theme": [
+          "escape",
+          "pursuit",
+          "mystery"
+        ],
+        "timeOfDay": "night",
+        "tone": [
+          "tense",
+          "ominous",
+          "mysterious"
+        ]
+      }
+    },
+    {
+      "start_time": 442441,
+      "end_time": 475183,
+      "tag": "scene_0003",
+      "scene": {
+        "brand": [
+          {
+            "end_time": 22814,
+            "start_time": 11886,
+            "tag": "Porsche 911"
+          },
+          {
+            "end_time": 11845,
+            "start_time": 4963,
+            "tag": "Sony"
+          }
+        ],
+        "intExt": "INT",
+        "keywords": [
+          "key",
+          "wooden drawer",
+          "office",
+          "papers",
+          "scientific equipment",
+          "Killian",
+          "Silver"
+        ],
+        "location": "office",
+        "memorable": [
+          "In a dimly lit office, two formally dressed men engage in a tense interaction involving documents and a window view. A critical directive is established that 'Killian must not go to Silver,' suggesting a high-stakes constraint or warning within the plot. This moment sets a suspenseful tone and introduces a specific restriction on a character's movement."
+        ],
+        "setting": [
+          "dimly lit",
+          "dark",
+          "wooden interior",
+          "vintage decor"
+        ],
+        "theme": [
+          "secrecy",
+          "forbidden knowledge",
+          "conspiracy"
+        ],
+        "timeOfDay": "night",
+        "tone": [
+          "tense",
+          "mysterious",
+          "suspenseful",
+          "dramatic"
+        ]
+      }
+    },
+    {
+      "start_time": 476976,
+      "end_time": 492616,
+      "tag": "scene_0004",
+      "scene": {
+        "brand": [
+          {
+            "end_time": 22814,
+            "start_time": 11886,
+            "tag": "Porsche 911"
+          },
+          {
+            "end_time": 11845,
+            "start_time": 4963,
+            "tag": "Sony"
+          }
+        ],
+        "intExt": "INT",
+        "keywords": [
+          "fedora",
+          "suit",
+          "phone",
+          "lighter",
+          "tense conversation",
+          "dimly lit room"
+        ],
+        "location": "indoors",
+        "memorable": [
+          "Two men in suits, one wearing a fedora, engage in a tense conversation within a dimly lit, noir-style room. The ominous text overlay 'HE'LL BE SORRY' suggests a threat or impending consequence, establishing a serious tone for the interaction."
+        ],
+        "setting": [
+          "dimly lit",
+          "dark"
+        ],
+        "theme": [
+          "revenge",
+          "tension",
+          "moral ambiguity"
+        ],
+        "timeOfDay": "night",
+        "tone": [
+          "tense",
+          "ominous",
+          "dramatic"
+        ]
+      }
+    },
+    {
+      "start_time": 496244,
+      "end_time": 506963,
+      "tag": "scene_0005",
+      "scene": {
+        "brand": [
+          {
+            "end_time": 22814,
+            "start_time": 11886,
+            "tag": "Porsche 911"
+          },
+          {
+            "end_time": 11845,
+            "start_time": 4963,
+            "tag": "Sony"
+          }
+        ],
+        "intExt": "INT",
+        "keywords": [
+          "Michael Marcel",
+          "vintage convertible",
+          "driving",
+          "desert road",
+          "burning note",
+          "cover-up"
+        ],
+        "location": "street",
+        "memorable": [
+          "Michael Marcel reveals a critical information gap, noting that while others knew his secrets, they were unaware of what Nika knew. This revelation is juxtaposed with visual evidence of a man driving a vintage car and a personal note being burned, suggesting a cover-up or the destruction of evidence related to Nika's knowledge."
+        ],
+        "setting": [
+          "vintage decor"
+        ],
+        "theme": [
+          "secrets",
+          "deception",
+          "power dynamics"
+        ],
+        "timeOfDay": "day",
+        "tone": [
+          "tense",
+          "mysterious"
+        ]
+      }
+    },
+    {
+      "start_time": 510550,
+      "end_time": 523772,
+      "tag": "scene_0006",
+      "scene": {
+        "brand": [
+          {
+            "end_time": 22814,
+            "start_time": 11886,
+            "tag": "Porsche 911"
+          },
+          {
+            "end_time": 11845,
+            "start_time": 4963,
+            "tag": "Sony"
+          }
+        ],
+        "intExt": "INT",
+        "keywords": [
+          "Clara",
+          "confession",
+          "smoky room",
+          "suits",
+          "hats",
+          "microphone"
+        ],
+        "location": "unknown",
+        "memorable": [
+          "Two unidentified men in a smoky, dimly lit room engage in a brief, cryptic exchange where one calls out 'Clara' and the other claims sole responsibility with 'Only i did.' This moment introduces a specific name and a confession of action, hinting at a hidden conflict or mystery central to the plot."
+        ],
+        "setting": [
+          "dimly lit"
+        ],
+        "theme": [
+          "guilt",
+          "secrecy",
+          "mystery"
+        ],
+        "timeOfDay": "unknown",
+        "tone": [
+          "tense",
+          "mysterious"
+        ]
+      }
+    }
+  ],
+  "version_info": {
+    "revision": "52b319403e9cc57795dbfdcbc2898b7516755d98",
+    "branch": "metadata-ml",
+    "build_date": "unknown"
+  }
+}
+
+Standard Summary with scene-wise descriptions
+
+curl -s 'https://ai.contentfabric.io/ml/summary/q/iq__3AVrevqxiPQnuVWUmCGWP98TdXPT/rep/summarize?start_time=0&end_time=231000&regenerate=true&engine=summary_v3&scene=true&authorization=atxsjc5jcpP9zKbQSv6jYdyHBVwJZJ7ooWMnFVckqRa5EvTa4LkTcF9VXVxcFrvMPb8JFbroVkNk9w41RhzULKZK853rL2EWzLy1kAR7g7Rj7vqJAS4YwBad89pEu9tmbpaALEa3gjw3aRd9iqw4hYwa2eyYfiHo8PtuYZbqpUq6P8dhLbsEgAZWvby283ciYw5sBymdyX1zVQ4xaZFZvCMBtamXbe9gWzCyc6BkHmwyAsVjGkp957ymxgwK62yYP2sz6oX98xFjjn3AP9g9Aa3y3mwLRCTjMrbUXemVAYitYQYKZB1pE9uuGfKAq4oAqTMAe4zzhpHJMvzd6kq3pGdetEYuN6SEkvLwfw8eDJmner1w6Urd44Xnq3PYbAuH8kCXPUM1SsVGm7NfKyKzTaDRKQiKd6tSSGATedSkooih72defn7Bx3omxRgcMfnCtCX2PVbw1UEX9riXWSz9vWdEHdF7J2shnHpi6s5yVrzh9ZTdHX9tFPbbZ6fuQznBxofkrQFZrrY533Fety6FKmbscp1tUxu9iVVhC2wCci1kHhXtoynvZ562J' | jq .
+{
+  "summary": "The opening sequence establishes a tense urban atmosphere with a confrontation on a rooftop and a fallen figure below. Agent 327 prepares to infiltrate a dangerous location, setting the stage for high-stakes action.",
+  "title": "Agent 1327 - Tense Urban Confrontation and Preparation",
+  "hashtags": [
+    "#action",
+    "#urban",
+    "#mystery"
+  ],
+  "scenes": [
+    {
+      "start_time": 791,
+      "end_time": 80041,
+      "tag": "scene_0000",
+      "scene": {
+        "brand": [],
+        "intExt": "BOTH",
+        "keywords": [
+          "rooftop",
+          "Agent 327",
+          "war-torn location",
+          "rusted truck",
+          "cluttered office",
+          "Harrycott",
+          "detective",
+          "clue"
+        ],
+        "location": [
+          "office",
+          "bar",
+          "rooftop",
+          "street"
+        ],
+        "memorable": [
+          "Agent 327 prepares to infiltrate a dangerous, war-torn location, identifying themselves to a support contact before crossing the threshold. This moment marks the transition from preparation to active engagement, establishing the high stakes and the agent's isolation as they enter the hostile environment."
+        ],
+        "setting": [
+          "nighttime",
+          "dusk",
+          "dawn",
+          "brick walls",
+          "cluttered"
+        ],
+        "theme": [
+          "isolation",
+          "surveillance and intrusion",
+          "high-stakes danger"
+        ],
+        "timeOfDay": "day",
+        "tone": [
+          "tense",
+          "mysterious",
+          "anticipatory"
+        ]
+      }
+    },
+    {
+      "start_time": 83958,
+      "end_time": 127875,
+      "tag": "scene_0001",
+      "scene": {
+        "brand": [],
+        "intExt": "INT",
+        "keywords": [
+          "barber's chair",
+          "haircut",
+          "small robot",
+          "office",
+          "confrontation",
+          "spray bottle",
+          "firearms",
+          "bar"
+        ],
+        "location": [
+          "office",
+          "hair salon",
+          "living room",
+          "indoors",
+          "bar"
+        ],
+        "memorable": [
+          "Two unidentified characters engage in a high-stakes conversation within an office environment, marked by urgent gestures and intense body language. The scene captures a moment of significant tension or revelation, as one character appears to be explaining or confronting the other with a sense of immediacy. This interaction likely serves as a critical development point, establishing conflict or delivering key information despite the lack of audible dialogue.",
+          "In a tense office setting, a human male and a fantasy creature engage in a serious interaction that culminates in a sudden outburst of alarm. The creature's shocked body language and the speaker's exclamation suggest a critical revelation or immediate threat has just been uncovered, shifting the scene's dynamic from conversation to crisis.",
+          "In a tense indoor setting, one character extends a hand in a gesture of surrender or peace toward another, while a variety of firearms are displayed on a nearby workbench. This visual standoff suggests a critical negotiation or conflict resolution moment where weapons are central to the interaction, highlighting the high stakes of the situation."
+        ],
+        "setting": [
+          "dimly lit",
+          "dark",
+          "wooden interior",
+          "vintage decor",
+          "cluttered"
+        ],
+        "theme": [
+          "tension and conflict",
+          "power struggle",
+          "sudden revelation"
+        ],
+        "timeOfDay": "dusk",
+        "tone": [
+          "tense",
+          "whimsical",
+          "routine"
+        ]
+      }
+    },
+    {
+      "start_time": 130041,
+      "end_time": 158375,
+      "tag": "scene_0002",
+      "scene": {
+        "brand": [],
+        "intExt": "INT",
+        "keywords": [
+          "weapon",
+          "standoff",
+          "bar",
+          "office",
+          "anthropomorphic dog",
+          "red button",
+          "photograph",
+          "rustic interior"
+        ],
+        "location": [
+          "bar",
+          "office",
+          "store",
+          "indoors",
+          "rustic room with wooden paneling",
+          "room with traditional asian decorations"
+        ],
+        "memorable": [
+          "Two unidentified characters engage in a silent, high-tension standoff within an office setting. The visual contrast between the distressed uniformed figure and the shocked individual in the brown jacket suggests a sudden, dramatic revelation or confrontation is occurring without words. This moment serves as a visual pivot point, heightening the stakes through body language and facial expressions rather than dialogue."
+        ],
+        "setting": [
+          "dark",
+          "wooden interior",
+          "vintage decor"
+        ],
+        "theme": [
+          "tension",
+          "deception",
+          "revelation"
+        ],
+        "timeOfDay": "unknown",
+        "tone": [
+          "tense",
+          "curious",
+          "menacing"
+        ]
+      }
+    },
+    {
+      "start_time": 161833,
+      "end_time": 204708,
+      "tag": "scene_0003",
+      "scene": {
+        "brand": [],
+        "intExt": "BOTH",
+        "keywords": [
+          "underground facility",
+          "barn",
+          "horse with gun",
+          "medical procedure",
+          "handcuffs",
+          "knife",
+          "remote control",
+          "agent 327"
+        ],
+        "location": [
+          "hallway",
+          "industrial",
+          "dimly lit barn or stable",
+          "indoors (dimly lit room)",
+          "underground room with brick walls",
+          "dark room with brick walls",
+          "outdoors"
+        ],
+        "memorable": [
+          "In a tense underground facility, a human male in a suit urgently demands backup and a specific copy while instructing an anthropomorphic companion to be handcuffed. The companion's confusion highlights a sudden shift in their dynamic, suggesting a breach of protocol or a desperate measure to secure the situation. This moment escalates the stakes by introducing immediate physical restraint and operational urgency.",
+          "In a dimly lit barn, a formally dressed human reacts with shock to the sight of a horse standing upright and brandishing a gun, while another horse remains calm. This surreal and tense visual establishes a bizarre, adult-oriented tone where animals exhibit human-like aggression, immediately raising questions about the world's logic and the immediate danger facing the human character.",
+          "An authority figure oversees a coercive medical procedure, identifying a new recruit designated as 'agent 327' and ordering the process to continue. This moment establishes the recruitment of a new operative through force or manipulation, highlighting the antagonists' control and the grim nature of their operations.",
+          "A bald man brandishing a knife confronts a woman in a dimly lit underground room, creating an immediate sense of danger. The woman's focused gaze suggests a critical moment of tension or decision, establishing a high-stakes conflict between the two characters.",
+          "An intense, silent confrontation unfolds between an unidentified gunman and a suited man holding a beer, both aiming weapons at one another in a rustic outdoor setting. This moment establishes immediate physical danger and a volatile conflict, highlighting the high stakes and the absurdity of the suited man's casual demeanor amidst a life-or-death situation."
+        ],
+        "setting": [
+          "dimly lit",
+          "dark",
+          "brick walls",
+          "wooden interior"
+        ],
+        "theme": [
+          "Power dynamics and control",
+          "Dehumanization and coercion",
+          "Betrayal and shifting alliances"
+        ],
+        "timeOfDay": "day",
+        "tone": [
+          "tense",
+          "mysterious",
+          "urgent"
+        ]
+      }
+    }
+  ],
+  "version_info": {
+    "revision": "52b319403e9cc57795dbfdcbc2898b7516755d98",
+    "branch": "metadata-ml",
+    "build_date": "unknown"
+  }
+}
+
+Standard “Scene” Summary:
+curl -s 'https://ai.contentfabric.io/ml/summary/q/iq__2WiwoB9LDhknEamvscCCjVR7F3Va/rep/summarize?start_time=0&end_time=600000&regenerate=true&engine=summary_v3&scene=true&authorization=atxsjc5jcpP9zKbQSv6jYdyHBVwJZJ7ooWMnFVckqRa5EvTa4LkTcF9VXVxcFrvMPb8JFbroVkNk9w41RhzULKZK853rL2EWzLy1kAR7g7Rj7vqJAS4YwBad89pEu9tmbpaALEa3gjw3aRd9iqw4hYwa2eyYfiHo8PtuYZbqpUq6P8dhLbsEgAZWvby283ciYw5sBymdyX1zVQ4xaZFZvCMBtamXbe9gWzCyc6BkHmwyAsVjGkp957ymxgwK62yYP2sz6oX98xFjjn3AP9g9Aa3y3mwLRCTjMrbUXemVAYitYQYKZB1pE9uuGfKAq4oAqTMAe4zzhpHJMvzd6kq3pGdetEYuN6SEkvLwfw8eDJmner1w6Urd44Xnq3PYbAuH8kCXPUM1SsVGm7NfKyKzTaDRKQiKd6tSSGATedSkooih72defn7Bx3omxRgcMfnCtCX2PVbw1UEX9riXWSz9vWdEHdF7J2shnHpi6s5yVrzh9ZTdHX9tFPbbZ6fuQznBxofkrQFZrrY533Fety6FKmbscp1tUxu9iVVhC2wCci1kHhXtoynvZ562J' | jq .
+{
+  "summary": "In a bar setting, a Senior Male Actor dismisses a situation as a joke while an unidentified speaker characterizes the group as amateurs and compares the island to Disneyland. The scene ends with an unknown voice asserting that 'there are none,' highlighting a disagreement or confusion about the group's status or presence, setting up intrigue about their true purpose.",
+  "title": "Bar Dispute Unveils Island Mystery",
+  "hashtags": [
+    "#mystery",
+    "#disagreement",
+    "#barsetting"
+  ],
+  "scenes": [
+    {
+      "start_time": 40,
+      "end_time": 9480,
+      "tag": "scene_0000",
+      "scene": {
+        "brand": [],
+        "intExt": "INT",
+        "keywords": [
+          "Senior Male Actor",
+          "bartender",
+          "bar",
+          "island",
+          "Disneyland",
+          "amateurs"
+        ],
+        "location": "restaurant",
+        "memorable": [
+          "In a bar setting, a Senior Male Actor dismisses a situation as a joke while an unidentified speaker characterizes the group as amateurs and compares the island to Disneyland. The scene ends with an unknown voice asserting that 'there are none,' highlighting a disagreement or confusion about the group's status or presence. This interaction establishes the characters' differing perspectives on the situation and the setting's atmosphere."
+        ],
+        "setting": [],
+        "theme": [
+          "illusion versus reality",
+          "professionalism versus amateurism",
+          "uncertainty and confusion"
+        ],
+        "timeOfDay": "unknown",
+        "tone": [
+          "tense",
+          "confused"
+        ]
+      }
+    }
+  ],
+  "version_info": {
+    "revision": "52b319403e9cc57795dbfdcbc2898b7516755d98",
+    "branch": "metadata-ml",
+    "build_date": "unknown"
+  }
+}
+
+curl -s 'https://ai.contentfabric.io/ml/summary/q/iq__2WiwoB9LDhknEamvscCCjVR7F3Va/rep/summarize?start_time=0&end_time=600000&regenerate=true&engine=summary_v3&scene=true&personal_prompt=Write+the+summary+in+sales+style&authorization=atxsjc5jcpP9zKbQSv6jYdyHBVwJZJ7ooWMnFVckqRa5EvTa4LkTcF9VXVxcFrvMPb8JFbroVkNk9w41RhzULKZK853rL2EWzLy1kAR7g7Rj7vqJAS4YwBad89pEu9tmbpaALEa3gjw3aRd9iqw4hYwa2eyYfiHo8PtuYZbqpUq6P8dhLbsEgAZWvby283ciYw5sBymdyX1zVQ4xaZFZvCMBtamXbe9gWzCyc6BkHmwyAsVjGkp957ymxgwK62yYP2sz6oX98xFjjn3AP9g9Aa3y3mwLRCTjMrbUXemVAYitYQYKZB1pE9uuGfKAq4oAqTMAe4zzhpHJMvzd6kq3pGdetEYuN6SEkvLwfw8eDJmner1w6Urd44Xnq3PYbAuH8kCXPUM1SsVGm7NfKyKzTaDRKQiKd6tSSGATedSkooih72defn7Bx3omxRgcMfnCtCX2PVbw1UEX9riXWSz9vWdEHdF7J2shnHpi6s5yVrzh9ZTdHX9tFPbbZ6fuQznBxofkrQFZrrY533Fety6FKmbscp1tUxu9iVVhC2wCci1kHhXtoynvZ562J' | jq .
+{
+  "summary": "Witness the tense clash in a dimly lit bar where a Senior Male Actor tries to dismiss a crisis as a mere joke, only to be brutally labeled an 'amateur' by a mysterious voice comparing their reality to a twisted Disneyland. The atmosphere shatters as an unknown figure chillingly declares 'there are none,' leaving the group's very existence in question. This high-stakes confrontation exposes the fragile line between illusion and danger in a world where nothing is as it seems.",
+  "title": "The Disneyland Deception",
+  "hashtags": [
+    "#MysteryThriller",
+    "#TenseConfrontation",
+    "#PlotTwist"
+  ],
+  "scenes": [
+    {
+      "start_time": 40,
+      "end_time": 9480,
+      "tag": "scene_0000",
+      "scene": {
+        "brand": [],
+        "intExt": "INT",
+        "keywords": [
+          "Senior Male Actor",
+          "bartender",
+          "bar",
+          "island",
+          "Disneyland",
+          "amateurs"
+        ],
+        "location": "restaurant",
+        "memorable": [
+          "In a bar setting, a Senior Male Actor dismisses a situation as a joke while an unidentified speaker characterizes the group as amateurs and compares the island to Disneyland. The scene ends with an unknown voice asserting that 'there are none,' highlighting a disagreement or confusion about the group's status or presence. This interaction establishes the characters' differing perspectives on the situation and the setting's atmosphere."
+        ],
+        "setting": [],
+        "theme": [
+          "illusion versus reality",
+          "professionalism versus amateurism",
+          "uncertainty and confusion"
+        ],
+        "timeOfDay": "unknown",
+        "tone": [
+          "tense",
+          "confused"
+        ]
+      }
+    }
+  ],
+  "version_info": {
+    "revision": "52b319403e9cc57795dbfdcbc2898b7516755d98",
+    "branch": "metadata-ml",
+    "build_date": "unknown"
+  }
+}
