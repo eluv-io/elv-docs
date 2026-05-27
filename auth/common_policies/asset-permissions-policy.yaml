@@ -1,4 +1,4 @@
-name: Asset Permission Policy v1.17
+name: Asset Permission Policy v1.18
 desc: |
   Centralized site policy enforcing asset and av offering permissions defined in
   a separate asset permission data model. The data model consists of a top-level
@@ -22,6 +22,8 @@ desc: |
 
   Changelog:
 
+  v1.18
+    * add support for client ip address, geo locations or country codes
   v1.17
     * refuse decryption of parts & files of public(ly listable) contents
     * filter encrypted offerings from public contents in allowOffering
@@ -94,7 +96,7 @@ rules:
           # audio/video "offering". These paths are instead treated like any
           # other rep calls (i.e. part of the "public area")
           offering_exclusion_paths: [
-              "/playout/options.json"
+            "/playout/options.json"
           ]
 
       # Overrides from permission data
@@ -487,46 +489,109 @@ functions:
   # Checks whether the subject in the permission var:perm matches the call's
   # subject (user ID) or any of the token's oauth group, OTP id, or fabric group
   matchPermissionSubject:
-    switch: # find the permission by oauth group, otp id, fabric group or user
-      - case: # oauth group
-          eq:
-            - var: perm/subject/type
-            - oauth_group
-        then:
-          in: # one of the permission's subject is in the user's oauth groups
-            - var: perm/subject/id
-            - env: token/ctx/elv:groups
-      - case: # OTP id
-          eq:
-            - var: perm/subject/type
-            - otp
-        then:
-          in:
-            - var: perm/subject/id
-            - env: token/ctx/elv:otpId
-      - case: # group
-          eq:
-            - var: perm/subject/type
-            - group
-        then:
-          in:
-            - var: perm/subject/id
-            - env: token/ctx/elv:groupIds
-      - case: # user
-          eq:
-            - var: perm/subject/type
-            - user
-        then:
-          or:
-            - eq:
-                - var: perm/subject/id
-                - env: call/subject
-            - eq: # compare perm subject to token subject
-                - var: perm/subject/id
-                - env: token/sub
-            - eq: # backward compatibility: "subject" of old token structure
-                - var: perm/subject/id
-                - env: token/addr
+    and:
+      # test the subject if specified or if none of the authorized_xyz are specified
+      # (even if subject is not specified to mimic previous behavior)
+      - or:
+          - not:
+              or:
+                - not:
+                    empty:
+                      var: perm/subject
+                - and:
+                  - empty:
+                      var: perm/authorized_locations
+                  - empty:
+                      var: perm/authorized_client_ips
+                  - empty:
+                      var: perm/authorized_country_codes
+          - switch: # find the permission by oauth group, otp id, fabric group or user
+              - case: # oauth group
+                  eq:
+                    - var: perm/subject/type
+                    - oauth_group
+                then:
+                  in: # one of the permission's subject is in the user's oauth groups
+                    - var: perm/subject/id
+                    - env: token/ctx/elv:groups
+              - case: # OTP id
+                  eq:
+                    - var: perm/subject/type
+                    - otp
+                then:
+                  in:
+                    - var: perm/subject/id
+                    - env: token/ctx/elv:otpId
+              - case: # group
+                  eq:
+                    - var: perm/subject/type
+                    - group
+                then:
+                  in:
+                    - var: perm/subject/id
+                    - env: token/ctx/elv:groupIds
+              - case: # user
+                  eq:
+                    - var: perm/subject/type
+                    - user
+                then:
+                  or:
+                    - eq:
+                        - var: perm/subject/id
+                        - env: call/subject
+                    - eq: # compare perm subject to token subject
+                        - var: perm/subject/id
+                        - env: token/sub
+                    - eq: # backward compatibility: "subject" of old token structure
+                        - var: perm/subject/id
+                        - env: token/addr
+      - or:
+          - empty:
+              var: perm/authorized_locations
+              def:
+          - func: isAuthorizedLocation
+      - or:
+          - empty:
+              var: perm/authorized_client_ips
+              def:
+          - func: isAuthorizedClientIp
+      - or:
+          - empty:
+              var: perm/authorized_country_codes
+              def:
+          - func: isAuthorizedCountryCode
+
+  isAuthorizedLocation:
+    in:
+      - fn.ipGeoLocationProps:
+          - "location"
+      - var: perm/authorized_locations
+
+  isAuthorizedClientIp:
+    in:
+      - fn.clientIp:
+      - var: perm/authorized_client_ips
+
+  # fn.ipGeoLocationProps returns an ip-geo location property for the current user.
+  # It expects one arg:the name of the property. That is one of:
+  # - location        string
+  # - country_code    string
+  # - country_name    string
+  # - continent_code  string
+  # - continent_name  string
+  # - region_code     string
+  # - region_name     string
+  # - connection_type string
+  # - latitude        float
+  # - longitude       float
+  # - city            string
+  # - zip             string
+  isAuthorizedCountryCode:
+    in:
+      - fn.ipGeoLocationProps:
+          - "country_code"
+      - var: perm/authorized_country_codes
+
 
   # checks the restrictions that can be defined for an asset or an offering
   # param 0: the "current" time
