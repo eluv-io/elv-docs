@@ -7,9 +7,7 @@
 #
 # Output is saved to /tmp/extcheckout.last for use by poll-status.sh
 
-set -euo pipefail
-
-FABRIC_URL="${FABRIC_URL:-http://localhost:8080/as}"
+FABRIC_URL="${FABRIC_URL:-https://as.glb.contentfabric.io/as}"
 TENANT_ID="${TENANT_ID:?TENANT_ID is required}"
 ADMIN_TOKEN="${ADMIN_TOKEN:?ADMIN_TOKEN is required}"
 SKU="${SKU:?SKU is required}"

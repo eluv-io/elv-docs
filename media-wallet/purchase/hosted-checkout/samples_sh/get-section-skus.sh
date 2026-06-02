@@ -8,9 +8,7 @@
 # Usage:
 #   USER_TOKEN=<token> PROPERTY_ID=<iq__...> SECTION_IDS='["pscm..."]' ./get-section-skus.sh
 
-set -euo pipefail
-
-FABRIC_URL="${FABRIC_URL:-http://localhost:8080/as}"
+FABRIC_URL="${FABRIC_URL:-https://as.glb.contentfabric.io/as}"
 USER_TOKEN="${USER_TOKEN:?USER_TOKEN is required}"
 PROPERTY_ID="${PROPERTY_ID:?PROPERTY_ID is required}"
 SECTION_IDS="${SECTION_IDS:?SECTION_IDS is required (JSON array of section IDs)}"

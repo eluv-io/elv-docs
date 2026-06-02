@@ -6,17 +6,20 @@
 #   TOKEN=<admin-or-user-token> ./poll-status.sh
 #   TOKEN=<token> CHECKOUT_ID=elvs_xxx ./poll-status.sh
 
-set -euo pipefail
-
-FABRIC_URL="${FABRIC_URL:-http://localhost:8080/as}"
+FABRIC_URL="${FABRIC_URL:-https://as.glb.contentfabric.io/as}"
 TENANT_ID="${TENANT_ID:?TENANT_ID is required}"
 TOKEN="${TOKEN:?TOKEN is required (admin or user token)}"
-CHECKOUT_ID="${CHECKOUT_ID:-$(jq -r .checkout_id /tmp/extcheckout.last 2>/dev/null)}"
+
+CHECKOUT_ID="${CHECKOUT_ID:-}"
+if [[ -z "${CHECKOUT_ID}" && -f /tmp/extcheckout.last ]]; then
+  CHECKOUT_ID="$(jq -r '.checkout_id // empty' /tmp/extcheckout.last 2>/dev/null || true)"
+fi
+
 POLL_INTERVAL="${POLL_INTERVAL:-2}"
 MAX_ATTEMPTS="${MAX_ATTEMPTS:-30}"
 
 if [[ -z "${CHECKOUT_ID}" ]]; then
-  echo "Error: CHECKOUT_ID not set and /tmp/extcheckout.last not found." >&2
+  echo "Error: CHECKOUT_ID not set and could not read checkout_id from /tmp/extcheckout.last." >&2
   exit 1
 fi
 
