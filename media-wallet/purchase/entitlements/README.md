@@ -1,7 +1,6 @@
 # Entitlements API
 
-Use this path to grant a user access to content by submitting a fulfilled purchase or rental directly to the Eluvio
-Authority. Supports purchase and rental types with fine-grained rental window control.
+Use this path to grant a user access to content by submitting a fulfilled purchase or rental directly to the Eluvio Authority. Supports purchase and rental types with fine-grained rental window control.
 
 ---
 
@@ -27,12 +26,13 @@ sequenceDiagram
 
 ## Endpoints
 
-| Operation | Endpoint |
-|---|---|
-| Create entitlement | `POST /tnt/:tid/entitlement/add` |
-| List entitlements | `POST /tnt/:tid/entitlement/list/:addr` |
-| Revoke by token | `POST /tnt/:tid/entitlement/revoke` |
-| Revoke by SKU | `POST /tnt/:tid/entitlement/revoke_by_sku` |
+| Operation           | Endpoint                                         |
+| ------------------- | ------------------------------------------------ |
+| Create entitlement  | `POST /tnt/:tid/entitlement/add`                 |
+| List entitlements   | `POST /tnt/:tid/entitlement/list/:addr`          |
+| Revoke by token     | `POST /tnt/:tid/entitlement/revoke`              |
+| Revoke by SKU       | `POST /tnt/:tid/entitlement/revoke_by_sku`       |
+| Record watch start  | `POST /tnt/:tid/entitlement/rental/watch_start`  |
 
 **Authentication:** Tenant admin bearer token for all operations.
 
@@ -49,13 +49,17 @@ sequenceDiagram
 
 ## Supported Transaction Types
 
-| Type | Description |
-|---|---|
-| `purchase` | Permanent entitlement |
-| `rental` | Time-limited entitlement with configurable window |
+| Type     | Description                |
+| -------- | -------------------------- |
+| purchase | Permanent entitlement      |
+| rental   | Time-limited entitlement   |
 
 ---
 
- Full API reference:
+## API Reference
 
-pull in from vub docs tree/main/doc
+- [Create Entitlement](./create.md) — submit a purchase or rental after payment confirmation
+- [List Entitlements](./list.md) — retrieve and verify a user's entitlements, with pagination and rental state filtering
+- [Revoke Single Entitlement](./revoke.md) — revoke a specific NFT token by contract address and token ID
+- [Revoke Entitlement by SKU](./revoke-by-sku.md) — revoke all tokens for one or more SKUs from a user's wallet
+- [Rental Watch Start](./watch-start.md) — record when a user first begins watching a rental, anchoring the active window
