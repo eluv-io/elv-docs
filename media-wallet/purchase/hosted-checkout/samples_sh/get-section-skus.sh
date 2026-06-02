@@ -37,7 +37,7 @@ echo "${section}" | jq -r '
   .contents[0] |
   "behavior: \(.permissions.behavior // "(none)")",
   "permission_item_ids: \(.permissions.permission_item_ids | length) entries",
-  "primary_purchase_options: \((.permissions.primary_purchase_options // []) | length) entries"
+  "primary_purchase_skus: \((.permissions.primary_purchase_skus // []) | length) entries"
 '
 echo ""
 

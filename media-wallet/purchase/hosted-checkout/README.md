@@ -15,16 +15,16 @@ sequenceDiagram
     participant FabricAPI
     participant Stripe
 
-    TenantApp->>FabricAPI: POST /tnt/:tid/checkout/external<br/>(admin token, SKU, elv_addr, URLs)
+    TenantApp->>FabricAPI: POST /tnt/:tid/checkout/external
     FabricAPI->>Stripe: Create checkout session
     Stripe-->>FabricAPI: session ID + checkout URL
     FabricAPI-->>TenantApp: {checkout_id, checkout_url}
     TenantApp->>User: Redirect to checkout_url
     User->>Stripe: Complete payment
     Stripe->>User: Redirect to success_url
-    Stripe->>FabricAPI: Webhook: payment_complete
+    Stripe->>FabricAPI: Webhook: payment complete
     FabricAPI->>FabricAPI: Mint NFT token
-    TenantApp->>FabricAPI: GET .../checkout/external/:checkout_id (poll)
+    TenantApp->>FabricAPI: GET .../checkout/external/:checkout_id
     FabricAPI-->>TenantApp: {status:"complete", token_id, token_addr}
 ```
 
@@ -51,27 +51,27 @@ POST /tnt/:tid/checkout/external
 
 **Path parameters:**
 
-| Parameter | Description |
-|---|---|
-| `tid` | Your tenant ID |
+| Parameter | Description    |
+|-----------|----------------|
+| `tid`     | Your tenant ID |
 
 **Request body:**
 
-| Field | Required | Description |
-|---|---|---|
-| `sku` | Yes | Product SKU to purchase |
-| `elv_addr` | Yes | User's wallet address |
-| `success_url` | Yes | URL to redirect user after successful payment |
-| `cancel_url` | Yes | URL to redirect user if they cancel |
-| `email` | No | User's email address (for Stripe receipt) |
-| `country_code` | No | ISO 3166-1 alpha-2 country code of the buyer (e.g. `"US"`) — used for correct currency selection |
+| Field          | Required | Description                                   |
+|----------------|----------|-----------------------------------------------|
+| `sku`          | Yes      | Product SKU to purchase                       |
+| `elv_addr`     | Yes      | User's wallet address                         |
+| `success_url`  | Yes      | URL to redirect user after successful payment |
+| `cancel_url`   | Yes      | URL to redirect user if they cancel           |
+| `email`        | No       | User's email address (for Stripe receipt)     |
+| `country_code` | No       | buyer country code (e.g. `"US"`)              |
 
 **Response:**
 
-| Field | Description |
-|---|---|
-| `checkout_id` | Stable session identifier (`elvs_...`) — store this to poll status |
-| `checkout_url` | Full Stripe-hosted checkout URL — redirect the user here |
+| Field          | Description                                                 |
+|----------------|-------------------------------------------------------------|
+| `checkout_id`  | Session identifier (`elvs_...`) - store this to poll status |
+| `checkout_url` | Stripe-hosted checkout URL - redirect the user here         |
 
 **Example:**
 
@@ -80,19 +80,19 @@ curl -s -X POST \
   -H 'Content-Type: application/json' \
   -H 'Accept: application/json' \
   -H 'Authorization: Bearer <admin-token>' \
-  "https://<fabric-authority-url>/tnt/<tid>/checkout/external" \
+  "https://<authority-url>/tnt/<tid>/checkout/external" \
   -d '{
-    "sku": "<sku>",
-    "elv_addr": "0xabc123...",
+    "sku":         "<sku>",
+    "elv_addr":    "<user-wallet-address>",
     "success_url": "https://your-app.com/success",
-    "cancel_url": "https://your-app.com/cancel",
+    "cancel_url":  "https://your-app.com/cancel",
     "country_code": "US"
   }' | jq
 ```
 
 ```json
 {
-  "checkout_id": "elvs_abc123...",
+  "checkout_id":  "elvs_...",
   "checkout_url": "https://checkout.stripe.com/c/pay/cs_live_..."
 }
 ```
@@ -105,33 +105,33 @@ curl -s -X POST \
 GET /tnt/:tid/checkout/external/:checkout_id
 ```
 
-**Authentication:** Tenant admin/content admin token, **or** the purchasing user's CSAT token.
+**Authentication:** Tenant admin/content admin token, or the purchasing user's CSAT token.
 
 **Path parameters:**
 
-| Parameter | Description |
-|---|---|
-| `tid` | Your tenant ID |
+| Parameter     | Description                                   |
+|---------------|-----------------------------------------------|
+| `tid`         | Your tenant ID                                |
 | `checkout_id` | The `checkout_id` returned from the create call |
 
 **Response fields:**
 
-| Field | Description |
-|---|---|
-| `checkout_id` | Session identifier |
-| `status` | `"pending"` \| `"complete"` \| `"failed"` |
-| `sku` | The SKU purchased |
-| `elv_addr` | The buyer's wallet address |
-| `extra` | Present on `"complete"` — contains minted token details |
+| Field        | Description                                           |
+|--------------|-------------------------------------------------------|
+| `checkout_id`| Session identifier                                    |
+| `status`     | `"pending"` \| `"complete"` \| `"failed"`            |
+| `sku`        | The SKU purchased                                     |
+| `elv_addr`   | The buyer's wallet address                            |
+| `extra`      | Present on `"complete"` — contains minted token info  |
 
 **Status: pending**
 
 ```json
 {
-  "checkout_id": "elvs_abc123...",
-  "status": "pending",
-  "sku": "<sku>",
-  "elv_addr": "0xabc123..."
+  "checkout_id": "elvs_...",
+  "status":      "pending",
+  "sku":         "<sku>",
+  "elv_addr":    "<user-wallet-address>"
 }
 ```
 
@@ -139,15 +139,15 @@ GET /tnt/:tid/checkout/external/:checkout_id
 
 ```json
 {
-  "checkout_id": "elvs_abc123...",
-  "status": "complete",
-  "sku": "<sku>",
-  "elv_addr": "0xabc123...",
+  "checkout_id": "elvs_...",
+  "status":      "complete",
+  "sku":         "<sku>",
+  "elv_addr":    "<user-wallet-address>",
   "extra": {
     "0": {
-      "token_addr": "0xcontract123...",
-      "token_id": "1030",
-      "token_id_str": "1030"
+      "token_addr":    "<contract-address>",
+      "token_id":      "1030",
+      "token_id_str":  "1030"
     },
     "status": "complete"
   }
@@ -158,57 +158,80 @@ GET /tnt/:tid/checkout/external/:checkout_id
 
 ## Discovering Which SKU to Purchase
 
-Before creating a checkout session, your app needs to know which SKU gates the content the user wants. Use the Sections API:
-
-### 1. Fetch the section's permission items (with user token)
-
-```bash
-curl -s \
-  -H 'Authorization: Bearer <user-token>' \
-  "https://<fabric-authority-url>/mw/properties/<propertyId>/sections" \
-  -d '["<sectionId>"]' | jq '.contents[0].permissions'
-```
-
-The permissions object contains `permission_item_ids` — the IDs that gate this section:
-
-```json
-{
-  "behavior": "show_purchase",
-  "permission_item_ids": ["prmo_abc123..."],
-  "secondary_market_purchase_option": ""
-}
-```
-
-### 2. Resolve SKUs from the permissions endpoint
+The Sections API returns everything needed in a single call. Each
+gated section or content item includes a `primary_purchase_skus`
+array with the SKUs the user can buy, resolved server-side from the
+property's permission configuration.
 
 ```bash
 curl -s \
   -H 'Authorization: Bearer <user-token>' \
-  "https://<fabric-authority-url>/mw/properties/<propertyId>/permissions" | jq
+  "https://<authority-url>/mw/properties/<propertyId>/sections" \
+  -d '["<sectionId>"]' | jq
 ```
 
-Returns a map of `{ permission_item_id → { authorized, marketplace_sku, title } }`. Cross-reference the `permission_item_ids` from step 1 to find the SKU to offer:
+**Section-gated content** — `primary_purchase_skus` on
+`section.permissions`:
 
 ```json
 {
-  "prmo_abc123...": {
-    "authorized": false,
-    "marketplace_sku": "<sku>",
-    "title": "Example Pass"
+  "permissions": {
+    "behavior": "show_purchase",
+    "permission_item_ids": ["<permission_item_id>"],
+    "primary_purchase_skus": [
+      {
+        "permission_item_id": "<permission_item_id>",
+        "sku":   "<sku>",
+        "title": "<pass name>"
+      }
+    ]
   }
 }
 ```
 
-If `authorized` is `true` for any of the section's permission items, the user already has access and no purchase is needed.
+**Item-gated content** — `primary_purchase_skus` on each content
+item. Multiple entries appear when several passes each grant access:
+
+```json
+{
+  "media_id": "<media_id>",
+  "permission_item_ids": ["<permission_item_id_1>", "<permission_item_id_2>"],
+  "primary_purchase_skus": [
+    {
+      "permission_item_id": "<permission_item_id_1>",
+      "sku":   "<sku_1>",
+      "title": "<pass name>"
+    },
+    {
+      "permission_item_id": "<permission_item_id_2>",
+      "sku":   "<sku_2>",
+      "title": "<pass name>"
+    }
+  ]
+}
+```
+
+`primary_purchase_skus` only contains passes the user **does not yet own**. If the array is absent or empty, the
+user already has access. When multiple options are present, the app selects the appropriate one for the user.
 
 ---
 
 ## Integration Notes
 
-- **Store `checkout_id` before redirecting.** It is returned in the API response; your app should persist it so you can poll status after the user returns from Stripe.
-- **Poll with backoff.** The Stripe webhook fires asynchronously after payment. Poll `/checkout/external/:checkout_id` with a short delay (e.g., every 2 seconds for up to 60 seconds).
-- **`country_code` reflects the buyer, not your server.** Because this API is called server-to-server, IP-based geolocation would resolve to your server's location. Pass the user's actual country code for correct currency selection.
-- **`success_url` and `cancel_url` are your app's URLs.** Stripe redirects the user to these after payment completes or is cancelled. The `checkout_id` is not automatically appended — your app already has it.
+- **Store `checkout_id` before redirecting.**
+  Your app should persist it so you can poll status after the user returns from Stripe.
+
+- **Poll with backoff.**
+  The Stripe webhook fires asynchronously.
+  Poll every 2–3 seconds for up to 60 seconds after the user returns from the Stripe redirect.
+
+- **`country_code` reflects the buyer, not your server.**
+  This API is called server-to-server, so IP geolocation resolves to your server's location.
+  Pass the buyer's actual country code for correct currency selection.
+
+- **`success_url` and `cancel_url` are your app's URLs.**
+  Stripe redirects the user there after payment completes or is cancelled.
+  The `checkout_id` is not appended automatically — your app already has it from the create response.
 
 ---
 
