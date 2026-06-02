@@ -27,9 +27,7 @@ echo "Polling ${CHECKOUT_ID} ..."
 
 attempt=0
 while (( attempt < MAX_ATTEMPTS )); do
-  response=$(curl -s \
-    -H 'Content-Type: application/json' \
-    -H 'Accept: application/json' \
+  response=$(curl -s -H 'Content-Type: application/json' -H 'Accept: application/json' \
     -H "Authorization: Bearer ${TOKEN}" \
     "${FABRIC_URL}/tnt/${TENANT_ID}/checkout/external/${CHECKOUT_ID}")
 

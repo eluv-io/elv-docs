@@ -15,9 +15,7 @@ SECTION_ID="${SECTION_ID:?SECTION_ID is required}"
 echo "Fetching section ${SECTION_ID} for property: ${PROPERTY_ID}"
 echo ""
 
-section=$(curl -s \
-  -H 'Content-Type: application/json' \
-  -H 'Accept: application/json' \
+section=$(curl -s -H 'Content-Type: application/json' -H 'Accept: application/json' \
   -H "Authorization: Bearer ${USER_TOKEN}" \
   "${FABRIC_URL}/mw/properties/${PROPERTY_ID}/sections?content_limit=5" \
   -d "[\"${SECTION_ID}\"]")

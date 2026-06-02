@@ -17,9 +17,7 @@ CANCEL_URL="${CANCEL_URL:-https://example.com/cancel}"
 COUNTRY_CODE="${COUNTRY_CODE:-US}"
 EMAIL="${EMAIL:-}"
 
-curl -s -X POST \
-  -H 'Content-Type: application/json' \
-  -H 'Accept: application/json' \
+curl -s -X POST -H 'Content-Type: application/json' -H 'Accept: application/json' \
   -H "Authorization: Bearer ${ADMIN_TOKEN}" \
   "${FABRIC_URL}/tnt/${TENANT_ID}/checkout/external" \
   -d "$(jq -n \
