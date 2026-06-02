@@ -2,8 +2,7 @@
 #
 # get-section-skus.sh -- find purchasable SKUs for a property section
 #
-# The sections response includes primary_purchase_skus inline on each gated
-# section or content item -- no separate /permissions call needed.
+# The sections response includes primary_purchase_skus inline on each gated section or content item
 #
 # Usage:
 #   USER_TOKEN=<token> PROPERTY_ID=<iq__...> SECTION_ID=<pscm...> ./get-section-skus.sh
