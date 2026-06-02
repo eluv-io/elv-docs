@@ -32,4 +32,3 @@ The Media Wallet APIs surface which content is gated and what a user needs  to g
 
 - [Hosted Checkout](purchase/hosted-checkout/README.md) — Eluvio-hosted Stripe checkout, no payment UI required
 - [Entitlements API](purchase/entitlements/README.md) — direct entitlement creation from any payment system
-- [Self-Hosted / Third-Party Payment](purchase/self-hosted-checkout/README.md) — tenant processes payment, submits to Eluvio for minting

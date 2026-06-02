@@ -11,14 +11,12 @@ For Media Wallet API reference (authentication, section/content APIs, schemas), 
 | Path | Best for | Who handles payment |
 |---|---|---|
 | [Hosted Checkout](hosted-checkout/README.md) | Stripe checkout without building payment UI | Eluvio (Stripe-hosted) |
-| [Self-Hosted / Third-Party Payment](self-hosted-checkout/README.md) | Tenant processes payment themselves | Tenant |
 | [Entitlements API](entitlements/README.md) | Fulfillment from any external payment system | Tenant |
 
 ---
 
-## Flow Summaries
 
-### Hosted Checkout
+## Hosted Checkout
 
 Tenant app redirects the user to an Eluvio-hosted Stripe checkout page. On payment completion, the fabric mints an NFT token and the tenant polls for status.
 
@@ -42,31 +40,28 @@ sequenceDiagram
     FabricAPI-->>TenantApp: {status: "complete", token_id, token_addr}
 ```
 
----
+### Discovering What to Purchase
 
-### Self-Hosted / Third-Party Payment
-
-Tenant handles payment end-to-end using their own Stripe account or another provider, then submits the confirmed transaction to Eluvio for minting.
+Before initiating a purchase, your app needs to know which SKU gates the content a user wants to access. Use the Sections API to discover this:
 
 ```mermaid
 sequenceDiagram
-    participant User
     participant TenantApp
-    participant PaymentProvider
     participant FabricAPI
 
-    User->>TenantApp: Initiates purchase
-    TenantApp->>PaymentProvider: Process payment (Stripe, Apple Pay, etc.)
-    PaymentProvider-->>TenantApp: Payment confirmed
-    TenantApp->>FabricAPI: POST /otp/3pp/:tid/payment<br/>(admin token, transaction, SKU, elv_addr)
-    FabricAPI->>FabricAPI: Mint NFT token
-    FabricAPI-->>TenantApp: {token_id, token_addr}
-    TenantApp->>User: Confirm access granted
+    TenantApp->>FabricAPI: GET /mw/properties/:propertyId/sections<br/>(user token, section IDs)
+    FabricAPI-->>TenantApp: Section content with permission_item_ids<br/>and primary_purchase_options[]{sku, title}
+    Note over TenantApp: For sections with behavior="show_purchase":<br/>primary_purchase_options lists SKUs to offer
+    TenantApp->>FabricAPI: GET /mw/properties/:propertyId/permissions<br/>(user token)
+    FabricAPI-->>TenantApp: {prmo...: {authorized, marketplace_sku, title}}
+    Note over TenantApp: Cross-reference to confirm user<br/>does not already own a qualifying pass
 ```
+
+See [Hosted Checkout — Discovering SKUs](hosted-checkout/README.md#discovering-which-sku-to-purchase) for a worked example.
 
 ---
 
-### Entitlements API
+## Entitlements API
 
 Tenant submits a fulfilled purchase or rental directly. Supports purchase and rental types with fine-grained rental window control.
 
@@ -86,23 +81,4 @@ sequenceDiagram
     TenantApp->>User: Confirm access granted
 ```
 
----
 
-## Discovering What to Purchase
-
-Before initiating a purchase, your app needs to know which SKU gates the content a user wants to access. Use the Sections API to discover this:
-
-```mermaid
-sequenceDiagram
-    participant TenantApp
-    participant FabricAPI
-
-    TenantApp->>FabricAPI: GET /mw/properties/:propertyId/sections<br/>(user token, section IDs)
-    FabricAPI-->>TenantApp: Section content with permission_item_ids<br/>and primary_purchase_options[]{sku, title}
-    Note over TenantApp: For sections with behavior="show_purchase":<br/>primary_purchase_options lists SKUs to offer
-    TenantApp->>FabricAPI: GET /mw/properties/:propertyId/permissions<br/>(user token)
-    FabricAPI-->>TenantApp: {prmo...: {authorized, marketplace_sku, title}}
-    Note over TenantApp: Cross-reference to confirm user<br/>does not already own a qualifying pass
-```
-
-See [Hosted Checkout — Discovering SKUs](hosted-checkout/README.md#discovering-which-sku-to-purchase) for a worked example.
