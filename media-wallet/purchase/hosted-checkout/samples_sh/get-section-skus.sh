@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 #
-# get-section-skus.sh — find purchasable SKUs for a property section
+# get-section-skus.sh -- find purchasable SKUs for a property section
 #
-# Fetches the section's permission_item_ids (section-level and per-content-item),
-# then looks them up in the /permissions endpoint to resolve SKU and title.
+# The sections response includes primary_purchase_skus inline on each gated
+# section or content item -- no separate /permissions call needed.
 #
 # Usage:
 #   USER_TOKEN=<token> PROPERTY_ID=<iq__...> SECTION_ID=<pscm...> ./get-section-skus.sh
@@ -16,7 +16,6 @@ SECTION_ID="${SECTION_ID:?SECTION_ID is required}"
 echo "Fetching section ${SECTION_ID} for property: ${PROPERTY_ID}"
 echo ""
 
-# 1. Fetch the section (limit items to keep response manageable)
 section=$(curl -s \
   -H 'Content-Type: application/json' \
   -H 'Accept: application/json' \
@@ -24,58 +23,22 @@ section=$(curl -s \
   "${FABRIC_URL}/mw/properties/${PROPERTY_ID}/sections?content_limit=5" \
   -d "[\"${SECTION_ID}\"]")
 
-# 2. Fetch the permissions map (unwrap permission_auth_state)
-permissions=$(curl -s \
-  -H 'Accept: application/json' \
-  -H "Authorization: Bearer ${USER_TOKEN}" \
-  "${FABRIC_URL}/mw/properties/${PROPERTY_ID}/permissions" \
-  | jq '.permission_auth_state // .')
-
-# 3. Section-level permission_item_ids
-echo "=== Section-level permissions ==="
-echo "${section}" | jq -r '
-  .contents[0] |
-  "behavior: \(.permissions.behavior // "(none)")",
-  "permission_item_ids: \(.permissions.permission_item_ids | length) entries",
-  "primary_purchase_skus: \((.permissions.primary_purchase_skus // []) | length) entries"
-'
+# Section-level purchase SKUs (behavior = show_purchase)
+echo "=== Section-level ==="
+echo "${section}" | jq '
+  .contents[0] | {
+    behavior:             .permissions.behavior,
+    primary_purchase_skus: .permissions.primary_purchase_skus
+  }'
 echo ""
 
-section_ids=$(echo "${section}" | jq -c '[.contents[0].permissions.permission_item_ids // [] | .[]]')
-if [[ "${section_ids}" != "[]" && "${section_ids}" != "null" ]]; then
-  echo "--- SKUs for section-level permission items ---"
-  echo "${permissions}" | jq --argjson ids "${section_ids}" '
-    to_entries[] |
-    select(.key as $k | $ids | index($k) != null) |
-    {permission_item_id: .key, sku: .value.marketplace_sku, title: .value.title, authorized: .value.authorized}
-  '
-  echo ""
-fi
-
-# 4. Content-item-level permission_item_ids (from media.permissions[] or computed field)
-echo "=== Content-item-level permissions (first 5 items) ==="
-all_item_ids=$(echo "${section}" | jq -c '
-  [
-    .contents[0].content[]? |
-    (
-      (.permission_item_ids // []) +
-      ([.media.permissions[]?.permission_item_id] | map(select(. != null)))
-    )
-  ] | flatten | unique
-')
-
-item_count=$(echo "${section}" | jq '.contents[0].content | length')
-echo "Content items in response: ${item_count}"
-echo "Unique permission_item_ids across items: $(echo "${all_item_ids}" | jq 'length')"
-echo ""
-
-if [[ "$(echo "${all_item_ids}" | jq 'length')" -gt 0 ]]; then
-  echo "--- SKUs for content-item permission items ---"
-  echo "${permissions}" | jq --argjson ids "${all_item_ids}" '
-    to_entries[] |
-    select(.key as $k | $ids | index($k) != null) |
-    {permission_item_id: .key, sku: .value.marketplace_sku, title: .value.title, authorized: .value.authorized}
-  '
-else
-  echo "No permission items found on content items."
-fi
+# Content-item-level purchase SKUs
+echo "=== Content items with primary_purchase_skus ==="
+echo "${section}" | jq '
+  .contents[0].content[]? |
+  select(.primary_purchase_skus != null and (.primary_purchase_skus | length) > 0) |
+  {
+    media_id:             .media_id,
+    title:                .media.title,
+    primary_purchase_skus: .primary_purchase_skus
+  }'
