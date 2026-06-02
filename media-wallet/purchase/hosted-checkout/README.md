@@ -80,9 +80,7 @@ Tenant admin or content admin bearer token.
 #### Example
 
 ```bash
-curl -s -X POST \
-  -H 'Content-Type: application/json' \
-  -H 'Accept: application/json' \
+curl -s -X POST -H 'Content-Type: application/json' -H 'Accept: application/json' \
   -H 'Authorization: Bearer <admin-token>' \
   "https://<authority-url>/tnt/<tid>/checkout/external" \
   -d '{
@@ -122,12 +120,12 @@ Tenant admin or content admin token, or the purchasing user's CSAT token.
 
 #### Response Fields
 
-| Field         | Description                                          |
-|---------------|------------------------------------------------------|
-| `checkout_id` | Session identifier                                   |
-| `status`      | `"pending"` \| `"complete"` \| `"failed"`           |
-| `sku`         | The SKU purchased                                    |
-| `elv_addr`    | The buyer's wallet address                           |
+| Field         | Description                                           |
+|---------------|-------------------------------------------------------|
+| `checkout_id` | Session identifier                                    |
+| `status`      | `"pending"` \| `"complete"` \| `"failed"`             |
+| `sku`         | The SKU purchased                                     |
+| `elv_addr`    | The buyer's wallet address                            |
 | `extra`       | Present on `"complete"` -- contains minted token info |
 
 #### Status: pending
@@ -178,7 +176,7 @@ curl -s \
 
 ### Section-gated content
 
-`primary_purchase_skus` on `section.permissions`:
+`primary_purchase_skus` appears on `section.permissions`:
 
 ```json
 {
@@ -198,8 +196,8 @@ curl -s \
 
 ### Item-gated content
 
-`primary_purchase_skus` on each content item. Multiple entries appear when
-several passes each grant access:
+`primary_purchase_skus` can appear on each content item.
+Multiple entries appear when several passes each grant access:
 
 ```json
 {
@@ -220,9 +218,8 @@ several passes each grant access:
 }
 ```
 
-`primary_purchase_skus` only contains passes the user does not yet own.
-If the array is absent or empty, the user already has access. When multiple
-options are present, the app selects the appropriate one for the user.
+`primary_purchase_skus` only contains passes the user does not yet own.  If the array is absent or empty, the user
+already has access. When multiple options are present, the app selects the appropriate one for the user.
 
 ---
 
@@ -230,28 +227,25 @@ options are present, the app selects the appropriate one for the user.
 
 ### Store `checkout_id` before redirecting
 
-Your app should persist it so you can poll status after the user returns
-from Stripe.
+Your app should persist it so you can poll status after the user returns from Stripe.
 
 ### Poll with backoff
 
-The Stripe webhook fires asynchronously. Poll every 2-3 seconds for up to
-60 seconds after the user returns from the Stripe redirect.
+The Stripe webhook fires asynchronously. Poll every 2-3 seconds for up to 60 seconds after the user returns from the
+Stripe redirect.
 
 ### `country_code` reflects the buyer, not your server
 
-This API is called server-to-server, so IP geolocation resolves to your
-server's location. Pass the buyer's actual country code for correct currency
-selection.
+This API is called server-to-server, so IP geolocation resolves to your server's location. Pass the buyer's actual
+country code for correct currency selection.
 
 ### `success_url` and `cancel_url` are your app's URLs
 
-Stripe redirects the user there after payment completes or is cancelled.
-The `checkout_id` is not appended automatically -- your app already has it
-from the create response.
+Stripe redirects the user there after payment completes or is cancelled.  The `checkout_id` is not appended
+automatically -- your app already has it from the create response.
 
 ---
 
 ## Samples
 
-Shell samples are in [samples_sh/](samples_sh/).
+Shell samples are available in [samples_sh/](samples_sh/).
