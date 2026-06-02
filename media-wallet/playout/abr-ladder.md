@@ -85,7 +85,7 @@
 
 ---
 
-## HEVC 25/30 fps SDR — Side-by-Side
+## HEVC 25/30 fps SDR -- Side-by-Side
 
 | Resolution | Bandwidth | Profile | Notes |
 |------------|-----------|---------|-------|
@@ -99,7 +99,7 @@
 
 ---
 
-## HEVC 50/60 fps SDR — Side-by-Side
+## HEVC 50/60 fps SDR -- Side-by-Side
 
 | Resolution | Bandwidth | Profile | Notes |
 |------------|-----------|---------|-------|
@@ -113,7 +113,7 @@
 
 ---
 
-## HEVC 25/30 fps HDR — Side-by-Side
+## HEVC 25/30 fps HDR -- Side-by-Side
 
 | Resolution | Bandwidth | Profile | Notes |
 |------------|-----------|---------|-------|
@@ -127,7 +127,7 @@
 
 ---
 
-## HEVC 50/60 fps HDR — Side-by-Side
+## HEVC 50/60 fps HDR -- Side-by-Side
 
 | Resolution | Bandwidth | Profile | Notes |
 |------------|-----------|---------|-------|

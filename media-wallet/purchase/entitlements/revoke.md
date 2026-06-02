@@ -16,7 +16,7 @@ POST /tnt/:tid/entitlement/revoke
 
 ## Authentication
 
-This API requires **TenantAuth** authorization — a Tenant or Content admin CSAT.
+This API requires **TenantAuth** authorization -- a Tenant or Content admin CSAT.
 
 Include the bearer token in the request header:
 

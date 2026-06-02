@@ -1,7 +1,8 @@
 # Hosted Checkout
 
-The Hosted Checkout API lets your application initiate a **Stripe-hosted checkout page** on behalf of a user,
-without building any payment UI yourself. Eluvio handles the Stripe session, the webhook, and the NFT mint. You
+The Hosted Checkout API lets your application initiate a Stripe-hosted
+checkout page on behalf of a user, without building any payment UI yourself.
+Eluvio handles the Stripe session, the webhook, and the NFT mint. You
 redirect the user and poll for completion.
 
 ---
@@ -32,10 +33,11 @@ sequenceDiagram
 
 ## Prerequisites
 
-* A **tenant admin or content admin token** (CSAT) for your tenant
-* The **user's wallet address** (`elv_addr`) — your app must know this before checkout
-* The **SKU** for the product to purchase (see [Discovering Which SKU to Purchase](#discovering-which-sku-to-purchase))
-* Your **success and cancel URLs** — where Stripe redirects after payment
+* A tenant admin or content admin token (CSAT) for your tenant
+* The user's wallet address (`elv_addr`) -- your app must know this before checkout
+* The SKU for the product to purchase (see
+  [Discovering Which SKU to Purchase](#discovering-which-sku-to-purchase))
+* Your success and cancel URLs -- where Stripe redirects after payment
 
 ---
 
@@ -47,15 +49,17 @@ sequenceDiagram
 POST /tnt/:tid/checkout/external
 ```
 
-**Authentication:** Tenant admin or content admin bearer token.
+#### Authentication
 
-**Path parameters:**
+Tenant admin or content admin bearer token.
+
+#### Path Parameters
 
 | Parameter | Description    |
 |-----------|----------------|
 | `tid`     | Your tenant ID |
 
-**Request body:**
+#### Request Body
 
 | Field          | Required | Description                                   |
 |----------------|----------|-----------------------------------------------|
@@ -64,16 +68,16 @@ POST /tnt/:tid/checkout/external
 | `success_url`  | Yes      | URL to redirect user after successful payment |
 | `cancel_url`   | Yes      | URL to redirect user if they cancel           |
 | `email`        | No       | User's email address (for Stripe receipt)     |
-| `country_code` | No       | buyer country code (e.g. `"US"`)              |
+| `country_code` | No       | Buyer country code (e.g. `"US"`)              |
 
-**Response:**
+#### Response
 
-| Field          | Description                                                 |
-|----------------|-------------------------------------------------------------|
-| `checkout_id`  | Session identifier (`elvs_...`) - store this to poll status |
-| `checkout_url` | Stripe-hosted checkout URL - redirect the user here         |
+| Field          | Description                                                  |
+|----------------|--------------------------------------------------------------|
+| `checkout_id`  | Session identifier (`elvs_...`) -- store this to poll status  |
+| `checkout_url` | Stripe-hosted checkout URL -- redirect the user here          |
 
-**Example:**
+#### Example
 
 ```bash
 curl -s -X POST \
@@ -82,10 +86,10 @@ curl -s -X POST \
   -H 'Authorization: Bearer <admin-token>' \
   "https://<authority-url>/tnt/<tid>/checkout/external" \
   -d '{
-    "sku":         "<sku>",
-    "elv_addr":    "<user-wallet-address>",
-    "success_url": "https://your-app.com/success",
-    "cancel_url":  "https://your-app.com/cancel",
+    "sku":          "<sku>",
+    "elv_addr":     "<user-wallet-address>",
+    "success_url":  "https://your-app.com/success",
+    "cancel_url":   "https://your-app.com/cancel",
     "country_code": "US"
   }' | jq
 ```
@@ -105,26 +109,28 @@ curl -s -X POST \
 GET /tnt/:tid/checkout/external/:checkout_id
 ```
 
-**Authentication:** Tenant admin/content admin token, or the purchasing user's CSAT token.
+#### Authentication
 
-**Path parameters:**
+Tenant admin or content admin token, or the purchasing user's CSAT token.
 
-| Parameter     | Description                                   |
-|---------------|-----------------------------------------------|
-| `tid`         | Your tenant ID                                |
+#### Path Parameters
+
+| Parameter     | Description                                     |
+|---------------|-------------------------------------------------|
+| `tid`         | Your tenant ID                                  |
 | `checkout_id` | The `checkout_id` returned from the create call |
 
-**Response fields:**
+#### Response Fields
 
-| Field        | Description                                           |
-|--------------|-------------------------------------------------------|
-| `checkout_id`| Session identifier                                    |
-| `status`     | `"pending"` \| `"complete"` \| `"failed"`            |
-| `sku`        | The SKU purchased                                     |
-| `elv_addr`   | The buyer's wallet address                            |
-| `extra`      | Present on `"complete"` — contains minted token info  |
+| Field         | Description                                          |
+|---------------|------------------------------------------------------|
+| `checkout_id` | Session identifier                                   |
+| `status`      | `"pending"` \| `"complete"` \| `"failed"`           |
+| `sku`         | The SKU purchased                                    |
+| `elv_addr`    | The buyer's wallet address                           |
+| `extra`       | Present on `"complete"` -- contains minted token info |
 
-**Status: pending**
+#### Status: pending
 
 ```json
 {
@@ -135,7 +141,7 @@ GET /tnt/:tid/checkout/external/:checkout_id
 }
 ```
 
-**Status: complete**
+#### Status: complete
 
 ```json
 {
@@ -145,9 +151,9 @@ GET /tnt/:tid/checkout/external/:checkout_id
   "elv_addr":    "<user-wallet-address>",
   "extra": {
     "0": {
-      "token_addr":    "<contract-address>",
-      "token_id":      "1030",
-      "token_id_str":  "1030"
+      "token_addr":   "<contract-address>",
+      "token_id":     "1030",
+      "token_id_str": "1030"
     },
     "status": "complete"
   }
@@ -158,10 +164,10 @@ GET /tnt/:tid/checkout/external/:checkout_id
 
 ## Discovering Which SKU to Purchase
 
-The Sections API returns everything needed in a single call. Each
-gated section or content item includes a `primary_purchase_skus`
-array with the SKUs the user can buy, resolved server-side from the
-property's permission configuration.
+The Sections API returns everything needed in a single call. Each gated
+section or content item includes a `primary_purchase_skus` array with the
+SKUs the user can buy, resolved server-side from the property's permission
+configuration.
 
 ```bash
 curl -s \
@@ -170,8 +176,9 @@ curl -s \
   -d '["<sectionId>"]' | jq
 ```
 
-**Section-gated content** — `primary_purchase_skus` on
-`section.permissions`:
+### Section-gated content
+
+`primary_purchase_skus` on `section.permissions`:
 
 ```json
 {
@@ -189,8 +196,10 @@ curl -s \
 }
 ```
 
-**Item-gated content** — `primary_purchase_skus` on each content
-item. Multiple entries appear when several passes each grant access:
+### Item-gated content
+
+`primary_purchase_skus` on each content item. Multiple entries appear when
+several passes each grant access:
 
 ```json
 {
@@ -211,27 +220,35 @@ item. Multiple entries appear when several passes each grant access:
 }
 ```
 
-`primary_purchase_skus` only contains passes the user **does not yet own**. If the array is absent or empty, the
-user already has access. When multiple options are present, the app selects the appropriate one for the user.
+`primary_purchase_skus` only contains passes the user does not yet own.
+If the array is absent or empty, the user already has access. When multiple
+options are present, the app selects the appropriate one for the user.
 
 ---
 
 ## Integration Notes
 
-- **Store `checkout_id` before redirecting.**
-  Your app should persist it so you can poll status after the user returns from Stripe.
+### Store `checkout_id` before redirecting
 
-- **Poll with backoff.**
-  The Stripe webhook fires asynchronously.
-  Poll every 2–3 seconds for up to 60 seconds after the user returns from the Stripe redirect.
+Your app should persist it so you can poll status after the user returns
+from Stripe.
 
-- **`country_code` reflects the buyer, not your server.**
-  This API is called server-to-server, so IP geolocation resolves to your server's location.
-  Pass the buyer's actual country code for correct currency selection.
+### Poll with backoff
 
-- **`success_url` and `cancel_url` are your app's URLs.**
-  Stripe redirects the user there after payment completes or is cancelled.
-  The `checkout_id` is not appended automatically — your app already has it from the create response.
+The Stripe webhook fires asynchronously. Poll every 2-3 seconds for up to
+60 seconds after the user returns from the Stripe redirect.
+
+### `country_code` reflects the buyer, not your server
+
+This API is called server-to-server, so IP geolocation resolves to your
+server's location. Pass the buyer's actual country code for correct currency
+selection.
+
+### `success_url` and `cancel_url` are your app's URLs
+
+Stripe redirects the user there after payment completes or is cancelled.
+The `checkout_id` is not appended automatically -- your app already has it
+from the create response.
 
 ---
 

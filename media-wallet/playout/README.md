@@ -1,7 +1,7 @@
 # Media Playback
 
 These APIs retrieve playback URLs for media items after a user's entitlement has been verified. The same endpoint
-serves both clear and DRM-protected content — the response keys differ based on the content protection configured
+serves both clear and DRM-protected content -- the response keys differ based on the content protection configured
 for the offering.
 
 ---

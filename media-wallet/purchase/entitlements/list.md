@@ -16,7 +16,7 @@ Each record represents a blockchain entitlement operation (e.g. mint, rent, clai
 * Minted NFTs
 * Product details
 * Purchase metadata (if available)
-* Rental lifecycle data (state, expiry, watch start) — for rental entries only
+* Rental lifecycle data (state, expiry, watch start) -- for rental entries only
 
 ---
 
@@ -30,7 +30,7 @@ POST /tnt/:tid/entitlement/list/:addr
 
 ## Authentication
 
-This API requires **TenantAuth** authorization — a Tenant or Content admin CSAT.
+This API requires **TenantAuth** authorization -- a Tenant or Content admin CSAT.
 
 Include in header:
 
@@ -181,7 +181,7 @@ curl -X POST "https://<fabric-authority-url>/tnt/<tenantId>/entitlement/list/<ad
 | `metadata`    | Purchase and title metadata (if correlated with payment)       |
 | `products`    | Products associated with this operation                        |
 | `minted`      | NFTs minted during this operation                              |
-| `rental`      | Rental lifecycle data — present only for `nft-rent` entries    |
+| `rental`      | Rental lifecycle data -- present only for `nft-rent` entries    |
 
 ---
 
@@ -243,9 +243,9 @@ Present only when `op` is `nft-rent`. Describes the current lifecycle state of t
 
 | State      | Meaning                                                             |
 | ---------- | ------------------------------------------------------------------- |
-| `upcoming` | Before `start_timestamp` — rental purchased but window not yet open |
-| `playable` | Window open and within `active_for` — user can watch now            |
-| `expired`  | Past expiry — token has been or will be revoked by the sweep        |
+| `upcoming` | Before `start_timestamp` -- rental purchased but window not yet open |
+| `playable` | Window open and within `active_for` -- user can watch now            |
+| `expired`  | Past expiry -- token has been or will be revoked by the sweep        |
 
 `first_played_at` being non-nil indicates the user has started watching.
 The `playable` state covers both not-yet-started and in-progress rentals.

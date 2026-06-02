@@ -142,7 +142,7 @@ Each entry is an `ActiveTokenDescription`:
 | Field               | Type   | Description                                                          |
 | ------------------- | ------ | -------------------------------------------------------------------- |
 | max_tokens_per_user | int    | Maximum number of concurrent active tokens allowed                   |
-| allow_empty_nonce   | bool   | Whether tokens without a nonce/device_id are allowed — always false  |
+| allow_empty_nonce   | bool   | Whether tokens without a nonce/device_id are allowed -- always false  |
 | issuer              | string | The trusted issuer configured for this tenant                        |
 
 ---

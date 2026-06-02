@@ -8,15 +8,15 @@ The **Rental Watch Start API** records the moment a user first presses play on a
 
 A rental has two separate time limits:
 
-1. **The offer window** — the period during which the user can *start* watching. Set at purchase time via `start_watch` (e.g. 30 days). If the user never presses play before this window closes, the rental expires immediately and the token is revoked. No grace period is granted.
+1. **The offer window** -- the period during which the user can *start* watching. Set at purchase time via `start_watch` (e.g. 30 days). If the user never presses play before this window closes, the rental expires immediately and the token is revoked. No grace period is granted.
 
-2. **The active window** — once playback starts, the user has `active_for` seconds (e.g. 48 hours) to finish watching. This window is anchored to the moment they first pressed play, not to the offer deadline. Concretely:
+2. **The active window** -- once playback starts, the user has `active_for` seconds (e.g. 48 hours) to finish watching. This window is anchored to the moment they first pressed play, not to the offer deadline. Concretely:
    - If they start on day 1, they can watch until day 1 + 48h.
-   - If they start on day 29 of a 30-day window, they still get the full 48h — through day 31 — even though the offer window has already closed.
+   - If they start on day 29 of a 30-day window, they still get the full 48h -- through day 31 -- even though the offer window has already closed.
 
-3. **Resuming** — the user can return and continue watching at any point within the 48-hour active window. Once those 48 hours are up, access is permanently revoked regardless of how much of the content they watched.
+3. **Resuming** -- the user can return and continue watching at any point within the 48-hour active window. Once those 48 hours are up, access is permanently revoked regardless of how much of the content they watched.
 
-Calling this API before the offer deadline anchors the expiry to the actual watch time. **This call must be made when the user first initiates playback** — it cannot be backdated past the offer deadline, and it cannot be changed once set.
+Calling this API before the offer deadline anchors the expiry to the actual watch time. **This call must be made when the user first initiates playback** -- it cannot be backdated past the offer deadline, and it cannot be changed once set.
 
 ---
 
@@ -57,7 +57,7 @@ Authorization: Bearer <token>
 
 * `first_played_at` must be at or after `rental_start` (the offer window open time)
 * `first_played_at` must be at or before `rental_start + start_watch` (the offer deadline)
-* Once set, `first_played_at` cannot be changed — subsequent calls for the same `trans_id` are rejected
+* Once set, `first_played_at` cannot be changed -- subsequent calls for the same `trans_id` are rejected
 
 ---
 

@@ -34,7 +34,7 @@ sequenceDiagram
 | Revoke by SKU       | `POST /tnt/:tid/entitlement/revoke_by_sku`       |
 | Record watch start  | `POST /tnt/:tid/entitlement/rental/watch_start`  |
 
-**Authentication:** Tenant admin bearer token for all operations.
+Authentication: tenant admin bearer token for all operations.
 
 ---
 
@@ -58,8 +58,8 @@ sequenceDiagram
 
 ## API Reference
 
-- [Create Entitlement](./create.md) — submit a purchase or rental after payment confirmation
-- [List Entitlements](./list.md) — retrieve and verify a user's entitlements, with pagination and rental state filtering
-- [Revoke Single Entitlement](./revoke.md) — revoke a specific NFT token by contract address and token ID
-- [Revoke Entitlement by SKU](./revoke-by-sku.md) — revoke all tokens for one or more SKUs from a user's wallet
-- [Rental Watch Start](./watch-start.md) — record when a user first begins watching a rental, anchoring the active window
+- [Create Entitlement](./create.md) -- submit a purchase or rental after payment confirmation
+- [List Entitlements](./list.md) -- retrieve and verify a user's entitlements, with pagination and rental state filtering
+- [Revoke Single Entitlement](./revoke.md) -- revoke a specific NFT token by contract address and token ID
+- [Revoke Entitlement by SKU](./revoke-by-sku.md) -- revoke all tokens for one or more SKUs from a user's wallet
+- [Rental Watch Start](./watch-start.md) -- record when a user first begins watching a rental, anchoring the active window

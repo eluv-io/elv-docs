@@ -3,7 +3,7 @@
 The Eluvio Content Fabric supports several ways for tenants and affiliates to grant users access to content. Each
 path suits a different integration model.
 
-For Media Wallet API reference (authentication, section/content APIs, schemas), see **[Media Wallet](../README.md)**.
+For Media Wallet API reference (authentication, section/content APIs, schemas), see [Media Wallet](../README.md).
 
 ---
 
@@ -56,7 +56,7 @@ sequenceDiagram
     Note over TenantApp: primary_purchase_skus only lists SKUs<br/>the user does not yet own
 ```
 
-See [Hosted Checkout — Discovering SKUs](hosted-checkout/README.md#discovering-which-sku-to-purchase) for a worked example.
+See [Hosted Checkout -- Discovering SKUs](hosted-checkout/README.md#discovering-which-sku-to-purchase) for a worked example.
 
 ---
 
@@ -80,4 +80,4 @@ sequenceDiagram
     TenantApp->>User: Confirm access granted
 ```
 
-See **[Entitlements API](entitlements/README.md)** for the full endpoint reference including list, revoke, and rental watch-start operations.
+See [Entitlements API](entitlements/README.md) for the full endpoint reference including list, revoke, and rental watch-start operations.
