@@ -1,9 +1,8 @@
 # Hosted Checkout
 
-The Hosted Checkout API lets your application initiate a Stripe-hosted
-checkout page on behalf of a user, without building any payment UI yourself.
-Eluvio handles the Stripe session, the webhook, and the NFT mint. You
-redirect the user and poll for completion.
+The Hosted Checkout API lets your application initiate a Stripe-hosted checkout page on behalf of a user, without
+building any payment UI yourself.  Eluvio handles the Stripe session, the webhook, and the NFT mint. You redirect
+the user and poll for completion.
 
 ---
 
@@ -35,8 +34,7 @@ sequenceDiagram
 
 * A tenant admin or content admin token (CSAT) for your tenant
 * The user's wallet address (`elv_addr`) -- your app must know this before checkout
-* The SKU for the product to purchase (see
-  [Discovering Which SKU to Purchase](#discovering-which-sku-to-purchase))
+* The SKU for the product to purchase (see [Discovering Which SKU to Purchase](#discovering-which-sku-to-purchase))
 * Your success and cancel URLs -- where Stripe redirects after payment
 
 ---

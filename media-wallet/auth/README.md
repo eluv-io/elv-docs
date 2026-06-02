@@ -1,6 +1,7 @@
 # Authentication
 
-These APIs cover user session management for tenant-integrated applications: exchanging a trusted JWT for a Fabric user access token (CSAT), refreshing that token without re-login, and managing user access wallets.
+These APIs cover user session management for tenant-integrated applications: exchanging a trusted JWT for a Fabric
+user access token (CSAT), refreshing that token without re-login, and managing user access wallets.
 
 ---
 

@@ -21,9 +21,6 @@ sequenceDiagram
     App->>FabricAPI: POST /as/wlt/login/jwt/csat (JWT)
     FabricAPI-->>App: User CSAT token
 
-    App->>FabricAPI: POST /as/tnt/:tid/entitlement/list/:addr (CSAT)
-    FabricAPI-->>App: Entitlement status
-
     App->>FabricAPI: GET /q/:objectId/rep/playout/:offering/options.json (CSAT)
     FabricAPI-->>App: DASH / HLS URL
 
