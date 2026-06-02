@@ -49,7 +49,7 @@ sequenceDiagram
     participant TenantApp
     participant FabricAPI
 
-    TenantApp->>FabricAPI: GET /mw/properties/:propertyId/sections<br/>(user token, section IDs)
+    TenantApp->>FabricAPI: POST /mw/properties/:propertyId/sections<br/>(user token, section IDs)
     FabricAPI-->>TenantApp: Section content with permission_item_ids<br/>and primary_purchase_options[]{sku, title}
     Note over TenantApp: For sections with behavior="show_purchase":<br/>primary_purchase_options lists SKUs to offer
     TenantApp->>FabricAPI: GET /mw/properties/:propertyId/permissions<br/>(user token)
