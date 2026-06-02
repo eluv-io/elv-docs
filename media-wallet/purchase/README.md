@@ -50,8 +50,8 @@ sequenceDiagram
     participant FabricAPI
 
     TenantApp->>FabricAPI: POST /mw/properties/:propertyId/sections<br/>(user token, section IDs)
-    FabricAPI-->>TenantApp: Section content with permission_item_ids<br/>and primary_purchase_options[]{sku, title}
-    Note over TenantApp: For sections with behavior="show_purchase":<br/>primary_purchase_options lists SKUs to offer
+    FabricAPI-->>TenantApp: Section content with permission_item_ids<br/>and primary_purchase_skus[]{sku, title}
+    Note over TenantApp: For sections with behavior="show_purchase":<br/>primary_purchase_skus lists SKUs to offer
     TenantApp->>FabricAPI: GET /mw/properties/:propertyId/permissions<br/>(user token)
     FabricAPI-->>TenantApp: {prmo...: {authorized, marketplace_sku, title}}
     Note over TenantApp: Cross-reference to confirm user<br/>does not already own a qualifying pass

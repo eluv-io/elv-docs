@@ -169,14 +169,14 @@ curl -s \
   -d '["<sectionId>"]' | jq
 ```
 
-Sections with `permissions.behavior = "show_purchase"` have a `primary_purchase_options` array listing SKUs the user can buy to unlock that section:
+Sections with `permissions.behavior = "show_purchase"` have a `primary_purchase_skus` array listing SKUs the user can buy to unlock that section:
 
 ```json
 {
   "permissions": {
     "behavior": "show_purchase",
     "permission_item_ids": ["prmo_abc123..."],
-    "primary_purchase_options": [
+    "primary_purchase_skus": [
       {
         "permission_item_id": "prmo_abc123...",
         "sku": "<sku>",
@@ -197,7 +197,8 @@ curl -s \
   "https://<fabric-authority-url>/mw/properties/<propertyId>/permissions" | jq
 ```
 
-Returns a map of `{ permission_item_id → { authorized, marketplace_sku, title } }`. If `authorized` is `true` for any of the permission items gating the content, the user already has access and no purchase is needed.
+Returns a map of `{ permission_item_id → { authorized, marketplace_sku, title } }`. If `authorized` is `true` for
+any of the permission items gating the content, the user already has access and no purchase is needed.
 
 ---
 

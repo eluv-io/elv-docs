@@ -2,7 +2,7 @@
 #
 # get-section-skus.sh — fetch a property section and extract purchasable SKUs
 #
-# For each section with behavior="show_purchase", prints the primary_purchase_options
+# For each section with behavior="show_purchase", prints the primary_purchase_skus
 # (SKU + title) the user can buy to unlock that section.
 #
 # Usage:
@@ -29,7 +29,7 @@ echo "${response}" | jq '
     section_id:       .id,
     section_label:    .label,
     behavior:         .permissions.behavior,
-    purchase_options: .permissions.primary_purchase_options
+    purchase_options: .permissions.primary_purchase_skus
   } |
   select(.purchase_options != null and (.purchase_options | length) > 0)
 '
