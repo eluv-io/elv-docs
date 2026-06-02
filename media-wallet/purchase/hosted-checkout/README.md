@@ -82,8 +82,8 @@ curl -s -X POST \
   -H 'Authorization: Bearer <admin-token>' \
   "https://<fabric-authority-url>/tnt/<tid>/checkout/external" \
   -d '{
-    "sku": "C9Zct19CoEAZYWug9tyavX",
-    "elv_addr": "0x761f45287ea364db6b216bd655910430afa3e839",
+    "sku": "<sku>",
+    "elv_addr": "0xabc123...",
     "success_url": "https://your-app.com/success",
     "cancel_url": "https://your-app.com/cancel",
     "country_code": "US"
@@ -92,8 +92,8 @@ curl -s -X POST \
 
 ```json
 {
-  "checkout_id": "elvs_WxtTe1TiPBbGHdZgqPNM7C",
-  "checkout_url": "https://checkout.stripe.com/c/pay/cs_live_a1..."
+  "checkout_id": "elvs_abc123...",
+  "checkout_url": "https://checkout.stripe.com/c/pay/cs_live_..."
 }
 ```
 
@@ -128,10 +128,10 @@ GET /tnt/:tid/checkout/external/:checkout_id
 
 ```json
 {
-  "checkout_id": "elvs_WxtTe1TiPBbGHdZgqPNM7C",
+  "checkout_id": "elvs_abc123...",
   "status": "pending",
-  "sku": "C9Zct19CoEAZYWug9tyavX",
-  "elv_addr": "0x761f45287ea364db6b216bd655910430afa3e839"
+  "sku": "<sku>",
+  "elv_addr": "0xabc123..."
 }
 ```
 
@@ -139,13 +139,13 @@ GET /tnt/:tid/checkout/external/:checkout_id
 
 ```json
 {
-  "checkout_id": "elvs_WxtTe1TiPBbGHdZgqPNM7C",
+  "checkout_id": "elvs_abc123...",
   "status": "complete",
-  "sku": "C9Zct19CoEAZYWug9tyavX",
-  "elv_addr": "0x761f45287ea364db6b216bd655910430afa3e839",
+  "sku": "<sku>",
+  "elv_addr": "0xabc123...",
   "extra": {
     "0": {
-      "token_addr": "0x59267d3eff5a4a595f6bfb790d18ed6af358653a",
+      "token_addr": "0xcontract123...",
       "token_id": "1030",
       "token_id_str": "1030"
     },
@@ -175,12 +175,12 @@ Sections with `permissions.behavior = "show_purchase"` have a `primary_purchase_
 {
   "permissions": {
     "behavior": "show_purchase",
-    "permission_item_ids": ["prmo51rABK9243M66xT3mgDH3P"],
+    "permission_item_ids": ["prmo_abc123..."],
     "primary_purchase_options": [
       {
-        "permission_item_id": "prmo51rABK9243M66xT3mgDH3P",
-        "sku": "C9Zct19CoEAZYWug9tyavX",
-        "title": "Season Pass"
+        "permission_item_id": "prmo_abc123...",
+        "sku": "<sku>",
+        "title": "Example Pass"
       }
     ]
   }

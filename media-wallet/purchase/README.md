@@ -81,4 +81,4 @@ sequenceDiagram
     TenantApp->>User: Confirm access granted
 ```
 
-
+See **[Entitlements API](entitlements/README.md)** for the full endpoint reference including list, revoke, and rental watch-start operations.
