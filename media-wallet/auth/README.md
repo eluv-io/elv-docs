@@ -18,7 +18,7 @@ sequenceDiagram
     App->>FabricAPI: POST /as/wlt/login/jwt/csat (JWT)
     FabricAPI-->>App: CSAT + user_addr + refresh_token
 
-    App->>FabricAPI: POST /tnt/:tid/user/access_wallet (admin token, JWT)
+    App->>FabricAPI: POST /as/tnt/:tid/user/access_wallet (admin token, JWT)
     FabricAPI-->>App: user_access_wallet address
 ```
 

@@ -162,7 +162,7 @@ If authentication fails or request is invalid:
 ## Curl Example
 
 ```bash
-curl -X POST "https://<fabric-authority-url>/as/wlt/login/jwt/csat" \
+curl -X POST "https://<fabric-authority-url>/wlt/login/jwt/csat" \
   -H "Authorization: Bearer <JWT>" \
   -H "Content-Type: application/json" \
   -d '{

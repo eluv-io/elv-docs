@@ -1,6 +1,8 @@
 # Media Playback
 
-These APIs retrieve playback URLs for media items after a user's entitlement has been verified. The same endpoint serves both clear and DRM-protected content — the response keys differ based on the content protection configured for the offering.
+These APIs retrieve playback URLs for media items after a user's entitlement has been verified. The same endpoint
+serves both clear and DRM-protected content — the response keys differ based on the content protection configured
+for the offering.
 
 ---
 
@@ -19,7 +21,7 @@ sequenceDiagram
     App->>FabricAPI: POST /as/wlt/login/jwt/csat (JWT)
     FabricAPI-->>App: User CSAT token
 
-    App->>FabricAPI: POST /tnt/:tid/entitlement/list/:addr (CSAT)
+    App->>FabricAPI: POST /as/tnt/:tid/entitlement/list/:addr (CSAT)
     FabricAPI-->>App: Entitlement status
 
     App->>FabricAPI: GET /q/:objectId/rep/playout/:offering/options.json (CSAT)
