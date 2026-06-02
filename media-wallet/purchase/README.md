@@ -50,11 +50,10 @@ sequenceDiagram
     participant FabricAPI
 
     TenantApp->>FabricAPI: POST /mw/properties/:propertyId/sections<br/>(user token, section IDs)
-    FabricAPI-->>TenantApp: Section content with permission_item_ids<br/>and primary_purchase_skus[]{sku, title}
-    Note over TenantApp: For sections with behavior="show_purchase":<br/>primary_purchase_skus lists SKUs to offer
+    FabricAPI-->>TenantApp: Section permissions with permission_item_ids[]
     TenantApp->>FabricAPI: GET /mw/properties/:propertyId/permissions<br/>(user token)
     FabricAPI-->>TenantApp: {prmo...: {authorized, marketplace_sku, title}}
-    Note over TenantApp: Cross-reference to confirm user<br/>does not already own a qualifying pass
+    Note over TenantApp: Match permission_item_ids to get SKU;<br/>skip purchase if authorized=true
 ```
 
 See [Hosted Checkout — Discovering SKUs](hosted-checkout/README.md#discovering-which-sku-to-purchase) for a worked example.

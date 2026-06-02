@@ -160,36 +160,26 @@ GET /tnt/:tid/checkout/external/:checkout_id
 
 Before creating a checkout session, your app needs to know which SKU gates the content the user wants. Use the Sections API:
 
-### 1. Fetch sections (with user token)
+### 1. Fetch the section's permission items (with user token)
 
 ```bash
 curl -s \
   -H 'Authorization: Bearer <user-token>' \
   "https://<fabric-authority-url>/mw/properties/<propertyId>/sections" \
-  -d '["<sectionId>"]' | jq
+  -d '["<sectionId>"]' | jq '.contents[0].permissions'
 ```
 
-Sections with `permissions.behavior = "show_purchase"` have a `primary_purchase_skus` array listing SKUs the user can buy to unlock that section:
+The permissions object contains `permission_item_ids` — the IDs that gate this section:
 
 ```json
 {
-  "permissions": {
-    "behavior": "show_purchase",
-    "permission_item_ids": ["prmo_abc123..."],
-    "primary_purchase_skus": [
-      {
-        "permission_item_id": "prmo_abc123...",
-        "sku": "<sku>",
-        "title": "Example Pass"
-      }
-    ]
-  }
+  "behavior": "show_purchase",
+  "permission_item_ids": ["prmo_abc123..."],
+  "secondary_market_purchase_option": ""
 }
 ```
 
-Individual content items also carry a normalized `permission_item_ids` array regardless of section type.
-
-### 2. Confirm the user does not already own a pass (optional)
+### 2. Resolve SKUs from the permissions endpoint
 
 ```bash
 curl -s \
@@ -197,8 +187,19 @@ curl -s \
   "https://<fabric-authority-url>/mw/properties/<propertyId>/permissions" | jq
 ```
 
-Returns a map of `{ permission_item_id → { authorized, marketplace_sku, title } }`. If `authorized` is `true` for
-any of the permission items gating the content, the user already has access and no purchase is needed.
+Returns a map of `{ permission_item_id → { authorized, marketplace_sku, title } }`. Cross-reference the `permission_item_ids` from step 1 to find the SKU to offer:
+
+```json
+{
+  "prmo_abc123...": {
+    "authorized": false,
+    "marketplace_sku": "<sku>",
+    "title": "Example Pass"
+  }
+}
+```
+
+If `authorized` is `true` for any of the section's permission items, the user already has access and no purchase is needed.
 
 ---
 
