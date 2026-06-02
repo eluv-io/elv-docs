@@ -2,18 +2,18 @@
 #
 # get-section-skus.sh — fetch a property section and extract purchasable SKUs
 #
-# For each section with behavior="show_purchase", prints the primary_purchase_skus
+# For sections with behavior="show_purchase", prints the primary_purchase_skus
 # (SKU + title) the user can buy to unlock that section.
 #
 # Usage:
-#   USER_TOKEN=<token> PROPERTY_ID=<iq__...> SECTION_IDS='["pscm..."]' ./get-section-skus.sh
+#   USER_TOKEN=<token> PROPERTY_ID=<iq__...> SECTION_ID=<pscm...> ./get-section-skus.sh
 
 FABRIC_URL="${FABRIC_URL:-https://as.glb.contentfabric.io/as}"
 USER_TOKEN="${USER_TOKEN:?USER_TOKEN is required}"
 PROPERTY_ID="${PROPERTY_ID:?PROPERTY_ID is required}"
-SECTION_IDS="${SECTION_IDS:?SECTION_IDS is required (JSON array of section IDs)}"
+SECTION_ID="${SECTION_ID:?SECTION_ID is required}"
 
-echo "Fetching sections for property: ${PROPERTY_ID}"
+echo "Fetching section ${SECTION_ID} for property: ${PROPERTY_ID}"
 echo ""
 
 response=$(curl -s \
@@ -21,7 +21,7 @@ response=$(curl -s \
   -H 'Accept: application/json' \
   -H "Authorization: Bearer ${USER_TOKEN}" \
   "${FABRIC_URL}/mw/properties/${PROPERTY_ID}/sections" \
-  -d "${SECTION_IDS}")
+  -d "[\"${SECTION_ID}\"]")
 
 echo "${response}" | jq '
   .contents[] |
@@ -40,7 +40,7 @@ echo "${response}" | jq '
   .contents[].content[]? |
   select(.permission_item_ids != null and (.permission_item_ids | length) > 0) |
   {
-    media_id:           .media_id,
+    media_id:            .media_id,
     permission_item_ids: .permission_item_ids
   }
 '
