@@ -2,7 +2,8 @@
 
 ## Overview
 
-The **Get User Info API** allows a tenant or user to retrieve information about the caller based on their authentication token, including the status of their associated access wallet, tenant group membership, and admin privileges.
+The **Get User Info API** allows an authenticated caller to retrieve information about themselves based on their
+authentication token, including the status of their associated access wallet, tenant group membership, and admin privileges.
 
 ---
 
