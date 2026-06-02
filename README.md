@@ -1,18 +1,17 @@
 # elv-docs
 
-Documentation
+Eluvio Content Fabric additional developer documentation
 
 ## Authorization
 
+* [Authorization Overview](auth/README.md)
+
+Policy documentation and samples
 
 
-### Policies
+## Media Wallet
 
-* [Policy Overview](auth/policy/policy-auth.md)
-* [Policy YAML Reference](auth/policy/policy-language-reference.yaml)
+* [Media Wallet](media-wallet/README.md)
 
-
-### Tokens
-
-* [Editor-Signed Tokens](auth/editor_signed_tokens.md)
-* [Editor-Signed Tokens Example Policy](auth/common_policies/editor_signed_policy.yaml)
+Eluvio Media Wallet API endpoints that enable clients to retrieve media property data, playout offerings, purchase paths,
+and related wallet-backed media assets, enforcing a varity of both tenant-based and user-based authorization.
