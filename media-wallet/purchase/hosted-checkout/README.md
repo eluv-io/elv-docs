@@ -148,8 +148,8 @@ Tenant admin or content admin token, or the purchasing user's CSAT token.
   "extra": {
     "0": {
       "token_addr":   "<contract-address>",
-      "token_id":     "1030",
-      "token_id_str": "1030"
+      "token_id":     "<token-id>",
+      "token_id_str": "<token-id>"
     },
     "status": "complete"
   }

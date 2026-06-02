@@ -32,8 +32,5 @@ curl -s -X POST -H 'Content-Type: application/json' -H 'Accept: application/json
   | jq
 
 echo ""
-echo "checkout_id: $(jq -r .checkout_id /tmp/extcheckout.last)"
-echo "checkout_url: $(jq -r .checkout_url /tmp/extcheckout.last)"
-echo ""
 echo "Redirect the user to the checkout_url above."
 echo "Then run poll-status.sh to check for completion."

@@ -2,7 +2,8 @@
 
 ## Overview
 
-The **Create User Access Wallet API** is required for allowing users to be added into tenant groups in the Fabric core. You can set up such users using a JWT from their login.
+The **Create User Access Wallet API** is required for allowing users to be added into tenant groups in the Fabric
+core. You can set up such users using a JWT from their login.
 
 ---
 
