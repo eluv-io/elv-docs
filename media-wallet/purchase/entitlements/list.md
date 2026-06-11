@@ -170,7 +170,7 @@ curl -X POST "https://<fabric-authority-url>/tnt/<tenantId>/entitlement/list/<ad
 | `tenant`      | Tenant ID                                                      |
 | `site`        | Site / collection identifier                                   |
 | `wallet_addr` | User wallet address                                            |
-| `op`          | Operation type (e.g. `nft-rent`, `nft-claim`, `nft-transfer`)  |
+| `op`          | Operation type (e.g. `nft-rent`, `nft-buy`, `nft-claim`)       |
 | `trans_id`    | Transaction ID associated with operation                       |
 | `status`      | Operation status (`complete`, etc.)                            |
 | `timestamp`   | Unix timestamp of operation                                    |
@@ -180,7 +180,7 @@ curl -X POST "https://<fabric-authority-url>/tnt/<tenantId>/entitlement/list/<ad
 | `metadata`    | Purchase and title metadata (if correlated with payment)       |
 | `products`    | Products associated with this operation                        |
 | `minted`      | NFTs minted during this operation                              |
-| `rental`      | Rental lifecycle data -- present only for `nft-rent` entries    |
+| `rental`      | Rental lifecycle data -- present only for `nft-rent` entries   |
 
 ---
 
@@ -214,7 +214,7 @@ Standard fields (when payment data is available):
 | ------------- | ----------------------------------------------------- |
 | `customer_id` | Third-party customer ID (if provided at add time)     |
 | `description` | User-supplied description (if provided at add time)   |
-| *(custom)*    | Any additional fields passed in `metadata` at add time |
+| *(custom)*    | Any additional fields passed in `metadata` on add     |
 
 Title catalog fields (when the tenant has a title catalog configured):
 
@@ -243,7 +243,7 @@ Present only when `op` is `nft-rent`. Describes the current lifecycle state of t
 
 | State      | Meaning                                                              |
 | ---------- | -------------------------------------------------------------------- |
-| `upcoming` | Before `start_timestamp` -- rental purchased but window not yet open |
+| `upcoming` | Before `start` -- rental purchased but window not yet open           |
 | `playable` | Window open and within `active_for` -- user can watch now            |
 | `expired`  | Past expiry -- token has been or will be revoked by the sweep        |
 

@@ -18,7 +18,7 @@ sequenceDiagram
     PaymentProvider-->>TenantApp: Payment confirmed
     TenantApp->>FabricAPI: POST /tnt/:tid/entitlement/add<br/>(admin token, transaction, SKUs[], elv_addr)
     FabricAPI->>FabricAPI: Mint NFT token
-    FabricAPI-->>TenantApp: {confirmation_id, token_id, token_addr}
+    FabricAPI-->>TenantApp: {trans_id, tokens[]}
     TenantApp->>User: Confirm access granted
 ```
 
