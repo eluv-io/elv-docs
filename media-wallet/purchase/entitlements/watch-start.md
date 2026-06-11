@@ -50,7 +50,7 @@ Authorization: Bearer <token>
 
 | Field             | Type              | Required | Description                                                       |
 | ----------------- | ----------------- | -------- | ----------------------------------------------------------------- |
-| `trans_id`        | string            | Yes      | Transaction ID of the rental (e.g. `3pp:<tenantId>:<paymentId>`) |
+| `trans_id`        | string            | Yes      | Full transaction ID as returned from the add or list APIs         |
 | `first_played_at` | ISO8601 timestamp | No       | When the user first pressed play; omit to use server time         |
 
 ### Validation Rules
