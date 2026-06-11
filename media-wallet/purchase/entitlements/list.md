@@ -60,11 +60,12 @@ Authorization: Bearer <access_token>
 
 ## Request Body
 
-| Field            | Type            | Required | Description                                                         |
-| ---------------- | --------------- | -------- | ------------------------------------------------------------------- |
-| `include_revoked` | bool           | No       | Whether to include revoked entitlements; default false              |
-| `skus`           | array of string | No       | If non-empty, only return entitlements containing any of these SKUs |
-| `rental_states`  | array of string | No       | Filter by rental state; see Rental State Filter below               |
+| Field             | Type            | Required | Description                                                                        |
+| ----------------- | --------------- | -------- | ---------------------------------------------------------------------------------- |
+| `include_revoked` | bool            | No       | Whether to include fully-revoked entitlements; default false                       |
+| `skus`            | array of string | No       | If non-empty, only return entitlements containing any of these SKUs                |
+| `rental_states`   | array of string | No       | Filter by rental state (`upcoming`, `playable`, `expired`)                         |
+| `actions`         | array of string | No       | Restrict to specific operation types (e.g. `nft-rent`, `nft-buy`); omit for all    |
 
 ---
 
@@ -106,10 +107,8 @@ curl -X POST "https://<fabric-authority-url>/tnt/<tenantId>/entitlement/list/<ad
       "num_minted": 1,
       "num_burned": 0,
       "metadata": {
-        "elv_addr": "0xabc123...",
-        "name": "Example Title",
-        "sku": "<sku-1>",
-        "trans_id": "3pp:<tenantId>:pi_3pp_xyz",
+        "customer_id": "cus_abc123",
+        "description": "Example rental",
         "title_iq": "iq__abc123",
         "title": "Example Title",
         "title_type": "feature",
@@ -206,15 +205,16 @@ curl -X POST "https://<fabric-authority-url>/tnt/<tenantId>/entitlement/list/<ad
 
 ## Metadata (`metadata`)
 
-Standard purchase fields (when payment data is available):
+Contains the user-supplied metadata from the entitlement add request, plus title catalog fields when available.
+Internal processing fields are excluded.
 
-| Field      | Description              |
-| ---------- | ------------------------ |
-| `trans_id` | Transaction ID           |
-| `elv_addr` | User wallet address      |
-| `sku`      | Product SKU              |
-| `name`     | Product name             |
-| `email`    | Customer email (if provided) |
+Standard fields (when payment data is available):
+
+| Field         | Description                                           |
+| ------------- | ----------------------------------------------------- |
+| `customer_id` | Third-party customer ID (if provided at add time)     |
+| `description` | User-supplied description (if provided at add time)   |
+| *(custom)*    | Any additional fields passed in `metadata` at add time |
 
 Title catalog fields (when the tenant has a title catalog configured):
 
@@ -241,8 +241,8 @@ Present only when `op` is `nft-rent`. Describes the current lifecycle state of t
 
 ### Rental States
 
-| State      | Meaning                                                             |
-| ---------- | ------------------------------------------------------------------- |
+| State      | Meaning                                                              |
+| ---------- | -------------------------------------------------------------------- |
 | `upcoming` | Before `start_timestamp` -- rental purchased but window not yet open |
 | `playable` | Window open and within `active_for` -- user can watch now            |
 | `expired`  | Past expiry -- token has been or will be revoked by the sweep        |
