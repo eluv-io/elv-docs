@@ -15,7 +15,7 @@ as implicitly started at the deadline; the user still receives the full `active_
 2. **The active window** -- once playback starts, the user has `active_for` seconds to finish
 watching. This window is anchored to the moment they first pressed play, not to the offer deadline. Concretely:
    - If they start on day 1, they can watch until day 1 + `active_for`.
-   - If they start on day 29 of a 30-day window, they still get the full `active_for` duration -- even though the offer window has already closed.
+   - If they start on day 29 of a 30-day window, they still get the full `active_for` duration.
 
 The user can return and continue watching at any point within the active window. Once that window expires, access is
 permanently revoked regardless of how much of the content they watched.
@@ -53,10 +53,10 @@ Authorization: Bearer <token>
 
 ## Request Body
 
-| Field             | Type              | Required | Description                                                       |
-| ----------------- | ----------------- | -------- | ----------------------------------------------------------------- |
-| `trans_id`        | string            | Yes      | Full transaction ID as returned from the add or list APIs         |
-| `first_played_at` | ISO8601 timestamp | No       | When the user first pressed play; omit to use server time         |
+| Field             | Type              | Required | Description                                                  |
+| ----------------- | ----------------- | -------- |--------------------------------------------------------------|
+| `trans_id`        | string            | Yes      | The `trans_id` returned from the entitlement add or list API |
+| `first_played_at` | ISO8601 timestamp | No       | When the user first pressed play; omit to use server time    |
 
 ### Validation Rules
 
