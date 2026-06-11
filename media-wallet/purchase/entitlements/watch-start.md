@@ -106,13 +106,13 @@ curl -X POST "https://<fabric-authority-url>/tnt/<tenantId>/entitlement/rental/w
 
 Terms used below:
 
-| Symbol            | Meaning                                         |
-| ----------------- | ----------------------------------------------- |
-| `rental.start`    | When the offer window opened                    |
-| `start_watch`     | Offer-window duration (rental setting)          |
-| `active_for`      | Active-window duration (rental setting)         |
-| `deadline`        | `rental.start + start_watch`                    |
-| `first_played_at` | Recorded watch-start timestamp (set by this API)|
+| Symbol            | Meaning                                           |
+| ----------------- |---------------------------------------------------|
+| `rental.start`    | When the offer window opened                      |
+| `start_watch`     | Offer-window duration (rental setting)            |
+| `active_for`      | Active-window duration (rental setting)           |
+| `deadline`        | `rental.start + start_watch`                      |
+| `first_played_at` | Recorded watch-start timestamp (set by this API)  |
 
 The rental expiry is always:
 
