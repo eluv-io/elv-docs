@@ -122,11 +122,11 @@ expiry = effective_watch_start + active_for
 
 `effective_watch_start` resolves as follows:
 
-| Condition                                          | `effective_watch_start` |
-| -------------------------------------------------- | ----------------------- |
-| `first_played_at` is set and ≤ `deadline`          | `first_played_at`       |
-| `first_played_at` is set but > `deadline`          | `deadline`              |
-| `first_played_at` is never set (API never called)  | `deadline`              |
+| Condition                                         | `effective_watch_start` |
+|---------------------------------------------------| ----------------------- |
+| `first_played_at` is set and <= `deadline`        | `first_played_at`       |
+| `first_played_at` is set but > `deadline`         | `deadline`              |
+| `first_played_at` is never set (API never called) | `deadline`              |
 
 If the user watches before the offer window closes, the active window starts when they first pressed play. In all
 other cases — late play or no play — the active window starts at `deadline`, giving the user the full `active_for`
