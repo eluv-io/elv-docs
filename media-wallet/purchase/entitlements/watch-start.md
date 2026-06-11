@@ -8,15 +8,20 @@ The **Rental Watch Start API** records the moment a user first presses play on a
 
 A rental has two separate time limits:
 
-1. **The offer window** -- the period during which the user can *start* watching. Set at purchase time via `start_watch` (e.g. 30 days). If the user never presses play before this window closes, the rental expires immediately and the token is revoked. No grace period is granted.
+1. **The offer window** -- the period during which the user can *start* watching. Set at purchase time via
+`start_watch` (e.g. 30 days). If the user never presses play before this window closes, the watch window is treated
+as implicitly started at the deadline; the user still receives the full `active_for` duration from that point.
 
-2. **The active window** -- once playback starts, the user has `active_for` seconds (e.g. 48 hours) to finish watching. This window is anchored to the moment they first pressed play, not to the offer deadline. Concretely:
+2. **The active window** -- once playback starts, the user has `active_for` seconds (e.g. 48 hours) to finish
+watching. This window is anchored to the moment they first pressed play, not to the offer deadline. Concretely:
    - If they start on day 1, they can watch until day 1 + 48h.
    - If they start on day 29 of a 30-day window, they still get the full 48h -- through day 31 -- even though the offer window has already closed.
 
-3. **Resuming** -- the user can return and continue watching at any point within the 48-hour active window. Once those 48 hours are up, access is permanently revoked regardless of how much of the content they watched.
+3. **Resuming** -- the user can return and continue watching at any point within the 48-hour active window. Once
+those 48 hours are up, access is permanently revoked regardless of how much of the content they watched.
 
-Calling this API before the offer deadline anchors the expiry to the actual watch time. **This call must be made when the user first initiates playback** -- it cannot be backdated past the offer deadline, and it cannot be changed once set.
+Calling this API anchors the expiry to the actual watch time when the user presses play before the deadline. **This
+call should be made when the user first initiates playback** -- it cannot be changed once set.
 
 ---
 
@@ -56,7 +61,6 @@ Authorization: Bearer <token>
 ### Validation Rules
 
 * `first_played_at` must be at or after `rental_start` (the offer window open time)
-* `first_played_at` must be at or before `rental_start + start_watch` (the offer deadline)
 * Once set, `first_played_at` cannot be changed -- subsequent calls for the same `trans_id` are rejected
 
 ---
@@ -95,20 +99,25 @@ curl -X POST "https://<fabric-authority-url>/tnt/<tenantId>/entitlement/rental/w
 | `trans_id ... is not a rental payment`                  | The transaction is not a rental                              |
 | `watch already recorded for trans_id ... at ...`        | `first_played_at` has already been set; it cannot be changed |
 | `first_played_at ... is before rental start ...`        | Timestamp is earlier than the offer window open date         |
-| `first_played_at ... is after start_watch deadline ...` | Timestamp is past the offer deadline; the rental has expired |
 
 ---
 
 ## Effect on Rental Expiry
 
-After a successful call, the rental expiry is:
+The rental expiry is always computed as:
 
 ```
-expiry = first_played_at + active_for
+expiry = effective_watch_start + active_for
 ```
 
-This is reflected in subsequent `entitlement/list` responses via `rental.expiry` and `rental.first_played_at`. The sweep uses this expiry to determine when to revoke the rental token.
+where `effective_watch_start = first_played_at` if set and before the deadline, otherwise `deadline` (`rental_start + start_watch`).
+
+After a successful call (when the user plays before the deadline), expiry is anchored to the actual watch time. This
+is reflected in subsequent `entitlement/list` responses via `rental.expiry` and `rental.first_played_at`. The sweep
+uses this expiry to determine when to revoke the rental token.
 
 ### If this API is never called
 
-If the user never initiates playback before the offer deadline, the rental state becomes `expired` at the deadline and the token is revoked by the next sweep. There is no grace period for rentals where playback was never initiated.
+If the user never initiates playback before the offer deadline, the watch window is treated as implicitly started at
+the deadline. The rental remains `playable` until `deadline + active_for`, giving the user the full `active_for`
+window even if they never explicitly pressed play.

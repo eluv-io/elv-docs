@@ -264,8 +264,8 @@ Multiple values may be combined: `["upcoming", "expired"]`.
 Omit the field or pass an empty array to return all states.
 When a rental state filter is active, non-rental entitlements are excluded from the results.
 
-`expiry` is computed as: `first_played_at + active_for` if `first_played_at` is set;
-otherwise `start + start_watch` (offer deadline; expires immediately if playback never starts).
+`expiry` is computed as: `first_played_at + active_for` if `first_played_at` is set and before the deadline;
+otherwise `start + start_watch + active_for` (deadline + active window; the rental does not expire early if playback never starts).
 
 ---
 
