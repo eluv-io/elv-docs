@@ -2,7 +2,8 @@
 
 ## Overview
 
-The **Create Entitlement API** allows your application to submit externally processed payments (such as Stripe, Google Pay, Apple Pay, Roku, etc.) into the Eluvio Content Fabric.
+The **Create Entitlement API** allows your application to submit externally processed payments (such as Stripe,
+Google Pay, Apple Pay, Roku, etc.) into the Eluvio Content Fabric.
 
 This endpoint is used when:
 * Payment is completed outside of the Eluvio no-code "Wallet Client" marketplaces
@@ -99,7 +100,8 @@ If `transaction_type = rental`, include a `rental_duration` object with these op
 | `start_watch`     | integer | Seconds after `start_timestamp` by which the user must begin watching. Default `172800` = 2 days |
 | `active_for`      | integer | Seconds the rental remains active after the user starts watching. Default `2592000` = 30 days    |
 
-**Example:** `start_timestamp` = `"2026-03-11T21:10:00Z"`, `start_watch` = `172800` (2 days), `active_for` = `2592000` (30 days) means the user must start watching by March 13 9:10 PM UTC, and once they begin they have 30 days to finish.
+**Example:** `start_timestamp` = `"2026-03-11T21:10:00Z"`, `start_watch` = `172800` (2 days), `active_for` = `2592000` (30 days)
+means the user must start watching by March 13 9:10 PM UTC, and once they begin they have 30 days to finish.
 
 ---
 
@@ -161,28 +163,30 @@ Returned when the payment is accepted and the entitlement is created.
 
 ### Fields
 
-| Field           | Description                          |
-| --------------- | ------------------------------------ |
-| message         | Success message                      |
-| confirmation_id | Confirmation identifier for tracking |
-| tenant_revenue  | Revenue allocated to the tenant      |
-| platform_fee    | Platform fee amount                  |
-| user_addr       | User wallet address                  |
-| token           | The resulting minted token           |
+| Field          | Description                                                               |
+| -------------- | ------------------------------------------------------------------------- |
+| message        | Success message                                                           |
+| trans_id       | Full transaction ID - used with the watch_start and entitlement list APIs |
+| tenant_revenue | Revenue allocated to the tenant                                           |
+| platform_fee   | Platform fee amount                                                       |
+| user_addr      | User wallet address                                                       |
+| tokens         | All tokens minted in this transaction                                     |
 
 ### Example Success Response
 
 ```json
 {
   "message": "3pp payment processed successfully",
-  "confirmation_id": "rent_98765",
+  "trans_id": "3pp:<tenantId>:pi_3pp_1234",
   "tenant_revenue": 2.75,
   "platform_fee": 0.51,
   "user_addr": "0xabc123...",
-  "token": {
-    "contract_addr": "0xcontract123...",
-    "token_id": "551"
-  }
+  "tokens": [
+    {
+      "contract_addr": "0xcontract123...",
+      "token_id": "551"
+    }
+  ]
 }
 ```
 
