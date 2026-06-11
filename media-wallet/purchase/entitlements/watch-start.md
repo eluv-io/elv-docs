@@ -129,7 +129,7 @@ expiry = effective_watch_start + active_for
 | `first_played_at` is never set (API never called) | `deadline`              |
 
 If the user watches before the offer window closes, the active window starts when they first pressed play. In all
-other cases — late play or no play — the active window starts at `deadline`, giving the user the full `active_for`
+other cases -- late play or no play -- the active window starts at `deadline`, giving the user the full `active_for`
 duration from that point.
 
 After a successful call, expiry is anchored to the actual watch time and reflected in subsequent `entitlement/list`
