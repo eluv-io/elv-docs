@@ -106,13 +106,13 @@ curl -X POST "https://<fabric-authority-url>/tnt/<tenantId>/entitlement/rental/w
 
 Terms used below:
 
-| Symbol            | Meaning                                           |
-| ----------------- |---------------------------------------------------|
-| `rental.start`    | When the offer window opened                      |
-| `start_watch`     | Offer-window duration (rental setting)            |
-| `active_for`      | Active-window duration (rental setting)           |
-| `deadline`        | `rental.start + start_watch`                      |
-| `first_played_at` | Recorded watch-start timestamp (set by this API)  |
+| Symbol            | Meaning                                                                       |
+| ----------------- | ----------------------------------------------------------------------------- |
+| `rental.start`    | When the offer window opened                                                  |
+| `start_watch`     | Seconds after `start` the user has to begin watching (default 30 days)        |
+| `active_for`      | Seconds of playback access after the user starts watching (default 2 days)    |
+| `deadline`        | `rental.start + start_watch`                                                  |
+| `first_played_at` | Recorded watch-start timestamp (set by this API)                              |
 
 The rental expiry is always:
 
@@ -128,8 +128,8 @@ expiry = effective_watch_start + active_for
 | `first_played_at` is set but > `deadline`         | `deadline`              |
 | `first_played_at` is never set (API never called) | `deadline`              |
 
-If the user watches before the offer window closes, the active window starts when they first pressed play. In all
-other cases -- late play or no play -- the active window starts at `deadline`, giving the user the full `active_for`
+If the user starts watching before the deadline, the playback window starts when they first pressed play. In all
+other cases -- late play or no play -- the playback window starts at `deadline`, giving the user the full `active_for`
 duration from that point.
 
 After a successful call, expiry is anchored to the actual watch time and reflected in subsequent `entitlement/list`

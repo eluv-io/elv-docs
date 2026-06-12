@@ -97,11 +97,11 @@ If `transaction_type = rental`, include a `rental_duration` object with these op
 | Field             | Type    | Description                                                                                      |
 | ----------------- | ------- | ------------------------------------------------------------------------------------------------ |
 | `start_timestamp` | string  | ISO8601 timestamp: when the rental window opens. Default is now                                  |
-| `start_watch`     | integer | Seconds after `start_timestamp` by which the user must begin watching. Default `172800` = 2 days |
-| `active_for`      | integer | Seconds the rental remains active after the user starts watching. Default `2592000` = 30 days    |
+| `start_watch`     | integer | Seconds after `start_timestamp` the user has to begin watching. Default `2592000` = 30 days      |
+| `active_for`      | integer | Seconds of playback access after the user starts watching. Default `172800` = 2 days             |
 
-**Example:** `start_timestamp` = `"2026-03-11T21:10:00Z"`, `start_watch` = `172800` (2 days), `active_for` = `2592000` (30 days)
-means the user must start watching by March 13 9:10 PM UTC, and once they begin they have 30 days to finish.
+**Example:** `start_timestamp` = `"2026-03-11T21:10:00Z"`, `start_watch` = `2592000` (30 days), `active_for` = `172800` (2 days)
+means the user has until April 10 9:10 PM UTC to start watching, and once they begin they have 2 days to finish.
 
 ---
 

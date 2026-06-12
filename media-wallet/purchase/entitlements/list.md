@@ -232,40 +232,40 @@ Title catalog fields (when the tenant has a title catalog configured):
 
 Present only when `op` is `nft-rent`. Describes the current lifecycle state of the rental.
 
-| Field             | Type              | Description                                                               |
-| ----------------- | ----------------- | ------------------------------------------------------------------------- |
-| `state`           | string            | See rental states table below                                             |
-| `start`           | ISO8601 timestamp | When the rental window opened                                             |
-| `expiry`          | ISO8601 timestamp | When the rental expires (computed from watch start + active_for duration) |
-| `first_played_at` | ISO8601 timestamp | When the user first began watching; omitted if not yet recorded           |
+| Field             | Type              | Description                                                      |
+| ----------------- | ----------------- | ---------------------------------------------------------------- |
+| `state`           | string            | See rental states table below                                    |
+| `start`           | ISO8601 timestamp | When the rental window opened                                    |
+| `expiry`          | ISO8601 timestamp | When the rental expires (effective watch start + active_for)     |
+| `first_played_at` | ISO8601 timestamp | When the user first began watching; omitted if not yet recorded  |
 
 ### Rental States
 
-| State      | Meaning                                                              |
-| ---------- | -------------------------------------------------------------------- |
-| `upcoming` | Before `start` -- rental purchased but window not yet open           |
-| `playable` | Window open and within `active_for` -- user can watch now            |
-| `expired`  | Past expiry -- token has been or will be revoked by the sweep        |
+| State      | Meaning                                                                                          |
+| ---------- | ------------------------------------------------------------------------------------------------ |
+| `upcoming` | Before `start` -- rental purchased but watch window not yet open                                 |
+| `playable` | Within `start_watch` window (not yet started) or within `active_for` playback window             |
+| `expired`  | Past expiry -- token has been or will be revoked by the sweep                                    |
 
 `first_played_at` being non-nil indicates the user has started watching.
-The `playable` state covers both not-yet-started and in-progress rentals.
+The `playable` state covers both the pre-play window (waiting to start) and in-progress playback.
 
 ### Rental State Filter (`rental_states`)
 
 `entitlement/list` accepts a `rental_states` array in the request body. Three concrete states are accepted:
 
-| Value      | Returns                                            |
-| ---------- | -------------------------------------------------- |
-| `upcoming` | Rentals not yet open                               |
-| `playable` | Window open, within rental period (started or not) |
-| `expired`  | Past expiry                                        |
+| Value      | Returns                                                 |
+| ---------- | ------------------------------------------------------- |
+| `upcoming` | Rentals not yet open                                    |
+| `playable` | Within start window or in-progress playback             |
+| `expired`  | Past expiry                                             |
 
 Multiple values may be combined: `["upcoming", "expired"]`.
 Omit the field or pass an empty array to return all states.
 When a rental state filter is active, non-rental entitlements are excluded from the results.
 
 `expiry` is computed as: `first_played_at + active_for` if `first_played_at` is set and before the deadline;
-otherwise `start + start_watch + active_for` (deadline + active window; the rental does not expire early if playback never starts).
+otherwise `deadline + active_for` (where `deadline = start + start_watch`).
 
 ---
 
