@@ -9,7 +9,7 @@ Eluvio Content Fabric additional developer documentation
 Eluvio Media Wallet API endpoints that enable clients to retrieve media property data, playout offerings, purchase paths,
 and related wallet-backed media assets, enforcing a variety of both tenant-based and user-based authorization.
 
-## Authorization with Auth Policies
+## Authorization Policies
 
 [Policy Overview](auth/README.md)
 
