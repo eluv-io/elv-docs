@@ -103,6 +103,8 @@ If `transaction_type = rental`, include a `rental_duration` object with these op
 **Example:** `start_timestamp` = `"2026-03-11T21:10:00Z"`, `start_watch` = `2592000` (30 days), `active_for` = `172800` (2 days)
 means the user has until April 10 9:10 PM UTC to start watching, and once they begin they have 2 days to finish.
 
+See [Rental Timing Model](./rental-timing.md) for the Rental Duration and Playback Duration model for rentals
+
 ---
 
 ## Metadata (Optional)

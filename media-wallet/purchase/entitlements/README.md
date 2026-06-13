@@ -63,3 +63,4 @@ Authentication: tenant admin bearer token for all operations.
 - [Revoke Single Entitlement](./revoke.md) -- revoke a specific NFT token by contract address and token ID
 - [Revoke Entitlement by SKU](./revoke-by-sku.md) -- revoke all tokens for one or more SKUs from a user's wallet
 - [Rental Watch Start](./watch-start.md) -- record when a user first begins watching a rental, anchoring the active window
+- [Rental Timing Model](./rental-timing.md) -- describes the Rental Duration and Playback Duration model for rentals
