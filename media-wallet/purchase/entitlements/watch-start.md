@@ -122,15 +122,14 @@ expiry = effective_watch_start + active_for
 
 `effective_watch_start` resolves as follows:
 
-| Condition                                         | `effective_watch_start` |
-|---------------------------------------------------| ----------------------- |
-| `first_played_at` is set and <= `deadline`        | `first_played_at`       |
-| `first_played_at` is set but > `deadline`         | `deadline`              |
-| `first_played_at` is never set (API never called) | rental expired — no playback window |
+| Condition                                                  | `effective_watch_start`             |
+| ---------------------------------------------------------- | ----------------------------------- |
+| `first_played_at` is set (always within the offer window)  | `first_played_at`                   |
+| `first_played_at` is never set (API never called)          | rental expired — no playback window |
 
-If the user starts watching before the deadline, the playback window starts when they first pressed play. If
-they start watching after the deadline, the playback window starts at the deadline. If the deadline passes
-with no recorded `first_played_at`, the rental expires and no playback window opens.
+This API rejects a `first_played_at` that falls after the deadline; `first_played_at` is therefore always
+within the offer window when set. If the deadline passes with no recorded `first_played_at`, the rental
+expires and no playback window opens.
 
 After a successful call, expiry is anchored to the actual watch time and reflected in subsequent `entitlement/list`
 responses via `rental.expiry` and `rental.first_played_at`. The sweep uses this expiry to determine when to revoke
