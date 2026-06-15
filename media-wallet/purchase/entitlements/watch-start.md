@@ -9,8 +9,8 @@ The **Rental Watch Start API** records the moment a user first presses play on a
 A rental has two separate time limits:
 
 1. **The offer window** -- the period during which the user can *start* watching. Set at purchase time via
-`start_watch` (e.g. 2 days). If the user never presses play before this window closes, the watch window is treated
-as implicitly started at the deadline; the user still receives the full `active_for` duration from that point.
+`start_watch` (e.g. 2 days). If the user never presses play before this window closes, the rental expires
+immediately at the deadline — no playback duration window opens.
 
 2. **The active window** -- once playback starts, the user has `active_for` seconds to finish
 watching. This window is anchored to the moment they first pressed play, not to the offer deadline. Concretely:
@@ -126,11 +126,11 @@ expiry = effective_watch_start + active_for
 |---------------------------------------------------| ----------------------- |
 | `first_played_at` is set and <= `deadline`        | `first_played_at`       |
 | `first_played_at` is set but > `deadline`         | `deadline`              |
-| `first_played_at` is never set (API never called) | `deadline`              |
+| `first_played_at` is never set (API never called) | rental expired — no playback window |
 
-If the user starts watching before the deadline, the playback window starts when they first pressed play. In all
-other cases -- late play or no play -- the playback window starts at `deadline`, giving the user the full `active_for`
-duration from that point.
+If the user starts watching before the deadline, the playback window starts when they first pressed play. If
+they start watching after the deadline, the playback window starts at the deadline. If the deadline passes
+with no recorded `first_played_at`, the rental expires and no playback window opens.
 
 After a successful call, expiry is anchored to the actual watch time and reflected in subsequent `entitlement/list`
 responses via `rental.expiry` and `rental.first_played_at`. The sweep uses this expiry to determine when to revoke
