@@ -29,9 +29,9 @@ Annotated examples illustrating specific policy features:
       must hold at least one token from any listed asset.
 
 
-## Editor-Signed Tokens (ESATs)
+## Editor-Signed Tokens
 
-With an **Editor-Signed Token**, the token is signed directly by a user who holds edit rights on the content. The
+With an **Editor-Signed Access Token**, or ESAT, the token is signed directly by a user who holds edit rights on the content. The
 fabric node verifies that the token signer matches the policy signer, so the policy does not need to re-validate the
 signer. The `ctx` embedded in the token carries fine-grained constraints (`authorized_meta`, `authorized_files`,
 etc.) that the policy can inspect.
@@ -42,16 +42,16 @@ etc.) that the policy can inspect.
 
 
 
-## Client-Signed Tokens (CSATs)
+## Client-Signed Tokens
 
-A **Client-Signed Access Token (CSAT)** is a fabric bearer token issued to a regular user by an auth service,
+A **Client-Signed Access Token**, or CSAT, is a fabric bearer token issued to a regular user by an auth service,
 typically obtained by exchanging a trusted JWT. CSATs are used for all media wallet API calls -- entitlements,
 playout, user info, etc. See [Media Wallet Authentication](../media-wallet/auth/README.md) for how to obtain one.
 
 ### Evaluating CSATs Against a Policy
 
 CSATs can be assessed against authorization policies just like state channel tokens, with one important difference:
-**the policy itself must validate the token signer**. With state channel tokens, the fabric node verifies the KMS
+the policy itself must validate the token signer. With state channel tokens, the fabric node verifies the KMS
 signature before policy evaluation; with a CSAT the node does not pre-validate the signer, so the policy's entry
 point must do it explicitly.
 
