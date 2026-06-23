@@ -22,11 +22,69 @@ Ready-to-use policies for common access control scenarios:
 
 Annotated examples illustrating specific policy features:
 
-* [IP/Geo Policy](sample_policies/policy-ip-geo.yaml) -- Demonstrates IP and geolocation-based authorization: validates the token signer, then restricts access by country code, region, client IP (exact or regex), and user agent (exact or regex).
-* [Cross-Chain NFT Policy](sample_policies/nft_cross_chain.yml) -- Grants access based on a cross-chain oracle balance check. The `authorizedAssets` list spans multiple chains (Ethereum, Polygon, Eluvio, Solana, Flow); a user must hold at least one token from any listed asset.
+* [IP/Geo Policy](sample_policies/policy-ip-geo.yaml) -- Demonstrates IP and geolocation-based authorization: validates
+      the token signer, then restricts access by country code, region, client IP (exact or regex), and user agent (exact or regex).
+* [Cross-Chain NFT Policy](sample_policies/nft_cross_chain.yml) -- Grants access based on a cross-chain oracle balance
+      check. The `authorizedAssets` list spans multiple chains (Ethereum, Polygon, Eluvio, Solana, Flow); a user
+      must hold at least one token from any listed asset.
 
 
-## Editor-signed Tokens and Editor-Signed Token Policies
+## Editor-Signed Tokens (ESATs)
+
+With an **Editor-Signed Token**, the token is signed directly by a user who holds edit rights on the content. The
+fabric node verifies that the token signer matches the policy signer, so the policy does not need to re-validate the
+signer. The `ctx` embedded in the token carries fine-grained constraints (`authorized_meta`, `authorized_files`,
+etc.) that the policy can inspect.
 
 * [Editor-Signed Tokens](editor_signed_tokens.md)
-* [Editor-Signed Token Policy](common_policies/editor_signed_policy.yaml) -- Enforces `authorized_meta`, `authorized_files`, `authorized_reps`, and `authorized_offerings` constraints carried in the editor-signed token's context.
+* [Editor-Signed Token Policy](common_policies/editor_signed_policy.yaml) -- Enforces `authorized_meta`, `authorized_files`,
+    `authorized_reps`, and `authorized_offerings` constraints carried in the editor-signed token's context.
+
+
+
+## Client-Signed Tokens (CSATs)
+
+A **Client-Signed Access Token (CSAT)** is a fabric bearer token issued to a regular user by an auth service,
+typically obtained by exchanging a trusted JWT. CSATs are used for all media wallet API calls -- entitlements,
+playout, user info, etc. See [Media Wallet Authentication](../media-wallet/auth/README.md) for how to obtain one.
+
+### Evaluating CSATs Against a Policy
+
+CSATs can be assessed against authorization policies just like state channel tokens, with one important difference:
+**the policy itself must validate the token signer**. With state channel tokens, the fabric node verifies the KMS
+signature before policy evaluation; with a CSAT the node does not pre-validate the signer, so the policy's entry
+point must do it explicitly.
+
+The convention for CSAT policies is:
+
+* Name the top-level entry point rule `authorize` (the `expr` block points to it)
+* Include an `isValidTokenSigner` rule that checks `env: token/adr` against a list of authorized signer addresses
+* Gate all access through `authorize` so the signer check cannot be bypassed
+
+```yaml
+type: ast
+expr:
+  rule: authorize   # entry point -- mandatory for client-signed tokens
+
+rules:
+  settings:
+    literal:
+      authorizedSigners:
+        - "0xYourSignerAddress"
+
+  authorize:
+    and:
+      - rule: validateToken
+      - rule: access   # your actual access logic here
+
+  isValidTokenSigner:
+    in:
+      - env: token/adr
+      - rule: settings/authorizedSigners
+
+  validateToken:
+    rule: isValidTokenSigner
+```
+
+The [IP/Geo Policy](sample_policies/policy-ip-geo.yaml) and [Cross-Chain NFT Policy](sample_policies/nft_cross_chain.yml) are
+both CSAT policy examples and show this pattern in full.
