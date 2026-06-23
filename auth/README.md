@@ -55,7 +55,7 @@ CSATs can be assessed against authorization policies, with one important differe
 the token signer. With ESATs, the fabric node verifies that the token signer has edit rights before policy evaluation;
 with a CSAT the node does not pre-validate the signer, so the policy's entry point must do it explicitly.
 
-The convention for CSAT policies is:
+CSAT policies must follow this pattern:
 
 * Name the top-level entry point rule `authorize` (the `expr` block points to it)
 * Include an `isValidTokenSigner` rule that checks `env: token/adr` against a list of authorized signer addresses
@@ -83,11 +83,11 @@ validates it, and how policy delegation is wired up.
 ### State-Channel Tokens
 
 A less used token type is the base **State-Channel Token**. It is created and signed by the Key Management Service
-(KMS), not the user. The flow: the user signs a small blob and submits it; we verify it, check the user's access
+(KMS), not the user. The flow: the user signs a small blob and submits it; the node verifies it, checks the user's access
 rights, resolves group memberships, and returns a KMS-signed token. The fabric node trusts the token because it
 trusts the KMS signature.
 
-Oauth-derived tokens and N-Time Password (NTP)/ticket tokens are both State Channel Tokens sub-types -- they carry
+Oauth-derived tokens and one-time password (OTP)/ticket tokens are both State Channel Token sub-types -- they carry
 group membership in `ctx`, which policies can inspect via `env: token/ctx/elv:groups` and `env: token/ctx/elv:groupIds`.
 
 For information on the Key Management Service (KMS) aka Key Services Nodes,
