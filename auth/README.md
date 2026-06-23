@@ -51,8 +51,8 @@ playout, user info, etc. See [Media Wallet Authentication](../media-wallet/auth/
 ### Evaluating CSATs Against a Policy
 
 CSATs can be assessed against authorization policies, with one important difference: the policy itself must validate
-the token signer. With ESATs, the fabric node verifies the KMS signature before policy evaluation; with a CSAT the
-node does not pre-validate the signer, so the policy's entry point must do it explicitly.
+the token signer. With ESATs, the fabric node verifies that the token signer has edit rights before policy evaluation;
+with a CSAT the node does not pre-validate the signer, so the policy's entry point must do it explicitly.
 
 The convention for CSAT policies is:
 
@@ -84,7 +84,7 @@ blob and submits it; we verify it, check the user's access rights, resolves bloc
 returns a KMS-signed token. The fabric node trusts the token because it trusts the KMS signature.
 
 Oauth-derived tokens and N-Time Password (NTP)/ticket tokens are both State Channel Tokens sub-types -- they carry
-group group membership in `ctx`, which policies can inspect via `env: token/ctx/elv:groups` and `env: token/ctx/elv:groupIds`.
+group membership in `ctx`, which policies can inspect via `env: token/ctx/elv:groups` and `env: token/ctx/elv:groupIds`.
 
 ## Editor-Signed Tokens
 
