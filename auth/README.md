@@ -87,7 +87,7 @@ A less used token type is the base **State-Channel Token**. It is created and si
 rights, resolves group memberships, and returns a KMS-signed token. The fabric node trusts the token because it
 trusts the KMS signature.
 
-Oauth-derived tokens and one-time password (OTP)/ticket tokens are both State Channel Token sub-types -- they carry
+OAuth-derived tokens and one-time password (OTP)/ticket tokens are both State Channel Token sub-types -- they carry
 group membership in `ctx`, which policies can inspect via `env: token/ctx/elv:groups` and `env: token/ctx/elv:groupIds`.
 
 For information on the Key Management Service (KMS) aka Key Services Nodes,
