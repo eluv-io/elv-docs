@@ -61,30 +61,5 @@ The convention for CSAT policies is:
 * Include an `isValidTokenSigner` rule that checks `env: token/adr` against a list of authorized signer addresses
 * Gate all access through `authorize` so the signer check cannot be bypassed
 
-```yaml
-type: ast
-expr:
-  rule: authorize   # entry point -- mandatory for client-signed tokens
-
-rules:
-  settings:
-    literal:
-      authorizedSigners:
-        - "0xYourSignerAddress"
-
-  authorize:
-    and:
-      - rule: validateToken
-      - rule: access   # your actual access logic here
-
-  isValidTokenSigner:
-    in:
-      - env: token/adr
-      - rule: settings/authorizedSigners
-
-  validateToken:
-    rule: isValidTokenSigner
-```
-
 The [IP/Geo Policy](sample_policies/policy-ip-geo.yaml) and [Cross-Chain NFT Policy](sample_policies/nft_cross_chain.yml) are
 both CSAT policy examples and show this pattern in full.
