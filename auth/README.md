@@ -78,18 +78,19 @@ validates it, and how policy delegation is wired up.
 | **Policy validates signer?** | Yes -- policy must do it explicitly | No -- node already did it | No -- node already did it |
 
 
+## Client-Signed Tokens
+
+A **Client-Signed Access Token (CSAT)** is signed by a regular (non-editor) client. The node performs only a time
+check -- no cryptographic pre-validation. CSATs are used for all media wallet API calls (entitlements, playout, user
+info, etc.). See [Media Wallet Authentication](../media-wallet/auth/README.md) for how to obtain one.
+
+
 ## Editor-Signed Tokens
 
 A **Editor-Signed Access Token (ESAT)** is signed directly by a user who holds edit rights on the content. No KMS
 is involved. When used with a delegated policy, the node enforces that the token signer is identical to the policy
 signer. Fine-grained constraints (`authorized_meta`, `authorized_files`, `authorized_offerings`, etc.) are embedded
 in the token's `ctx` for the policy to inspect.
-
-## Client-Signed Tokens
-
-A **Client-Signed Access Token (CSAT)** is signed by a regular (non-editor) client. The node performs only a time
-check -- no cryptographic pre-validation. CSATs are used for all media wallet API calls (entitlements, playout, user
-info, etc.). See [Media Wallet Authentication](../media-wallet/auth/README.md) for how to obtain one.
 
 
 ## State-Channel Tokens
