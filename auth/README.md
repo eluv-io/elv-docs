@@ -70,13 +70,13 @@ both CSAT policy examples and show this pattern in full.
 Three token types can be assessed against authorization policies. They differ in who signs the token, how the node
 validates it, and how policy delegation is wired up.
 
-| | Client-Signed (CSAT) | Editor-Signed (ESAT) | State-Channel Token |
-|---|---|---|---|
-| **Signed by** | Regular client/user | User with edit rights on the content | Key Management Service (KMS) |
-| **Node pre-validation** | Time check only | Enforces token signer == policy signer | Verifies KMS signature |
-| **Policy delegation** | Via contract metadata `_ELV` | Via `elv:delegation-id` in token `ctx` | Via `elv:delegation-id` in token `ctx` |
-| **Policy entry point** | Must be named `authorize` | Flexible | Flexible |
-| **Policy validates signer?** | Yes -- policy must do it explicitly | No -- node already did it | No -- node already did it |
+| **Aspect**                   | Client-Signed (CSAT)                | Editor-Signed (ESAT)                   | State-Channel Token                    |
+|------------------------------|-------------------------------------|----------------------------------------|----------------------------------------|
+| **Signed by**                | Regular client/user                 | User with edit rights on the content   | Key Management Service (KMS)           |
+| **Node pre-validation**      | Time check only                     | Enforces token signer == policy signer | Verifies KMS signature                 |
+| **Policy delegation**        | Via contract metadata `_ELV`        | Via `elv:delegation-id` in token `ctx` | Via `elv:delegation-id` in token `ctx` |
+| **Policy entry point**       | Must be named `authorize`           | Flexible                               | Flexible                               |
+| **Policy validates signer?** | Yes -- policy must do it explicitly | No -- node already did it              | No -- node already did it              |
 
 
 
