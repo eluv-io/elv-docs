@@ -1,6 +1,5 @@
-# Authorization
 
-## Policies
+# Content Fabric Authorization Policies
 
 * [Policy Overview](policy/policy-auth.md)
 * [Policy YAML Reference](policy/policy-language-reference.yaml)
