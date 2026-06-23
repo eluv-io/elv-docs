@@ -50,10 +50,9 @@ playout, user info, etc. See [Media Wallet Authentication](../media-wallet/auth/
 
 ### Evaluating CSATs Against a Policy
 
-CSATs can be assessed against authorization policies just like state channel tokens, with one important difference:
-the policy itself must validate the token signer. With state channel tokens, the fabric node verifies the KMS
-signature before policy evaluation; with a CSAT the node does not pre-validate the signer, so the policy's entry
-point must do it explicitly.
+CSATs can be assessed against authorization policies, with one important difference: the policy itself must validate
+the token signer. With ESATs, the fabric node verifies the KMS signature before policy evaluation; with a CSAT the
+node does not pre-validate the signer, so the policy's entry point must do it explicitly.
 
 The convention for CSAT policies is:
 
@@ -63,3 +62,40 @@ The convention for CSAT policies is:
 
 The [IP/Geo Policy](sample_policies/policy-ip-geo.yaml) and [Cross-Chain NFT Policy](sample_policies/nft_cross_chain.yml) are
 both CSAT policy examples and show this pattern in full.
+
+
+## Token Types and Policy Interaction
+
+Three token types can be assessed against authorization policies. They differ in who signs the token, how the node
+validates it, and how policy delegation is wired up.
+
+| | State-Channel Token | Editor-Signed (ESAT) | Client-Signed (CSAT) |
+|---|---|---|---|
+| **Signed by** | KMS | User with edit rights on the content | Regular client/user |
+| **Node pre-validation** | Verifies KMS signature | Enforces token signer == policy signer | Time check only |
+| **Policy delegation** | Via `elv:delegation-id` in token `ctx` | Via `elv:delegation-id` in token `ctx` | Via contract metadata `_ELV`) |
+| **Policy entry point** | Flexible | Flexible | Must be named `authorize` |
+| **Policy validates signer?** | No -- node already did it | No -- node already did it | Yes -- policy must do it explicitly |
+
+## State-Channel Tokens
+
+A **State-Channel Token (SCT)** is created and signed by the KMS, not the user. The flow: the user signs a small
+blob and submits it; we verify it, check the user's access rights, resolves blockchain group memberships, and
+returns a KMS-signed token. The fabric node trusts the token because it trusts the KMS signature.
+
+Oauth-derived tokens and N-Time Password (NTP)/ticket tokens are both State Channel Tokens sub-types -- they carry
+group group membership in `ctx`, which policies can inspect via `env: token/ctx/elv:groups` and `env: token/ctx/elv:groupIds`.
+
+## Editor-Signed Tokens
+
+A **Editor-Signed Access Token (ESAT)** is signed directly by a user who holds edit rights on the content. No KMS
+is involved. When used with a delegated policy, the node enforces that the token signer is identical to the policy
+signer. Fine-grained constraints (`authorized_meta`, `authorized_files`, `authorized_offerings`, etc.) are embedded
+in the token's `ctx` for the policy to inspect.
+
+## Client-Signed Tokens
+
+A **Client-Signed Access Token (CSAT)** is signed by a regular (non-editor) client. The node performs only a time
+check -- no cryptographic pre-validation. CSATs are used for all media wallet API calls (entitlements, playout, user
+info, etc.). See [Media Wallet Authentication](../media-wallet/auth/README.md) for how to obtain one.
+
