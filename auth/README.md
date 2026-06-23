@@ -70,7 +70,7 @@ both CSAT policy examples and show this pattern in full.
 Three token types can be assessed against authorization policies. They differ in who signs the token, how the node
 validates it, and how policy delegation is wired up.
 
-| **Aspect**                   | Client-Signed (CSAT)                | Editor-Signed (ESAT)                   | State-Channel Token                    |
+| **Aspect**                   | Client-Signed (CSAT)                | Editor-Signed (ESAT)                   | State Channel Token                    |
 |------------------------------|-------------------------------------|----------------------------------------|----------------------------------------|
 | **Signed by**                | Regular client/user                 | User with edit rights on the content   | Key Management Service (KMS)           |
 | **Node pre-validation**      | Time check only                     | Enforces token signer == policy signer | Verifies KMS signature                 |
@@ -80,9 +80,9 @@ validates it, and how policy delegation is wired up.
 
 
 
-### State-Channel Tokens
+### State Channel Tokens
 
-A less used token type is the base **State-Channel Token**. It is created and signed by the Key Management Service
+A less used token type is the base **State Channel Token**. It is created and signed by the Key Management Service
 (KMS), not the user. The flow: the user signs a small blob and submits it; the node verifies it, checks the user's access
 rights, resolves group memberships, and returns a KMS-signed token. The fabric node trusts the token because it
 trusts the KMS signature.
