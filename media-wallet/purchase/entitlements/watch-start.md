@@ -61,6 +61,7 @@ Authorization: Bearer <token>
 ### Validation Rules
 
 * `first_played_at` must be at or after `rental.start` (the offer window open time)
+* `first_played_at` must be at or before the offer deadline (`rental.start + start_watch`)
 * Once set, `first_played_at` cannot be changed -- subsequent calls for the same `trans_id` are rejected
 
 ---
