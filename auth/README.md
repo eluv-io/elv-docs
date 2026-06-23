@@ -71,7 +71,7 @@ validates it, and how policy delegation is wired up.
 
 | | Client-Signed (CSAT) | Editor-Signed (ESAT) | State-Channel Token |
 |---|---|---|---|
-| **Signed by** | Regular client/user | User with edit rights on the content | KMS |
+| **Signed by** | Regular client/user | User with edit rights on the content | Key Management Service (KMS) |
 | **Node pre-validation** | Time check only | Enforces token signer == policy signer | Verifies KMS signature |
 | **Policy delegation** | Via contract metadata `_ELV` | Via `elv:delegation-id` in token `ctx` | Via `elv:delegation-id` in token `ctx` |
 | **Policy entry point** | Must be named `authorize` | Flexible | Flexible |
@@ -102,3 +102,5 @@ signature.
 Oauth-derived tokens and N-Time Password (NTP)/ticket tokens are both State Channel Tokens sub-types -- they carry
 group membership in `ctx`, which policies can inspect via `env: token/ctx/elv:groups` and `env: token/ctx/elv:groupIds`.
 
+Information on the Key Management Service (KMS) aka Key Services Nodes,
+see [Concepts](https://docs.eluv.io/docs/getting-started/concepts/).
