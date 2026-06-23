@@ -31,15 +31,16 @@ Annotated examples illustrating specific policy features:
 
 ## Editor-Signed Tokens
 
-With an **Editor-Signed Access Token**, or ESAT, the token is signed directly by a user who holds edit rights on the content. The
-fabric node verifies that the token signer matches the policy signer, so the policy does not need to re-validate the
-signer. The `ctx` embedded in the token carries fine-grained constraints (`authorized_meta`, `authorized_files`,
-etc.) that the policy can inspect.
+With an **Editor-Signed Access Token**, or ESAT, the token is signed directly by a user who holds edit rights on the
+content.  When used with a delegated policy, the fabric node enforces that the token signer is identical to the
+policy signer; the policy does not need to re-validate the signer.
+
+Fine-grained constraints (`authorized_meta`, `authorized_files`, `authorized_offerings`, etc.) are embedded in the
+token's `ctx` for the policy to inspect.
 
 * [Editor-Signed Tokens](editor_signed_tokens.md)
 * [Editor-Signed Token Policy](common_policies/editor_signed_policy.yaml) -- Enforces `authorized_meta`, `authorized_files`,
     `authorized_reps`, and `authorized_offerings` constraints carried in the editor-signed token's context.
-
 
 
 ## Client-Signed Tokens
@@ -78,30 +79,16 @@ validates it, and how policy delegation is wired up.
 | **Policy validates signer?** | Yes -- policy must do it explicitly | No -- node already did it | No -- node already did it |
 
 
-## Client-Signed Tokens
 
-A **Client-Signed Access Token (CSAT)** is signed by a regular (non-editor) client. The node performs only a time
-check -- no cryptographic pre-validation. CSATs are used for all media wallet API calls (entitlements, playout, user
-info, etc.). See [Media Wallet Authentication](../media-wallet/auth/README.md) for how to obtain one.
+### State-Channel Tokens
 
-
-## Editor-Signed Tokens
-
-A **Editor-Signed Access Token (ESAT)** is signed directly by a user who holds edit rights on the content. No KMS
-is involved. When used with a delegated policy, the node enforces that the token signer is identical to the policy
-signer. Fine-grained constraints (`authorized_meta`, `authorized_files`, `authorized_offerings`, etc.) are embedded
-in the token's `ctx` for the policy to inspect.
-
-
-## State-Channel Tokens
-
-A less used token type is the base **State-Channel Token**. It is created and signed by the KMS, not the user. The
-flow: the user signs a small blob and submits it; we verify it, check the user's access rights, resolves
-group memberships, and returns a KMS-signed token. The fabric node trusts the token because it trusts the KMS
-signature.
+A less used token type is the base **State-Channel Token**. It is created and signed by the Key Management Service
+(KMS), not the user. The flow: the user signs a small blob and submits it; we verify it, check the user's access
+rights, resolves group memberships, and returns a KMS-signed token. The fabric node trusts the token because it
+trusts the KMS signature.
 
 Oauth-derived tokens and N-Time Password (NTP)/ticket tokens are both State Channel Tokens sub-types -- they carry
 group membership in `ctx`, which policies can inspect via `env: token/ctx/elv:groups` and `env: token/ctx/elv:groupIds`.
 
-Information on the Key Management Service (KMS) aka Key Services Nodes,
+For information on the Key Management Service (KMS) aka Key Services Nodes,
 see [Concepts](https://docs.eluv.io/docs/getting-started/concepts/).
