@@ -64,27 +64,19 @@ The [IP/Geo Policy](sample_policies/policy-ip-geo.yaml) and [Cross-Chain NFT Pol
 both CSAT policy examples and show this pattern in full.
 
 
-## Token Types and Policy Interaction
+## Appendix: Token Types and Policy Interaction
 
 Three token types can be assessed against authorization policies. They differ in who signs the token, how the node
 validates it, and how policy delegation is wired up.
 
-| | State-Channel Token | Editor-Signed (ESAT) | Client-Signed (CSAT) |
+| | Client-Signed (CSAT) | Editor-Signed (ESAT) | State-Channel Token |
 |---|---|---|---|
-| **Signed by** | KMS | User with edit rights on the content | Regular client/user |
-| **Node pre-validation** | Verifies KMS signature | Enforces token signer == policy signer | Time check only |
-| **Policy delegation** | Via `elv:delegation-id` in token `ctx` | Via `elv:delegation-id` in token `ctx` | Via contract metadata `_ELV`) |
-| **Policy entry point** | Flexible | Flexible | Must be named `authorize` |
-| **Policy validates signer?** | No -- node already did it | No -- node already did it | Yes -- policy must do it explicitly |
+| **Signed by** | Regular client/user | User with edit rights on the content | KMS |
+| **Node pre-validation** | Time check only | Enforces token signer == policy signer | Verifies KMS signature |
+| **Policy delegation** | Via contract metadata `_ELV` | Via `elv:delegation-id` in token `ctx` | Via `elv:delegation-id` in token `ctx` |
+| **Policy entry point** | Must be named `authorize` | Flexible | Flexible |
+| **Policy validates signer?** | Yes -- policy must do it explicitly | No -- node already did it | No -- node already did it |
 
-## State-Channel Tokens
-
-A **State-Channel Token (SCT)** is created and signed by the KMS, not the user. The flow: the user signs a small
-blob and submits it; we verify it, check the user's access rights, resolves blockchain group memberships, and
-returns a KMS-signed token. The fabric node trusts the token because it trusts the KMS signature.
-
-Oauth-derived tokens and N-Time Password (NTP)/ticket tokens are both State Channel Tokens sub-types -- they carry
-group membership in `ctx`, which policies can inspect via `env: token/ctx/elv:groups` and `env: token/ctx/elv:groupIds`.
 
 ## Editor-Signed Tokens
 
@@ -98,4 +90,15 @@ in the token's `ctx` for the policy to inspect.
 A **Client-Signed Access Token (CSAT)** is signed by a regular (non-editor) client. The node performs only a time
 check -- no cryptographic pre-validation. CSATs are used for all media wallet API calls (entitlements, playout, user
 info, etc.). See [Media Wallet Authentication](../media-wallet/auth/README.md) for how to obtain one.
+
+
+## State-Channel Tokens
+
+A less used token type is the base **State-Channel Token**. It is created and signed by the KMS, not the user. The
+flow: the user signs a small blob and submits it; we verify it, check the user's access rights, resolves
+group memberships, and returns a KMS-signed token. The fabric node trusts the token because it trusts the KMS
+signature.
+
+Oauth-derived tokens and N-Time Password (NTP)/ticket tokens are both State Channel Tokens sub-types -- they carry
+group membership in `ctx`, which policies can inspect via `env: token/ctx/elv:groups` and `env: token/ctx/elv:groupIds`.
 
