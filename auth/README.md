@@ -40,7 +40,7 @@ token's `ctx` for the policy to inspect.
 
 * [Editor-Signed Tokens](editor_signed_tokens.md)
 * [Editor-Signed Token Policy](common_policies/editor_signed_policy.yaml) -- Enforces `authorized_meta`, `authorized_files`,
-    `authorized_reps`, and `authorized_offerings` constraints carried in the editor-signed token's context.
+  `authorized_reps`, and `authorized_offerings` constraints carried in the editor-signed token's context.
 
 
 ## Client-Signed Tokens
