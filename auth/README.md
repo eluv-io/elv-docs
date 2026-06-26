@@ -19,8 +19,7 @@ Ready-to-use policies for common access control scenarios:
 * [NFT Owner + Minter Policy](common_policies/nft_owner_minter.yaml) -- Same as NFT Owner, but also grants access
   to a designated user address (e.g. a minter account).
 * [NFT Owner + Admin Policy](common_policies/nft_owner_or_admin.yaml) -- Same as NFT Owner, but also grants access
-  to any user who is a member of the `tenant_admin` or `content_admin` blockchain group (live group membership
-  check via `userIsTenantAdmin` / `userIsContentAdmin`).
+  to any user who is a member of the `tenant_admin` or `content_admin` group for the object
 
 Annotated examples illustrating specific policy features:
 
