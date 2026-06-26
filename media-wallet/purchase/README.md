@@ -9,10 +9,10 @@ For Media Wallet API reference (authentication, section/content APIs, schemas), 
 
 ## Choosing a Path
 
-| Path | Best for | Who handles payment |
-|---|---|---|
-| [Hosted Checkout](hosted-checkout/README.md) | Stripe checkout without building payment UI | Eluvio (Stripe-hosted) |
-| [Entitlements API](entitlements/README.md) | Fulfillment from any external payment system | Tenant |
+| Path                                         | Best for                                     | Who handles payment    |
+|----------------------------------------------|----------------------------------------------|------------------------|
+| [Hosted Checkout](hosted-checkout/README.md) | Stripe checkout without building payment UI  | Eluvio (Stripe-hosted) |
+| [Entitlements API](entitlements/README.md)   | Fulfillment from any external payment system | Tenant                 |
 
 ---
 

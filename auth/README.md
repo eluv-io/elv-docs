@@ -28,7 +28,9 @@ Annotated examples illustrating specific policy features:
   must hold at least one token from any listed asset.
 
 
-## Editor-Signed Tokens
+## Tokens
+
+### Editor-Signed Tokens
 
 With an **Editor-Signed Access Token**, or ESAT, the token is signed directly by a user who holds edit rights on the
 content.  When used with a delegated policy, the fabric node enforces that the token signer is identical to the
@@ -42,13 +44,13 @@ token's `ctx` for the policy to inspect.
   `authorized_reps`, and `authorized_offerings` constraints carried in the editor-signed token's context.
 
 
-## Client-Signed Tokens
+### Client-Signed Tokens
 
 A **Client-Signed Access Token**, or CSAT, is a fabric bearer token issued to a regular user by an auth service,
 typically obtained by exchanging a trusted JWT. CSATs are used for all media wallet API calls -- entitlements,
 playout, user info, etc. See [Media Wallet Authentication](../media-wallet/auth/README.md) for how to obtain one.
 
-### Evaluating CSATs Against a Policy
+#### Evaluating CSATs Against a Policy
 
 CSATs can be assessed against authorization policies, with one important difference: the policy itself must validate
 the token signer. With ESATs, the fabric node verifies that the token signer has edit rights before policy evaluation;
@@ -64,7 +66,7 @@ The [IP/Geo Policy](sample_policies/policy-ip-geo.yaml) and [Cross-Chain NFT Pol
 both CSAT policy examples and show this pattern in full.
 
 
-## Appendix: Token Types and Policy Interaction
+### Appendix: Token Types and Policy Interaction
 
 Three token types can be assessed against authorization policies. They differ in who signs the token, how the node
 validates it, and how policy delegation is wired up.
@@ -79,7 +81,7 @@ validates it, and how policy delegation is wired up.
 
 
 
-### State Channel Tokens
+#### State Channel Tokens
 
 A less used token type is the base **State Channel Token**. It is created and signed by the Key Management Service
 (KMS), not the user. The flow: the user signs a small blob and submits it; the node verifies it, checks the user's access

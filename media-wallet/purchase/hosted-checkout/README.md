@@ -72,8 +72,8 @@ Tenant admin or content admin bearer token.
 
 | Field          | Description                                                  |
 |----------------|--------------------------------------------------------------|
-| `checkout_id`  | Session identifier (`elvs_...`) -- store this to poll status  |
-| `checkout_url` | Stripe-hosted checkout URL -- redirect the user here          |
+| `checkout_id`  | Session identifier (`elvs_...`) -- store this to poll status |
+| `checkout_url` | Stripe-hosted checkout URL -- redirect the user here         |
 
 #### Example
 
