@@ -1,0 +1,29 @@
+name: policy nft-owner-or-admin v1.0
+desc: |
+  Contract policy for access control based on NFT ownership, with access also granted to tenant
+  and content administrators. The policy permits any read operation if the user owns a
+  non-fungible token governed by a linked ERC-721 smart contract, or is a member of the
+  tenant_admin or content_admin blockchain group.
+type: ast
+expr:
+  rule: main
+rules:
+
+  main:
+    or:
+      - fn.isOwnerOfLinkedNft:
+          - env: call/subject
+      - rule: isAdminUser
+      - and:
+          - eq:
+              - env: api_call/action
+              - q.read.decrypt
+          - fn.ids.Equivalent:
+              - env: call/node_id
+              - env: call/subject
+
+  # grants access to tenant and content administrators via live blockchain group membership check
+  isAdminUser:
+    or:
+      - func: userIsTenantAdmin
+      - func: userIsContentAdmin
