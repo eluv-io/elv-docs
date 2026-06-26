@@ -6,8 +6,7 @@ desc: |
   tenant_admin or content_admin blockchain group.
 
   Entry point is named "authorize" so the policy accepts client-signed tokens (CSATs) in addition
-  to editor-signed and state channel tokens. No signer allowlist is required: the admin check
-  makes a live blockchain call against call/subject, so group membership is the trust anchor.
+  to editor-signed and state channel tokens.
 type: ast
 expr:
   rule: authorize
@@ -33,7 +32,7 @@ rules:
               - env: call/node_id
               - env: call/subject
 
-  # grants access to tenant and content administrators via live blockchain group membership check
+  # uses runtime-injected environment functions
   isAdminUser:
     or:
       - func: userIsTenantAdmin
