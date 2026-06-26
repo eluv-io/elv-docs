@@ -58,14 +58,18 @@ CSATs can be assessed against authorization policies, with one important differe
 the token signer. With ESATs, the fabric node verifies that the token signer has edit rights before policy evaluation;
 with a CSAT the node does not pre-validate the signer, so the policy's entry point must do it explicitly.
 
-CSAT policies must follow this pattern:
+CSAT policies should follow this pattern:
 
 * Name the top-level entry point rule `authorize` (the `expr` block points to it)
 * Include an `isValidTokenSigner` rule that checks `env: token/adr` against a list of authorized signer addresses
 * Gate all access through `authorize` so the signer check cannot be bypassed
 
 The [IP/Geo Policy](sample_policies/policy-ip-geo.yaml) and [Cross-Chain NFT Policy](sample_policies/nft_cross_chain.yml) are
-both CSAT policy examples and show this pattern in full.
+both CSAT policy examples and show this pattern.
+
+`isValidTokenSigner` may be omitted when the policy independently verifies the user's identity via a
+on-chain lookup rather than trusting anything carried in the token.  [NFT Owner Policy](common_policies/nft_owner.yaml) and
+[NFT Owner + Admin Policy](common_policies/nft_owner_or_admin.yaml) are examples of this.
 
 
 ### Appendix: Token Types and Policy Interaction
