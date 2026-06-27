@@ -1,0 +1,39 @@
+name: policy nft-owner-or-admin v1.1
+desc: |
+  Contract policy for access control based on NFT ownership, with access also granted to tenant
+  and content administrators. The policy permits any read operation if the user owns a
+  non-fungible token governed by a linked ERC-721 smart contract, or is a member of the
+  tenant_admin or content_admin blockchain group.
+
+  Entry point is named "authorize" so the policy accepts client-signed tokens (CSATs) in addition
+  to editor-signed and state channel tokens.
+type: ast
+expr:
+  rule: authorize
+rules:
+
+  # Entry point for client-signed tokens (CSATs); also used by ESAT/state channel tokens.
+  # isAdminUser runs first: fn.isOwnerOfLinkedNft propagates errors rather than returning false,
+  # so if the NFT contract is missing or invalid, main would error before isAdminUser could run.
+  authorize:
+    or:
+      - rule: isAdminUser
+      - rule: main
+
+  main:
+    or:
+      - fn.isOwnerOfLinkedNft:
+          - env: call/subject
+      - and:
+          - eq:
+              - env: api_call/action
+              - q.read.decrypt
+          - fn.ids.Equivalent:
+              - env: call/node_id
+              - env: call/subject
+
+  # uses runtime-injected environment functions
+  isAdminUser:
+    or:
+      - func: userIsTenantAdmin
+      - func: userIsContentAdmin
