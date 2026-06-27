@@ -77,10 +77,10 @@ from the policy or grant layer and contains an `"op": "Allow"` entry whose cause
 
 Check the top-level `errors[0].op` field:
 
-| `op` value        | Meaning            | Action                         |
-|-------------------|--------------------|--------------------------------|
-| `"authorization"` | Geo-blocked        | Show regional availability message |
-| `"Allow"`         | No entitlement     | Show subscription/purchase CTA |
+| `op` value        | Meaning        | Action                             |
+|-------------------|----------------|------------------------------------|
+| `"authorization"` | Geo-blocked    | Show regional availability message |
+| `"Allow"`         | No entitlement | Show subscription/purchase CTA     |
 
 The `"location"` field is only present on geo errors and can be used to name the region if
 needed. It is absent on entitlement errors.
