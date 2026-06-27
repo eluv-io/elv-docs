@@ -43,6 +43,11 @@ Retrieves **Widevine DRM-protected** playback URLs plus the license server URL f
 
 ## Reference
 
+### [Authorization Errors](./errors.md)
+
+How to distinguish geo-restriction failures from entitlement failures — same 403 status, different
+error body — so clients can surface the right message to the user.
+
 ### [VOD ABR Ladder Specification](./abr-ladder.md)
 
 Bandwidth and resolution targets for HEVC encoding across SDR, HDR, and MV-HEVC profiles at standard and high frame rates.
