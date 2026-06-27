@@ -29,7 +29,7 @@ entitlement checks (NFT ownership, admin group) failing.
               "cause": {
                 "op": "Policy.Enforce",
                 "kind": "permission denied",
-                "trace": "fail - policy: policy nft-owner-or-admin v1.1\n  fail - rule: isAdminUser\n    fail - func: userIsTenantAdmin\n    fail - func: userIsContentAdmin\n  fail - rule: main\n    fail - func: isOwnerOfLinkedNft\n"
+                "trace": "fail - policy: ... fail - func: isOwnerOfLinkedNft\n"
               }
             }
           ]
@@ -66,7 +66,7 @@ the user's country code, which was matched against the blocked list.
               "cause": {
                 "op": "Policy.Enforce",
                 "kind": "permission denied",
-                "trace": "fail - policy: policy geo-block-us-test\n  fail - rule: authorize\n    pass - rule: isValidTokenSigner\n    fail - rule: isAllowedRegion\n      pass - in(US,[US])\n        data - func: ipGeoLocationProps - US\n"
+                "trace": "fail - policy: ... pass - in(US,[US])\n        data - func: ipGeoLocationProps - US\n"
               }
             }
           ]
@@ -86,10 +86,11 @@ the user's country code, which was matched against the blocked list.
 Both errors are HTTP 403 with `op: "Allow"` at the top level. Detect the type by inspecting
 the `trace` string inside `errors[0].cause.cause.errors[0].cause.trace`:
 
-| Trace contains          | Meaning        | Action                             |
-|-------------------------|----------------|------------------------------------|
-| `ipGeoLocationProps`    | Geo-blocked    | Show regional availability message |
-| `isOwnerOfLinkedNft` / `userIsTenantAdmin` | No entitlement | Show subscription/purchase CTA |
+| Trace contains                             | Meaning        | Action                             |
+|--------------------------------------------|----------------|------------------------------------|
+| `ipGeoLocationProps`                       | Geo-blocked    | Show regional availability message |
+| `isOwnerOfLinkedNft` / `userIsTenantAdmin` | No entitlement | Show subscription/purchase CTA     |
+
 
 ```javascript
 function classifyPlayoutError(response) {
