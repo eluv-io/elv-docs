@@ -1,45 +1,16 @@
 # Playout Authorization Errors
 
 The playout endpoint (`/q/:objectId/rep/playout/:offering/options.json`) returns **HTTP 403** for
-all authorization failures. Two distinct failure types can occur, and they produce different error
-bodies that clients can use to surface the right message to users.
-
----
-
-## Geo-Restriction
-
-The request originated from a region not permitted by the content's geo policy. The error is
-produced before policy evaluation and always includes an `"op": "authorization"` entry with a
-`"location"` field containing the detected country code.
-
-```json
-{
-  "errors": [
-    {
-      "op": "authorization",
-      "kind": "permission denied",
-      "reason": "client geo location not authorized",
-      "location": "SE"
-    }
-  ]
-}
-```
-
-| Field      | Value                                  |
-|------------|----------------------------------------|
-| `op`       | `"authorization"`                      |
-| `reason`   | `"client geo location not authorized"` |
-| `location` | ISO country code of the request origin |
-
-**Suggested user message:** "This content is not available in your region."
+all authorization failures. When geo-restriction is enforced via a policy (the standard approach),
+both geo-block and no-entitlement failures share the same outer error structure. They are
+distinguished by the `trace` field inside the `Policy.Enforce` cause.
 
 ---
 
 ## No Entitlement
 
-The user has no active subscription, purchase, or rental for this content. The error originates
-from the policy or grant layer and contains an `"op": "Allow"` entry whose cause chain reaches
-`"enforcePolicy"` or `"isAllowed"`.
+The user has no active subscription, purchase, or rental for this content. The `trace` shows
+entitlement checks (NFT ownership, admin group) failing.
 
 ```json
 {
@@ -54,7 +25,12 @@ from the policy or grant layer and contains an `"op": "Allow"` entry whose cause
           "errors": [
             {
               "op": "enforcePolicy",
-              "kind": "permission denied"
+              "kind": "permission denied",
+              "cause": {
+                "op": "Policy.Enforce",
+                "kind": "permission denied",
+                "trace": "fail - policy: policy nft-owner-or-admin v1.1\n  fail - rule: isAdminUser\n    fail - func: userIsTenantAdmin\n    fail - func: userIsContentAdmin\n  fail - rule: main\n    fail - func: isOwnerOfLinkedNft\n"
+              }
             }
           ]
         }
@@ -64,32 +40,65 @@ from the policy or grant layer and contains an `"op": "Allow"` entry whose cause
 }
 ```
 
-| Field  | Value                |
-|--------|----------------------|
-| `op`   | `"Allow"`            |
-| `kind` | `"permission denied"`|
-
 **Suggested user message:** "A subscription or purchase is required to watch this title."
+
+---
+
+## Geo-Restriction
+
+The request originated from a blocked region. The `trace` shows `ipGeoLocationProps` returning
+the user's country code, which was matched against the blocked list.
+
+```json
+{
+  "errors": [
+    {
+      "op": "Allow",
+      "kind": "permission denied",
+      "cause": {
+        "op": "isAllowed",
+        "kind": "permission denied",
+        "cause": {
+          "errors": [
+            {
+              "op": "enforcePolicy",
+              "kind": "permission denied",
+              "cause": {
+                "op": "Policy.Enforce",
+                "kind": "permission denied",
+                "trace": "fail - policy: policy geo-block-us-test\n  fail - rule: authorize\n    pass - rule: isValidTokenSigner\n    fail - rule: isAllowedRegion\n      pass - in(US,[US])\n        data - func: ipGeoLocationProps - US\n"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ]
+}
+```
+
+**Suggested user message:** "This content is not available in your region."
 
 ---
 
 ## Distinguishing the Two
 
-Check the top-level `errors[0].op` field:
+Both errors are HTTP 403 with `op: "Allow"` at the top level. Detect the type by inspecting
+the `trace` string inside `errors[0].cause.cause.errors[0].cause.trace`:
 
-| `op` value        | Meaning        | Action                             |
-|-------------------|----------------|------------------------------------|
-| `"authorization"` | Geo-blocked    | Show regional availability message |
-| `"Allow"`         | No entitlement | Show subscription/purchase CTA     |
-
-The `"location"` field is only present on geo errors and can be used to name the region if
-needed. It is absent on entitlement errors.
+| Trace contains          | Meaning        | Action                             |
+|-------------------------|----------------|------------------------------------|
+| `ipGeoLocationProps`    | Geo-blocked    | Show regional availability message |
+| `isOwnerOfLinkedNft` / `userIsTenantAdmin` | No entitlement | Show subscription/purchase CTA |
 
 ```javascript
-const err = response.errors?.[0];
-if (err?.op === "authorization" && err?.reason?.includes("geo")) {
-  // geo-blocked
-} else if (err?.op === "Allow") {
-  // no entitlement
+function classifyPlayoutError(response) {
+  const trace = response.errors?.[0]
+    ?.cause?.cause?.errors?.[0]
+    ?.cause?.trace ?? "";
+
+  if (trace.includes("ipGeoLocationProps")) return "geo-blocked";
+  if (trace.includes("enforcePolicy"))      return "no-entitlement";
+  return "unknown";
 }
 ```
