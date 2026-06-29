@@ -45,8 +45,9 @@ Retrieves **Widevine DRM-protected** playback URLs plus the license server URL f
 
 ### [Authorization Errors](./errors.md)
 
-How to distinguish geo-restriction failures from entitlement failures -- same 403 status, different
-error body -- so clients can surface the right message to the user.
+How to distinguish geo-restriction failures from entitlement failures.
+(Interpretting the 403 status error body.)
+
 
 ### [VOD ABR Ladder Specification](./abr-ladder.md)
 
