@@ -1,9 +1,8 @@
 # Playout Authorization Errors
 
-The playout endpoint (`/q/:objectId/rep/playout/:offering/options.json`) returns **HTTP 403** for
-all authorization failures. When geo-restriction is enforced via a policy (the standard approach),
-both geo-block and no-entitlement failures share the same outer error structure. They are
-distinguished by the `trace` field inside the `Policy.Enforce` cause.
+The playout endpoint (`/q/:objectId/rep/playout/:offering/options.json`) returns **HTTP 403** for all authorization
+failures. When geo-restriction is enforced via a policy, both geo-block and no-entitlement failures share the same
+outer error structure. They are distinguished by the `trace` field inside the `Policy.Enforce` cause.
 
 ---
 
