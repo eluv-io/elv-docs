@@ -1,44 +1,46 @@
 name: policy nft-owner-geo-admin v1.0
 desc: |
   Contract policy combining geo restriction with NFT ownership and admin access.
-  Permits any read operation if:
-    - the user's IP is in the allowed region, AND
-    - the user owns a non-fungible token governed by a linked ERC-721 smart contract,
-      or is a member of the tenant_admin or content_admin blockchain group.
 
-  isAllowedRegion runs first in an 'and'. If geo blocks, the and short-circuits before
-  the NFT/admin check runs. This produces distinct trace patterns that allow callers to
-  distinguish the failure reason:
+  Admins (tenant_admin or content_admin group members) are allowed from any geography.
+  All other users must pass the geo check AND own a qualifying NFT.
+
+  The authorize rule is structured so that:
+    - isAdminUser is checked first; if it passes, geo and NFT checks are skipped entirely.
+    - For non-admins, isAllowedRegion runs first in an 'and' before any blockchain
+      calls. If geo blocks, the and short-circuits before isOwnerOfLinkedNft runs.
+
+  This produces distinct trace patterns for error classification on non-admin failures:
     geo blocked:          ipGeoLocationProps present, isOwnerOfLinkedNft absent
     geo passes, NFT fails: both ipGeoLocationProps and isOwnerOfLinkedNft present
 
-  Entry point is named 'authorize' so the policy accepts client-signed tokens (CSATs)
-  in addition to editor-signed and state channel tokens.
-
+  Entry point is named 'authorize' for CSAT compatibility.
   isValidTokenSigner is omitted: admin and NFT checks are on-chain trust anchors.
-  The blocked country list should be customized per deployment.
+  Customize blockedCountryCodes for your deployment.
 type: ast
 expr:
   rule: authorize
 rules:
 
-  # Entry point for CSATs; also used by ESAT/state channel tokens.
-  # isAllowedRegion runs first so that geo failures short-circuit before any
-  # blockchain calls (isOwnerOfLinkedNft) are made.
+  settings:
+    literal:
+      blockedCountryCodes:
+        - "US"
+
+  # Admins bypass geo entirely. Non-admins must pass geo before any blockchain calls.
   authorize:
-    and:
-      - rule: isAllowedRegion
-      - or:
-          - rule: isAdminUser
+    or:
+      - rule: isAdminUser
+      - and:
+          - rule: isAllowedRegion
           - rule: main
 
-  # Customize the country code list for your deployment.
   isAllowedRegion:
     not:
       in:
         - fn.ipGeoLocationProps:
             - "country_code"
-        - - "US"
+        - rule: settings/blockedCountryCodes
 
   # uses runtime-injected environment functions
   isAdminUser:
@@ -46,8 +48,8 @@ rules:
       - func: userIsTenantAdmin
       - func: userIsContentAdmin
 
-  # isAdminUser runs before main: fn.isOwnerOfLinkedNft propagates errors rather
-  # than returning false if the NFT contract is missing or invalid.
+  # isOwnerOfLinkedNft propagates errors rather than returning false if the NFT
+  # contract is missing or invalid, so it runs after isAdminUser.
   main:
     or:
       - fn.isOwnerOfLinkedNft:
