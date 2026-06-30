@@ -1,4 +1,4 @@
-name: policy nft-or-admin-with-geo v1.0
+name: policy nft-owner-geo-admin v1.0
 desc: |
   Contract policy combining geo restriction with NFT ownership and admin access.
   Permits any read operation if:
