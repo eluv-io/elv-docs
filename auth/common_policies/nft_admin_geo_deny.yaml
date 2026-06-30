@@ -18,7 +18,6 @@ rules:
       unauthorizedCountryCodes:
         - "US"
 
-  # Admins bypass geo entirely. Non-admins must not be in a blocked region AND must own an NFT.
   authorize:
     or:
       - rule: isAdminUser
