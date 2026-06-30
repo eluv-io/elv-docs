@@ -64,9 +64,8 @@ Response (abbreviated):
 }
 ```
 
-`primary_purchase_skus` is set by the server only when both conditions hold:
-- The user does not own the permission item (`authorized == false`)
-- The permission item has a marketplace SKU configured (`marketplace_sku != ""`)
+`primary_purchase_skus` is populated only for permission items the user does not yet own
+and that have a purchasable SKU configured in the marketplace.
 
 Pass the SKU directly to [Hosted Checkout](hosted-checkout/README.md) or the
 [Entitlements API](entitlements/README.md).
@@ -83,10 +82,8 @@ pass that carries a geo policy.
 
 1. Each pass is a content object with an access policy that allows only the appropriate region.
 2. The Sections API checks the pass's permissioned metadata for the requesting user.
-3. If the user's IP is in the allowed region --> pass check succeeds --> `purchaseAuthorized: true` -->
-   SKU appears in `primary_purchase_skus`.
-4. If the user's IP is in a blocked region --> pass check fails --> `purchaseAuthorized: false` -->
-   SKU is omitted from `primary_purchase_skus`.
+3. If the user's IP is in the allowed region --> pass check succeeds --> SKU appears in `primary_purchase_skus`.
+4. If the user's IP is in a blocked region --> pass check fails --> SKU is omitted from `primary_purchase_skus`.
 
 The result: `primary_purchase_skus` only ever contains passes that the user's geo permits them to buy.
 A user in Australia sees the "Rest of World" SKU; a user in Ireland sees the Ireland SKU. Neither
