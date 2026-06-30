@@ -1,0 +1,53 @@
+name: policy nft-admin-geo-deny v1.0
+desc: |
+  Combined policy: geo denylist + NFT ownership + admin bypass.
+
+  Users whose IP resolves to a country in unauthorizedCountryCodes are blocked.
+  All other regions are permitted.
+  Admins (tenant_admin or content_admin group members) area allowed for any geo.
+  Non-admin users must pass the geo check AND own a qualifying NFT.
+
+  Entry point is named 'authorize' for CSAT compatibility.
+type: ast
+expr:
+  rule: authorize
+rules:
+
+  settings:
+    literal:
+      unauthorizedCountryCodes:
+        - "US"
+
+  authorize:
+    or:
+      - rule: isAdminUser
+      - and:
+          - rule: isAllowedRegion
+          - rule: main
+
+  isAllowedRegion:
+    not:
+      in:
+        - fn.ipGeoLocationProps:
+            - "country_code"
+        - rule: settings/unauthorizedCountryCodes
+
+  # uses runtime-injected environment functions
+  isAdminUser:
+    or:
+      - func: userIsTenantAdmin
+      - func: userIsContentAdmin
+
+  # isOwnerOfLinkedNft propagates errors rather than returning false if the NFT
+  # contract is missing or invalid, so it runs after isAdminUser.
+  main:
+    or:
+      - fn.isOwnerOfLinkedNft:
+          - env: call/subject
+      - and:
+          - eq:
+              - env: api_call/action
+              - q.read.decrypt
+          - fn.ids.Equivalent:
+              - env: call/node_id
+              - env: call/subject
