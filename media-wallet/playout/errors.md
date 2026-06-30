@@ -5,7 +5,7 @@ authorization failures. There are two variations we want to disambiguate: geogra
 access pass restrictions.  The error responses share the same outer structure and are distinguished by function
 names embedded in the `trace` field inside the `Policy.Enforce` cause.
 
-This document shares these details, and, matching javsscript code to detect them.
+This document shares these details, and matching JavaScript code to detect them.
 
 ---
 
