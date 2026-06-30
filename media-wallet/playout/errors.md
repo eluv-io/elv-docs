@@ -107,11 +107,11 @@ the user's country code, checked against the geo restriction list.
 Both errors are HTTP 403. The classification uses the presence or absence of two function names
 anywhere in the stringified response, exploiting `and` short-circuit evaluation in the policy engine:
 
-| `ipGeoLocationProps` | `isOwnerOfLinkedNft` | Meaning                                             |
-|----------------------|----------------------|-----------------------------------------------------|
-| present              | absent               | Geo-blocked — NFT check was short-circuited         |
-| present              | present              | No entitlement — geo passed, NFT check ran + failed |
-| absent               | present              | No entitlement — no geo policy on this object       |
+| `ipGeoLocationProps` | `isOwnerOfLinkedNft` | Meaning                                              |
+|----------------------|----------------------|------------------------------------------------------|
+| present              | absent               | Geo-blocked -- NFT check was short-circuited         |
+| present              | present              | No entitlement -- geo passed, NFT check ran + failed |
+| absent               | present              | No entitlement -- no geo policy on this object       |
 
 When geo and NFT checks are combined in a single policy with `and`, the policy engine short-circuits
 at the geo check if it fails, leaving `isOwnerOfLinkedNft` absent from the trace. If geo passes,
