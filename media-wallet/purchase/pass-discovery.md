@@ -43,7 +43,7 @@ Response (abbreviated):
   "contents": [
     {
       "id": "pscm...",
-      "label": "Season Passes",
+      "label": "Access Passes",
       "content": [
         {
           "id": "psci...",
@@ -51,8 +51,8 @@ Response (abbreviated):
           "primary_purchase_skus": [
             {
               "permission_item_id": "prmo...",
-              "sku": "4gMyMXiSmbdqG6ECPTB6mu",
-              "title": "URC TV 2025/26 Season Pass"
+              "sku": "SKUABCD1234",
+              "title": "Season Pass"
             }
           ]
         }
@@ -74,7 +74,7 @@ Pass the SKU directly to [Hosted Checkout](hosted-checkout/README.md) or the
 ## Geo Restriction: How Passes Are Filtered by Region
 
 Tenants with geo-restricted content configure separate permission items per region
-(e.g. "Rest of World", "Ireland", "Canada", "Italy"). Each permission item references a
+(e.g. "Rest of World", "Canada", "Italy"). Each permission item references a
 pass that carries a geo policy.
 
 **The filtering happens at the pass's policy level, not in the Sections API:**
@@ -120,35 +120,34 @@ equivalent regional availability message in your app.
 
 ---
 
-## Native App Integration: Wallet URL with Purchase Context
+## Initiating Purchase: Hosted Checkout
 
-Embedded or native apps (TVs, iOS, Android) typically hand off the purchase flow to the Eluvio Media Wallet
-via a URL with a base58-encoded context parameter `p`.
+Once you have a SKU from `primary_purchase_skus`, pass it to the Hosted Checkout API. This is a
+server-to-server call using your tenant admin token -- the user never sees the wallet, only your
+app's UI and the Stripe checkout page.
 
-The `p` parameter is a base58-encoded JSON object:
+```mermaid
+sequenceDiagram
+    participant User
+    participant App
+    participant TenantServer
+    participant FabricAPI
 
-```json
-{
-  "type": "purchase",
-  "id": "<propertyId | pageId | sectionId | sectionItemId | mediaItemId>",
-  "sectionSlugOrId": "<sectionId>",
-  "sectionItemId": "<sectionItemId>",
-  "permissionItemIds": ["<permissionItemId>", ...],
-  "secondaryPurchaseOption": "show | only | out_of_stock"
-}
+    App->>TenantServer: User wants to buy (SKU, elv_addr)
+    TenantServer->>FabricAPI: POST /tnt/:tid/checkout/external (admin token, SKU, elv_addr)
+    FabricAPI-->>TenantServer: {checkout_id, checkout_url}
+    TenantServer-->>App: checkout_url
+    App->>User: Redirect to Stripe checkout
+    User-->>App: Returns to success_url
+    App->>TenantServer: Poll status (checkout_id)
+    TenantServer->>FabricAPI: GET /tnt/:tid/checkout/external/:checkout_id
+    FabricAPI-->>TenantServer: {status: "complete", token_addr, token_id}
+    TenantServer-->>App: Access granted
 ```
 
-| Field                               | Purpose                                                          |
-|-------------------------------------|------------------------------------------------------------------|
-| `type`                              | Always `"purchase"`                                              |
-| `id`                                | Broadest-to-most-specific resource ID; last non-null value wins  |
-| `permissionItemIds`                 | Explicit list of permission items to offer; skips section lookup |
-| `sectionSlugOrId` + `sectionItemId` | Wallet resolves purchase options from the section hierarchy      |
-| `secondaryPurchaseOption`           | Controls secondary-market display                                |
+See [Hosted Checkout](hosted-checkout/README.md) for the full API reference, request/response
+fields, and polling guidance.
 
-The wallet decodes `p`, resolves the relevant permission items, checks `purchaseAuthorized` for
-each, and presents only the geo-permitted options. If none are `purchaseAuthorized`, it falls
-back to `no_purchase_available_page`.
-
-The `authorization` query parameter carries the user's provider, token, and wallet address so the
-wallet can complete the purchase on their behalf without requiring a separate login.
+> **Note on `country_code`:** The checkout API is called server-to-server, so IP geolocation
+> resolves to your server, not the user. Pass the buyer's actual country code for correct currency
+> selection.
