@@ -1,0 +1,61 @@
+name: policy nft-admin-geo-allow v1.0
+desc: |
+  Combined policy: geo allowlist + NFT ownership + admin bypass.
+
+  Only users whose IP resolves to a country in authorizedCountryCodes may access.
+  Admins (tenant_admin or content_admin group members) bypass geo entirely.
+  Non-admin users must pass the geo check AND own a qualifying NFT.
+
+  Use this variant when you have a small list of permitted countries (e.g. a
+  territory-specific pass for Italy, Ireland, or Canada).
+
+  Trace patterns for non-admin failures:
+    geo blocked:           ipGeoLocationProps present, isOwnerOfLinkedNft absent
+    geo passes, NFT fails: both ipGeoLocationProps and isOwnerOfLinkedNft present
+
+  Entry point is named 'authorize' for CSAT compatibility.
+  isValidTokenSigner is omitted: admin and NFT checks are on-chain trust anchors.
+  Customize authorizedCountryCodes for your deployment.
+type: ast
+expr:
+  rule: authorize
+rules:
+
+  settings:
+    literal:
+      authorizedCountryCodes:
+        - "IT"
+
+  # Admins bypass geo entirely. Non-admins must be in the allowed region AND own an NFT.
+  authorize:
+    or:
+      - rule: isAdminUser
+      - and:
+          - rule: isAllowedRegion
+          - rule: main
+
+  isAllowedRegion:
+    in:
+      - fn.ipGeoLocationProps:
+          - "country_code"
+      - rule: settings/authorizedCountryCodes
+
+  # uses runtime-injected environment functions
+  isAdminUser:
+    or:
+      - func: userIsTenantAdmin
+      - func: userIsContentAdmin
+
+  # isOwnerOfLinkedNft propagates errors rather than returning false if the NFT
+  # contract is missing or invalid, so it runs after isAdminUser.
+  main:
+    or:
+      - fn.isOwnerOfLinkedNft:
+          - env: call/subject
+      - and:
+          - eq:
+              - env: api_call/action
+              - q.read.decrypt
+          - fn.ids.Equivalent:
+              - env: call/node_id
+              - env: call/subject

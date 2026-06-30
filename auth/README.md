@@ -20,10 +20,16 @@ Ready-to-use policies for common access control scenarios:
   to a designated user address (e.g. a minter account).
 * [NFT Owner + Admin Policy](common_policies/nft_owner_or_admin.yaml) -- Same as NFT Owner, but also grants access
   to any user who is a member of the `tenant_admin` or `content_admin` group for the object
-* [NFT Owner + Admin + Geo Policy](common_policies/nft_owner_geo_admin.yaml) -- Same as NFT Owner + Admin,
-  but adds a geo restriction check that short-circuits before any blockchain calls. When the geo check fails,
-  `isOwnerOfLinkedNft` is absent from the error trace; when geo passes but NFT fails, both appear. This lets
-  callers distinguish the two failure modes from the 403 trace.
+* [NFT Owner + Admin + Geo Allowlist Policy](common_policies/nft_admin_geo_allow.yaml) -- Same as NFT Owner + Admin,
+  but restricts access to a listed set of countries (`authorizedCountryCodes`). Admins bypass geo entirely.
+  Use this for territory-specific passes (e.g. Italy-only, Ireland-only).
+* [NFT Owner + Admin + Geo Denylist Policy](common_policies/nft_admin_geo_deny.yaml) -- Same as NFT Owner + Admin,
+  but blocks a listed set of countries (`unauthorizedCountryCodes`); all other regions are permitted. Admins
+  bypass geo entirely. Use this for "rest of world" passes that exclude specific territories with their own passes.
+
+  In both geo variants, the geo check short-circuits before any blockchain calls when it fails: `isOwnerOfLinkedNft`
+  is absent from the error trace when geo blocks, and present when geo passes but NFT fails. See
+  [Playout Authorization Errors](../media-wallet/playout/errors.md) for the classifier.
 
 Annotated examples illustrating specific policy features:
 

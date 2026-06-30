@@ -1,0 +1,64 @@
+name: policy nft-admin-geo-deny v1.0
+desc: |
+  Combined policy: geo denylist + NFT ownership + admin bypass.
+
+  Users whose IP resolves to a country in unauthorizedCountryCodes are blocked.
+  All other regions are permitted. Admins (tenant_admin or content_admin group
+  members) bypass geo entirely.
+  Non-admin users must pass the geo check AND own a qualifying NFT.
+
+  Use this variant when it is easier to enumerate excluded countries than
+  permitted ones (e.g. a "rest of world" pass that excludes specific territories
+  with separate passes).
+
+  Trace patterns for non-admin failures:
+    geo blocked:           ipGeoLocationProps present, isOwnerOfLinkedNft absent
+    geo passes, NFT fails: both ipGeoLocationProps and isOwnerOfLinkedNft present
+
+  Entry point is named 'authorize' for CSAT compatibility.
+  isValidTokenSigner is omitted: admin and NFT checks are on-chain trust anchors.
+  Customize unauthorizedCountryCodes for your deployment.
+type: ast
+expr:
+  rule: authorize
+rules:
+
+  settings:
+    literal:
+      unauthorizedCountryCodes:
+        - "US"
+
+  # Admins bypass geo entirely. Non-admins must not be in a blocked region AND must own an NFT.
+  authorize:
+    or:
+      - rule: isAdminUser
+      - and:
+          - rule: isAllowedRegion
+          - rule: main
+
+  isAllowedRegion:
+    not:
+      in:
+        - fn.ipGeoLocationProps:
+            - "country_code"
+        - rule: settings/unauthorizedCountryCodes
+
+  # uses runtime-injected environment functions
+  isAdminUser:
+    or:
+      - func: userIsTenantAdmin
+      - func: userIsContentAdmin
+
+  # isOwnerOfLinkedNft propagates errors rather than returning false if the NFT
+  # contract is missing or invalid, so it runs after isAdminUser.
+  main:
+    or:
+      - fn.isOwnerOfLinkedNft:
+          - env: call/subject
+      - and:
+          - eq:
+              - env: api_call/action
+              - q.read.decrypt
+          - fn.ids.Equivalent:
+              - env: call/node_id
+              - env: call/subject
