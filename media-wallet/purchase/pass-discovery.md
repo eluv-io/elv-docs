@@ -29,11 +29,11 @@ See [Playout Authorization Errors](../playout/errors.md) for the full error stru
 
 ## Sections API: Finding the Right SKU
 
-The Media Wallet Sections API returns `primary_purchase_skus` inline on any section or content item
+The Media Wallet `/sections` API returns `primary_purchase_skus` inline on any section or content item
 the user cannot access. This list is already filtered to SKUs the user does not yet own.
 
 ```
-POST /mw/properties/:propertyId/sections
+POST /mw/properties/{propertyId}/sections
 Authorization: Bearer <user-token>
 Body: ["<sectionId>", ...]
 ```
