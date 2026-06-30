@@ -52,6 +52,8 @@ The `trace` shows `isOwnerOfLinkedNft` failing.
 
 **Suggested user message:** "A subscription, purchase, or rental is required to watch this title."
 
+To determine which pass to offer, see [Discovering What to Purchase](../purchase/pass-discovery.md).
+
 ---
 
 ## Geo-Restriction
