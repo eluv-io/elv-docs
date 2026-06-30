@@ -44,19 +44,9 @@ sequenceDiagram
 
 ### Discovering What to Purchase
 
-The Sections API returns purchase options inline:
-
-```mermaid
-sequenceDiagram
-    participant TenantApp
-    participant FabricAPI
-
-    TenantApp->>FabricAPI: POST /mw/properties/:propertyId/sections<br/>(user token, section IDs)
-    FabricAPI-->>TenantApp: Sections with primary_purchase_skus[]{sku, title}<br/>on each gated section or content item
-    Note over TenantApp: primary_purchase_skus only lists SKUs<br/>the user does not yet own
-```
-
-See [Hosted Checkout -- Discovering SKUs](hosted-checkout/README.md#discovering-which-sku-to-purchase) for a worked example.
+The Sections API returns `primary_purchase_skus` inline on gated content — already filtered to
+SKUs the user doesn't own and that their geo permits. See [Pass Discovery](pass-discovery.md)
+for the full flow, including geo restriction behavior and the native app wallet URL format.
 
 ---
 
