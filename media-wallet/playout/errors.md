@@ -58,9 +58,9 @@ To determine which pass to offer, see [Discovering What to Purchase](../purchase
 
 ## Geo-Restriction
 
-The request originated from a blocked region. Produced by, for example, a geo policy (e.g. `policy-ip-geo.yaml`)
+The request originated from a restricted region. Produced by, for example, a geo policy (e.g. `policy-ip-geo.yaml`)
 applied to the content or its associated pass. The `trace` shows `ipGeoLocationProps` returning
-the user's country code, matched against the blocked list.
+the user's country code, checked against the geo restriction list.
 
 ```json
 {

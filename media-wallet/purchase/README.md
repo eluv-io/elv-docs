@@ -46,7 +46,7 @@ sequenceDiagram
 
 The Sections API returns `primary_purchase_skus` inline on gated content — already filtered to
 SKUs the user doesn't own and that their geo permits. See [Pass Discovery](pass-discovery.md)
-for the full flow, including geo restriction behavior and the native app wallet URL format.
+for the full flow, including geo restriction behavior and what to show when no passes are available.
 
 ---
 
