@@ -2,7 +2,7 @@
 
 The playout endpoint (`/q/{objectId}/rep/playout/{offering}/options.json`) returns **HTTP 403** for all
 authorization failures. There are two variations to disambiguate: geographic restrictions and missing
-access pass restrictions.  The error responses share the same outer structure and are distinguished by function
+entitlements (no access pass). The error responses share the same outer structure and are distinguished by function
 names embedded in the `trace` field inside the `Policy.Enforce` cause.
 
 This document shares these details, and matching JavaScript code to detect them.

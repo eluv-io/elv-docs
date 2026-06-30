@@ -105,8 +105,10 @@ sequenceDiagram
 
 ## When No Passes Are Available
 
-If the user's geo is blocked for all passes, `primary_purchase_skus` will be empty on every
-content item. The tenant should detect this and show an appropriate message.
+
+If the content is gated (for example, a playout request returned HTTP 403) but `primary_purchase_skus` is empty on
+every gated content item, then no purchasable passes are available for this user (including the case where all
+passes are geo-filtered out).  The tenant should detect this and show an appropriate message.
 
 The Eluvio Media Wallet supports a `no_purchase_available_page` configuration on the property,
 which is displayed automatically when no purchase options are available. This page is
