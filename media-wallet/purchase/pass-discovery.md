@@ -12,8 +12,10 @@ A playback attempt returns HTTP 403. Classify the error to decide what to show t
 ```javascript
 function classifyPlayoutError(response) {
   const s = JSON.stringify(response);
-  if (s.includes("ipGeoLocationProps")) return "geo-blocked";
-  if (s.includes("isOwnerOfLinkedNft"))  return "no-entitlement";
+  const hasGeo = s.includes("ipGeoLocationProps");
+  const hasNft = s.includes("isOwnerOfLinkedNft");
+  if (hasGeo && !hasNft) return "geo-blocked";
+  if (hasNft) return "no-entitlement";
   return "unknown";
 }
 ```
