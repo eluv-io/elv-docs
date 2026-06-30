@@ -10,7 +10,7 @@ desc: |
   v1.6
     * add isReadInfo for reading content info with q/<qid>?details=true&profile=true
   v1.5
-    * fix isContentDecrypt 
+    * fix isContentDecrypt
        * comparison of call/subject and call/node_id
        * allow read part
   v1.4

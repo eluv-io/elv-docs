@@ -3,21 +3,11 @@ desc: |
   Combined policy: geo denylist + NFT ownership + admin bypass.
 
   Users whose IP resolves to a country in unauthorizedCountryCodes are blocked.
-  All other regions are permitted. Admins (tenant_admin or content_admin group
-  members) bypass geo entirely.
+  All other regions are permitted.
+  Admins (tenant_admin or content_admin group members) area allowed for any geo.
   Non-admin users must pass the geo check AND own a qualifying NFT.
 
-  Use this variant when it is easier to enumerate excluded countries than
-  permitted ones (e.g. a "rest of world" pass that excludes specific territories
-  with separate passes).
-
-  Trace patterns for non-admin failures:
-    geo blocked:           ipGeoLocationProps present, isOwnerOfLinkedNft absent
-    geo passes, NFT fails: both ipGeoLocationProps and isOwnerOfLinkedNft present
-
   Entry point is named 'authorize' for CSAT compatibility.
-  isValidTokenSigner is omitted: admin and NFT checks are on-chain trust anchors.
-  Customize unauthorizedCountryCodes for your deployment.
 type: ast
 expr:
   rule: authorize
