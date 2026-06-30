@@ -104,22 +104,27 @@ the user's country code, matched against the blocked list.
 
 ## Distinguishing the Two
 
-Both errors are HTTP 403. The classification signal is function names embedded anywhere in the
-error response JSON:
+Both errors are HTTP 403. The classification uses the presence or absence of two function names
+anywhere in the stringified response, exploiting `and` short-circuit evaluation in the policy engine:
 
-| Signal in response JSON   | Meaning        | Action                             |
-|---------------------------|----------------|------------------------------------|
-| `"ipGeoLocationProps"`    | Geo-blocked    | Show regional availability message |
-| `"isOwnerOfLinkedNft"`    | No entitlement | Show subscription/purchase CTA     |
+| `ipGeoLocationProps` | `isOwnerOfLinkedNft` | Meaning                                             |
+|----------------------|----------------------|-----------------------------------------------------|
+| present              | absent               | Geo-blocked — NFT check was short-circuited         |
+| present              | present              | No entitlement — geo passed, NFT check ran + failed |
+| absent               | present              | No entitlement — no geo policy on this object       |
 
-Geo is checked first because a geo policy on a pass can produce a response that also contains
-entitlement markers from the content policy.
+When geo and NFT checks are combined in a single policy with `and`, the policy engine short-circuits
+at the geo check if it fails, leaving `isOwnerOfLinkedNft` absent from the trace. If geo passes,
+both functions appear. This makes the absence of `isOwnerOfLinkedNft` the reliable geo-block signal,
+not the presence of `ipGeoLocationProps` alone.
 
 ```javascript
 function classifyPlayoutError(response) {
   const s = JSON.stringify(response);
-  if (s.includes("ipGeoLocationProps")) return "geo-blocked";
-  if (s.includes("isOwnerOfLinkedNft")) return "no-entitlement";
+  const hasGeo = s.includes("ipGeoLocationProps");
+  const hasNft = s.includes("isOwnerOfLinkedNft");
+  if (hasGeo && !hasNft) return "geo-blocked";
+  if (hasNft) return "no-entitlement";
   return "unknown";
 }
 ```

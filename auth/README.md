@@ -20,6 +20,10 @@ Ready-to-use policies for common access control scenarios:
   to a designated user address (e.g. a minter account).
 * [NFT Owner + Admin Policy](common_policies/nft_owner_or_admin.yaml) -- Same as NFT Owner, but also grants access
   to any user who is a member of the `tenant_admin` or `content_admin` group for the object
+* [NFT Owner + Admin + Geo Policy](common_policies/nft_owner_geo_admin.yaml) -- Same as NFT Owner + Admin,
+  but adds a geo restriction check that short-circuits before any blockchain calls. When the geo check fails,
+  `isOwnerOfLinkedNft` is absent from the error trace; when geo passes but NFT fails, both appear. This lets
+  callers distinguish the two failure modes from the 403 trace.
 
 Annotated examples illustrating specific policy features:
 
