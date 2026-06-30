@@ -50,7 +50,7 @@ The `trace` shows `isOwnerOfLinkedNft` failing.
 }
 ```
 
-**Suggested user message:** "A subscription or purchase is required to watch this title."
+**Suggested user message:** "A subscription, purchase, or rental is required to watch this title."
 
 ---
 
