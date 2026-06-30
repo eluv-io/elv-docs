@@ -110,7 +110,7 @@ If the content is gated (for example, a playout request returned HTTP 403) but `
 every gated content item, then no purchasable passes are available for this user (including the case where all
 passes are geo-filtered out).  The tenant should detect this and show an appropriate message.
 
-The Eluvio Media Wallet supports a `no_purchase_available_page` configuration on the property,
+The Eluvio Media Wallet Creator Studio supports a `no_purchase_available_page` configuration on the property,
 which is displayed automatically when no purchase options are available. This page is
 tenant-configured with custom text, background image, and an external link (e.g. a "Where to
 Watch" page listing regional broadcasters).
