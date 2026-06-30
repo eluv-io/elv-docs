@@ -1,37 +1,46 @@
 # Playout Authorization Errors
 
-The playout endpoint (`/q/{objectId}/rep/playout/{offering}/options.json`) returns **HTTP 403** for all authorization
-failures. When geo-restriction is enforced via a policy, both geo-block and no-entitlement failures share the same
-outer error structure. They are distinguished by the `trace` field inside the `Policy.Enforce` cause.
+The playout endpoint (`/q/{objectId}/rep/playout/{offering}/options.json`) returns **HTTP 403** for all
+authorization failures. Inside these failure modes are two variations we want to disambiguate: geography
+restrictions, and, missing access pass restrictions.  The error responses share the same outer structure and are
+distinguished by function names embedded in the `trace` field inside the `Policy.Enforce` cause.
 
 ---
 
-## No Entitlement
+## No Entitlement -- Missing Access Pass
 
-The user has no active subscription, purchase, or rental for this content. The `trace` shows
-entitlement checks (NFT ownership, admin group) failing.
+The user does not own a qualifying NFT. Produced by, for example, `nft_owner.yaml` or `nft_owner_or_admin.yaml`.
+The `trace` shows `isOwnerOfLinkedNft` failing.
 
 ```json
 {
   "errors": [
     {
-      "op": "Allow",
+      "op": "Q.callJPC",
       "kind": "permission denied",
       "cause": {
-        "op": "isAllowed",
+        "op": "Allow",
         "kind": "permission denied",
-        "cause": {
-          "errors": [
-            {
-              "op": "enforcePolicy",
-              "kind": "permission denied",
-              "cause": {
-                "op": "Policy.Enforce",
-                "kind": "permission denied",
-                "trace": "fail - policy: ... fail - func: isOwnerOfLinkedNft\n"
-              }
+        "permissions_error": {
+          "op": "Allow",
+          "kind": "permission denied",
+          "cause": {
+            "op": "isAllowed",
+            "kind": "permission denied",
+            "cause": {
+              "errors": [
+                {
+                  "op": "enforcePolicy",
+                  "kind": "permission denied",
+                  "cause": {
+                    "op": "Policy.Enforce",
+                    "kind": "permission denied",
+                    "trace": "fail - policy: ... isOwnerOfLinkedNft - 1.8ms\n"
+                  }
+                }
+              ]
             }
-          ]
+          }
         }
       }
     }
@@ -45,30 +54,39 @@ entitlement checks (NFT ownership, admin group) failing.
 
 ## Geo-Restriction
 
-The request originated from a blocked region. The `trace` shows `ipGeoLocationProps` returning
-the user's country code, which was matched against the blocked list.
+The request originated from a blocked region. Produced by, for example, a geo policy (e.g. `policy-ip-geo.yaml`)
+applied to the content or its associated pass. The `trace` shows `ipGeoLocationProps` returning
+the user's country code, matched against the blocked list.
 
 ```json
 {
   "errors": [
     {
-      "op": "Allow",
+      "op": "Q.callJPC",
       "kind": "permission denied",
       "cause": {
-        "op": "isAllowed",
+        "op": "Allow",
         "kind": "permission denied",
-        "cause": {
-          "errors": [
-            {
-              "op": "enforcePolicy",
-              "kind": "permission denied",
-              "cause": {
-                "op": "Policy.Enforce",
-                "kind": "permission denied",
-                "trace": "fail - policy: ... pass - in(US,[US])\n        data - func: ipGeoLocationProps - US\n"
-              }
+        "permissions_error": {
+          "op": "Allow",
+          "kind": "permission denied",
+          "cause": {
+            "op": "isAllowed",
+            "kind": "permission denied",
+            "cause": {
+              "errors": [
+                {
+                  "op": "enforcePolicy",
+                  "kind": "permission denied",
+                  "cause": {
+                    "op": "Policy.Enforce",
+                    "kind": "permission denied",
+                    "trace": "fail - policy: ... ipGeoLocationProps - 13.5µs - US\n"
+                  }
+                }
+              ]
             }
-          ]
+          }
         }
       }
     }
@@ -82,23 +100,22 @@ the user's country code, which was matched against the blocked list.
 
 ## Distinguishing the Two
 
-Both errors are HTTP 403 with `op: "Allow"` at the top level. Detect the type by inspecting
-the `trace` string inside `errors[0].cause.cause.errors[0].cause.trace`:
+Both errors are HTTP 403. The classification signal is function names embedded anywhere in the
+error response JSON:
 
-| Trace contains                             | Meaning        | Action                             |
-|--------------------------------------------|----------------|------------------------------------|
-| `ipGeoLocationProps`                       | Geo-blocked    | Show regional availability message |
-| `isOwnerOfLinkedNft` / `userIsTenantAdmin` | No entitlement | Show subscription/purchase CTA     |
+| Signal in response JSON   | Meaning        | Action                             |
+|---------------------------|----------------|------------------------------------|
+| `"ipGeoLocationProps"`    | Geo-blocked    | Show regional availability message |
+| `"isOwnerOfLinkedNft"`    | No entitlement | Show subscription/purchase CTA     |
 
+Geo is checked first because a geo policy on a pass can produce a response that also contains
+entitlement markers from the content policy.
 
 ```javascript
 function classifyPlayoutError(response) {
-  const trace = response.errors?.[0]
-    ?.cause?.cause?.errors?.[0]
-    ?.cause?.trace ?? "";
-
-  if (trace.includes("ipGeoLocationProps")) return "geo-blocked";
-  if (trace.includes("enforcePolicy"))      return "no-entitlement";
+  const s = JSON.stringify(response);
+  if (s.includes("ipGeoLocationProps")) return "geo-blocked";
+  if (s.includes("isOwnerOfLinkedNft")) return "no-entitlement";
   return "unknown";
 }
 ```
