@@ -32,14 +32,11 @@ rules:
             - "country_code"
         - rule: settings/unauthorizedCountryCodes
 
-  # uses runtime-injected environment functions
   isAdminUser:
     or:
       - func: userIsTenantAdmin
       - func: userIsContentAdmin
 
-  # isOwnerOfLinkedNft propagates errors rather than returning false if the NFT
-  # contract is missing or invalid, so it runs after isAdminUser.
   main:
     or:
       - fn.isOwnerOfLinkedNft:
