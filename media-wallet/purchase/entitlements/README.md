@@ -19,7 +19,17 @@ sequenceDiagram
     PaymentProvider-->>TenantApp: Payment confirmed
     TenantApp->>FabricAPI: POST /tnt/:tid/entitlement/add<br/>(admin token, transaction, SKUs[], elv_addr)
     FabricAPI->>FabricAPI: Mint NFT token
-    FabricAPI-->>TenantApp: {trans_id, tokens[]}
+
+    alt Synchronous (default)
+        FabricAPI-->>TenantApp: 200 {trans_id, tokens[], poll_id}
+    else Async (set_async_mint / set_async_confirm)
+        FabricAPI-->>TenantApp: 202 {trans_id, poll_id}
+        loop Poll until complete
+            TenantApp->>FabricAPI: GET /tnt/:tid/entitlement/status/:poll_id
+            FabricAPI-->>TenantApp: {mint_status, confirm_status[, tokens]}
+        end
+    end
+
     TenantApp->>User: Confirm access granted
 ```
 
@@ -27,14 +37,14 @@ sequenceDiagram
 
 ## Endpoints
 
-| Operation           | Endpoint                                         |
-| ------------------- | ------------------------------------------------ |
-| Create entitlement  | `POST /tnt/:tid/entitlement/add`                 |
-| Poll create status  | `GET /tnt/:tid/entitlement/status/:poll_id`      |
-| List entitlements   | `POST /tnt/:tid/entitlement/list/:addr`          |
-| Revoke by token     | `POST /tnt/:tid/entitlement/revoke`              |
-| Revoke by SKU       | `POST /tnt/:tid/entitlement/revoke_by_sku`       |
-| Record watch start  | `POST /tnt/:tid/entitlement/rental/watch_start`  |
+| Operation               | Endpoint                                        |
+|-------------------------|-------------------------------------------------|
+| Create entitlement      | `POST /tnt/:tid/entitlement/add`                |
+| Poll entitlememt status | `GET /tnt/:tid/entitlement/status/:poll_id`     |
+| List entitlements       | `POST /tnt/:tid/entitlement/list/:addr`         |
+| Revoke by token         | `POST /tnt/:tid/entitlement/revoke`             |
+| Revoke by SKU           | `POST /tnt/:tid/entitlement/revoke_by_sku`      |
+| Record watch start      | `POST /tnt/:tid/entitlement/rental/watch_start` |
 
 Authentication: tenant admin bearer token for all operations.
 
