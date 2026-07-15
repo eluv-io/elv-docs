@@ -66,6 +66,15 @@ Authorization: Bearer <token>
 | elv_addr         | Yes      | User wallet address                                         |
 | skus             | Yes      | Array of one or more product SKUs being purchased or rented |
 
+### Optional Fields
+
+| Field             | Required | Description                                                                                                                                                       |
+|-------------------|----------|-------------------------------------------------------------------------------------------------------------|
+| set_async_mint    | No       | If `true`, return immediately instead of waiting for the mint to complete. Default `false`.                 |
+| set_async_confirm | No       | If `true`, return once the mint completes instead of also waiting for wallet confirmation. Default `false`. |
+
+See [Async Mint and Confirm](#async-mint-and-confirm)
+
 ---
 
 ## Transaction Object
@@ -157,24 +166,47 @@ curl -X POST "https://<fabric-authority-url>/tnt/<tenantId>/entitlement/add" \
 
 ---
 
+## Async Mint and Confirm
+
+By default, `entitlement/add` does not respond until the NFT has been minted and the token has been confirmed
+to appear in the user's wallet. This can take anywhere from a few seconds up to about a minute.
+If your integration would rather not hold a connection open that long, set one of
+these flags and poll [Poll Entitlement Status](#poll-entitlement-status) instead:
+
+| Flag                | Effect                                                                                                     |
+|---------------------|------------------------------------------------------------------------------------------------------------|
+| `set_async_mint`    | Respond immediately (HTTP 202) with a `poll_id`, before the mint has even completed                        |
+| `set_async_confirm` | Wait for the mint to complete and respond (HTTP 200) with `tokens`, but don't wait for wallet confirmation |
+
+`set_async_mint` implies `set_async_confirm` -- if you don't wait for the mint, there's nothing yet to confirm.
+
+Use the `poll_id` from the response with [Poll Entitlement Status](#poll-entitlement-status) to check on mint and
+wallet-confirm progress.
+
+---
+
 # Response
 
-## Success Response (HTTP 200)
+## Success Response (HTTP 200, or HTTP 202 with `set_async_mint`)
 
-Returned when the payment is accepted and the entitlement is created.
+Returned when the payment is accepted and the entitlement is created. Returns HTTP 202 instead of 200 when
+`set_async_mint` is used and the mint has not completed yet -- poll for completion.
 
 ### Fields
 
-| Field          | Description                                                               |
-| -------------- | ------------------------------------------------------------------------- |
-| message        | Success message                                                           |
-| trans_id       | Full transaction ID - used with the watch_start and entitlement list APIs |
-| tenant_revenue | Revenue allocated to the tenant                                           |
-| platform_fee   | Platform fee amount                                                       |
-| user_addr      | User wallet address                                                       |
-| tokens         | All tokens minted in this transaction                                     |
+| Field          | Description                                                                |
+|----------------|----------------------------------------------------------------------------|
+| message        | Success message                                                            |
+| trans_id       | Full transaction ID - used with the watch_start and entitlement list APIs  |
+| tenant_revenue | Revenue allocated to the tenant                                            |
+| platform_fee   | Platform fee amount                                                        |
+| user_addr      | User wallet address                                                        |
+| tokens         | All tokens minted in this transaction. Absent if `set_async_mint` was used |
+| poll_id        | Job identifier for [Poll Entitlement Status](#poll-entitlement-status)     |
 
 ### Example Success Response
+
+#### Synchronous, HTTP 200
 
 ```json
 {
@@ -188,9 +220,98 @@ Returned when the payment is accepted and the entitlement is created.
       "contract_addr": "0xcontract123...",
       "token_id": "551"
     }
+  ],
+  "poll_id": "nft-buy:<siteId>:3pp:<tenantId>:pi_3pp_1234"
+}
+```
+
+#### Asynchronous, HTTP 202
+
+```json
+{
+  "message": "3pp payment processed successfully",
+  "trans_id": "3pp:<tenantId>:pi_3pp_1234",
+  "tenant_revenue": 2.75,
+  "platform_fee": 0.51,
+  "user_addr": "0xabc123...",
+  "poll_id": "nft-buy:<siteId>:3pp:<tenantId>:pi_3pp_1234"
+}
+```
+
+---
+
+## Poll Entitlement Status
+
+```
+GET /tnt/:tid/entitlement/status/:poll_id
+```
+
+Check on mint and wallet-confirm progress for a job started with `set_async_mint` and/or `set_async_confirm`.
+
+#### Authentication
+
+Tenant admin bearer token.
+
+#### Path Parameters
+
+| Parameter | Description                                 |
+|-----------|---------------------------------------------|
+| `tid`     | Your tenant ID                              |
+| `poll_id` | The `poll_id` returned from the create call |
+
+#### Query Parameters
+
+| Parameter  | Required | Description                                                  |
+|------------|----------|--------------------------------------------------------------|
+| `elv_addr` | Yes      | The user's wallet address, as submitted to `entitlement/add` |
+
+#### Response Fields
+
+| Field            | Description                                                        |
+|------------------|--------------------------------------------------------------------|
+| `poll_id`        | Echoes the polled job identifier                                   |
+| `mint_status`    | `"pending"`, `"complete"`, `"failed"`                              |
+| `confirm_status` | `"pending"`, `"complete"`, `"failed"` (mint failed)                |
+| `tokens`         | Present once `mint_status` is `"complete"`                         |
+| `error`          | Present when `mint_status` is `"failed"`, if a reason is available |
+
+#### Status: pending
+
+```json
+{
+  "poll_id": "nft-buy:<siteId>:3pp:<tenantId>:pi_3pp_1234",
+  "mint_status": "pending",
+  "confirm_status": "pending"
+}
+```
+
+#### Status: complete
+
+```json
+{
+  "poll_id": "nft-buy:<siteId>:3pp:<tenantId>:pi_3pp_1234",
+  "mint_status": "complete",
+  "confirm_status": "complete",
+  "tokens": [
+    {
+      "contract_addr": "0xcontract123...",
+      "token_id": "551"
+    }
   ]
 }
 ```
+
+#### Status: failed
+
+```json
+{
+  "poll_id": "nft-buy:<siteId>:3pp:<tenantId>:pi_3pp_1234",
+  "mint_status": "failed",
+  "confirm_status": "failed"
+}
+```
+
+Poll every 1-2 seconds for up to a minute after `entitlement/add` returns.
 
 ---
 
@@ -213,11 +334,13 @@ Returned when the request is invalid or cannot be processed.
 
 ## Common Error Messages
 
-| Message                           | Meaning                                  |
-| --------------------------------- | ---------------------------------------- |
-| Invalid request                   | Request body is malformed                |
-| Invalid user address              | `elv_addr` is not a valid wallet address |
-| No marketplace for SKU            | SKU is not recognized                    |
-| Marketplace does not match tenant | SKU does not belong to your tenant       |
-| Refund not supported yet          | Refund transaction type is not available |
-| Invalid transaction type          | Must be `purchase` or `rental`           |
+| Message                                     | Meaning                                                        |
+|---------------------------------------------|----------------------------------------------------------------|
+| Invalid request                             | Request body is malformed                                      |
+| Invalid user address                        | `elv_addr` is not a valid wallet address                       |
+| No marketplace for SKU                      | SKU is not recognized                                          |
+| Marketplace does not match tenant           | SKU does not belong to your tenant                             |
+| Refund not supported yet                    | Refund transaction type is not available                       |
+| Invalid transaction type                    | Must be `purchase` or `rental`                                 |
+| missing poll_id                             | `poll_id` path parameter was omitted (status API)              |
+| missing or invalid elv_addr query parameter | `elv_addr` query parameter was omitted or invalid (status API) |

@@ -1,6 +1,7 @@
 # Entitlements API
 
-Use this path to grant a user access to content by submitting a fulfilled purchase or rental directly to the Eluvio Authority. Supports purchase and rental types with fine-grained rental window control.
+Use this path to grant a user access to content by submitting a fulfilled purchase or rental directly to the Eluvio
+Authority. Supports purchase and rental types with fine-grained rental window control.
 
 ---
 
@@ -29,6 +30,7 @@ sequenceDiagram
 | Operation           | Endpoint                                         |
 | ------------------- | ------------------------------------------------ |
 | Create entitlement  | `POST /tnt/:tid/entitlement/add`                 |
+| Poll create status  | `GET /tnt/:tid/entitlement/status/:poll_id`      |
 | List entitlements   | `POST /tnt/:tid/entitlement/list/:addr`          |
 | Revoke by token     | `POST /tnt/:tid/entitlement/revoke`              |
 | Revoke by SKU       | `POST /tnt/:tid/entitlement/revoke_by_sku`       |
@@ -58,7 +60,8 @@ Authentication: tenant admin bearer token for all operations.
 
 ## API Reference
 
-- [Create Entitlement](./create.md) -- submit a purchase or rental after payment confirmation
+- [Create Entitlement](./create.md) -- submit a purchase or rental after payment confirmation;
+  supports sync or async confirmation, see [poll status endpoint](./create.md#poll-entitlement-status)
 - [List Entitlements](./list.md) -- retrieve and verify a user's entitlements, with pagination and rental state filtering
 - [Revoke Single Entitlement](./revoke.md) -- revoke a specific NFT token by contract address and token ID
 - [Revoke Entitlement by SKU](./revoke-by-sku.md) -- revoke all tokens for one or more SKUs from a user's wallet
