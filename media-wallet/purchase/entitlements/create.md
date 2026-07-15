@@ -221,7 +221,7 @@ Returned when the payment is accepted and the entitlement is created. Returns HT
       "token_id": "551"
     }
   ],
-  "poll_id": "nft-buy:<siteId>:3pp:<tenantId>:pi_3pp_1234"
+  "poll_id": "0xabc123...:nft-buy:<siteId>:3pp:<tenantId>:pi_3pp_1234"
 }
 ```
 
@@ -234,7 +234,7 @@ Returned when the payment is accepted and the entitlement is created. Returns HT
   "tenant_revenue": 2.75,
   "platform_fee": 0.51,
   "user_addr": "0xabc123...",
-  "poll_id": "nft-buy:<siteId>:3pp:<tenantId>:pi_3pp_1234"
+  "poll_id": "0xabc123...:nft-buy:<siteId>:3pp:<tenantId>:pi_3pp_1234"
 }
 ```
 
@@ -279,7 +279,7 @@ Tenant admin bearer token.
 
 ```json
 {
-  "poll_id": "nft-buy:<siteId>:3pp:<tenantId>:pi_3pp_1234",
+  "poll_id": "0xabc123...:nft-buy:<siteId>:3pp:<tenantId>:pi_3pp_1234",
   "mint_status": "pending",
   "confirm_status": "pending"
 }
@@ -289,7 +289,7 @@ Tenant admin bearer token.
 
 ```json
 {
-  "poll_id": "nft-buy:<siteId>:3pp:<tenantId>:pi_3pp_1234",
+  "poll_id": "0xabc123...:nft-buy:<siteId>:3pp:<tenantId>:pi_3pp_1234",
   "mint_status": "complete",
   "confirm_status": "complete",
   "tokens": [
@@ -305,7 +305,7 @@ Tenant admin bearer token.
 
 ```json
 {
-  "poll_id": "nft-buy:<siteId>:3pp:<tenantId>:pi_3pp_1234",
+  "poll_id": "0xabc123...:nft-buy:<siteId>:3pp:<tenantId>:pi_3pp_1234",
   "mint_status": "failed",
   "confirm_status": "failed"
 }
@@ -334,13 +334,14 @@ Returned when the request is invalid or cannot be processed.
 
 ## Common Error Messages
 
-| Message                                     | Meaning                                                        |
-|---------------------------------------------|----------------------------------------------------------------|
-| Invalid request                             | Request body is malformed                                      |
-| Invalid user address                        | `elv_addr` is not a valid wallet address                       |
-| No marketplace for SKU                      | SKU is not recognized                                          |
-| Marketplace does not match tenant           | SKU does not belong to your tenant                             |
-| Refund not supported yet                    | Refund transaction type is not available                       |
-| Invalid transaction type                    | Must be `purchase` or `rental`                                 |
-| missing poll_id                             | `poll_id` path parameter was omitted (status API)              |
-| missing or invalid elv_addr query parameter | `elv_addr` query parameter was omitted or invalid (status API) |
+| Message                                     | Meaning                                                                |
+|---------------------------------------------|------------------------------------------------------------------------|
+| Invalid request                             | Request body is malformed                                              |
+| Invalid user address                        | `elv_addr` is not a valid wallet address                               |
+| No marketplace for SKU                      | SKU is not recognized                                                  |
+| Marketplace does not match tenant           | SKU does not belong to your tenant                                     |
+| Refund not supported yet                    | Refund transaction type is not available                               |
+| Invalid transaction type                    | Must be `purchase` or `rental`                                         |
+| Missing or invalid poll_id                  | `poll_id` path parameter was omitted or malformed (status API)         |
+| Missing or invalid elv_addr query parameter | `elv_addr` query parameter was omitted or invalid (status API)         |
+
