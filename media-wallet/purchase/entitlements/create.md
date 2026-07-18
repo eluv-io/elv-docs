@@ -169,12 +169,12 @@ curl -X POST "https://<fabric-authority-url>/tnt/<tenantId>/entitlement/add" \
 
 By default, `entitlement/add` does not respond until the NFT has been minted and the token has been confirmed
 to appear in the user's wallet. This can take anywhere from a few seconds up to about a minute.
-If your integration would rather not hold a connection open that long, set `set_async` to `true` and poll
-[Poll Entitlement Status](#poll-entitlement-status) instead: the call responds immediately (HTTP 202) with a
-`poll_id`, before the mint has completed.
+If your integration would rather not wait for this, set the `set_async` falg to `true` in the request.
+In Async Mode, the call will respond immediately with a HTTP 202 and a `poll_id`.  Use this `poll_id` from the
+response with [Poll Entitlement Status](#poll-entitlement-status) to check the mint and wallet-confirm progress.
 
-Use the `poll_id` from the response with [Poll Entitlement Status](#poll-entitlement-status) to check on mint and
-wallet-confirm progress.
+Note: If this exact transaction was already fully processed (e.g. a retried request), it simply returns HTTP 200.
+
 
 ---
 
@@ -182,8 +182,8 @@ wallet-confirm progress.
 
 ## Success Response (HTTP 200, or HTTP 202 with `set_async`)
 
-Returned when the payment is accepted and the entitlement is created. Returns HTTP 202 instead of 200 when
-`set_async` is used -- poll for completion.
+Returned when the payment is accepted and the entitlement is created.
+Returns HTTP 200, or HTTP 202 when `set_async` is used and the mint has not already completed.
 
 ### Fields
 
