@@ -68,12 +68,11 @@ Authorization: Bearer <token>
 
 ### Optional Fields
 
-| Field             | Required | Description                                                                                                                                                       |
-|-------------------|----------|-------------------------------------------------------------------------------------------------------------|
-| set_async_mint    | No       | If `true`, return immediately instead of waiting for the mint to complete. Default `false`.                 |
-| set_async_confirm | No       | If `true`, return once the mint completes instead of also waiting for wallet confirmation. Default `false`. |
+| Field      | Required | Description                          |
+|------------|----------|--------------------------------------|
+| set_async  | No       | If `true`, do not wait for the mint  |
 
-See [Async Mint and Confirm](#async-mint-and-confirm)
+See [Async Mode](#async-mode)
 
 ---
 
@@ -166,19 +165,13 @@ curl -X POST "https://<fabric-authority-url>/tnt/<tenantId>/entitlement/add" \
 
 ---
 
-## Async Mint and Confirm
+## Async Mode
 
 By default, `entitlement/add` does not respond until the NFT has been minted and the token has been confirmed
 to appear in the user's wallet. This can take anywhere from a few seconds up to about a minute.
-If your integration would rather not hold a connection open that long, set one of
-these flags and poll [Poll Entitlement Status](#poll-entitlement-status) instead:
-
-| Flag                | Effect                                                                                                     |
-|---------------------|------------------------------------------------------------------------------------------------------------|
-| `set_async_mint`    | Respond immediately (HTTP 202) with a `poll_id`, before the mint has even completed                        |
-| `set_async_confirm` | Wait for the mint to complete and respond (HTTP 200) with `tokens`, but don't wait for wallet confirmation |
-
-`set_async_mint` implies `set_async_confirm` -- if you don't wait for the mint, there's nothing yet to confirm.
+If your integration would rather not hold a connection open that long, set `set_async` to `true` and poll
+[Poll Entitlement Status](#poll-entitlement-status) instead: the call responds immediately (HTTP 202) with a
+`poll_id`, before the mint has completed.
 
 Use the `poll_id` from the response with [Poll Entitlement Status](#poll-entitlement-status) to check on mint and
 wallet-confirm progress.
@@ -187,22 +180,22 @@ wallet-confirm progress.
 
 # Response
 
-## Success Response (HTTP 200, or HTTP 202 with `set_async_mint`)
+## Success Response (HTTP 200, or HTTP 202 with `set_async`)
 
 Returned when the payment is accepted and the entitlement is created. Returns HTTP 202 instead of 200 when
-`set_async_mint` is used and the mint has not completed yet -- poll for completion.
+`set_async` is used -- poll for completion.
 
 ### Fields
 
-| Field          | Description                                                                |
-|----------------|----------------------------------------------------------------------------|
-| message        | Success message                                                            |
-| trans_id       | Full transaction ID - used with the watch_start and entitlement list APIs  |
-| tenant_revenue | Revenue allocated to the tenant                                            |
-| platform_fee   | Platform fee amount                                                        |
-| user_addr      | User wallet address                                                        |
-| tokens         | All tokens minted in this transaction. Absent if `set_async_mint` was used |
-| poll_id        | Job identifier for [Poll Entitlement Status](#poll-entitlement-status)     |
+| Field          | Description                                                            |
+|----------------|------------------------------------------------------------------------|
+| message        | Success message                                                        |
+| trans_id       | Full transaction ID - used with watch_start and entitlement/list       |
+| tenant_revenue | Revenue allocated to the tenant                                        |
+| platform_fee   | Platform fee amount                                                    |
+| user_addr      | User wallet address                                                    |
+| tokens         | All tokens minted in this transaction. Absent if `set_async` was used  |
+| poll_id        | Job identifier for [Poll Entitlement Status](#poll-entitlement-status) |
 
 ### Example Success Response
 
@@ -246,7 +239,7 @@ Returned when the payment is accepted and the entitlement is created. Returns HT
 GET /tnt/:tid/entitlement/status/:poll_id
 ```
 
-Check on mint and wallet-confirm progress for a job started with `set_async_mint` and/or `set_async_confirm`.
+Check on mint and wallet-confirm progress for a job started with `set_async`.
 
 #### Authentication
 
@@ -267,21 +260,21 @@ Tenant admin bearer token.
 
 #### Response Fields
 
-| Field            | Description                                                        |
-|------------------|--------------------------------------------------------------------|
-| `poll_id`        | Echoes the polled job identifier                                   |
-| `mint_status`    | `"pending"`, `"complete"`, `"failed"`                              |
-| `confirm_status` | `"pending"`, `"complete"`, `"failed"` (mint failed)                |
-| `tokens`         | Present once `mint_status` is `"complete"`                         |
-| `error`          | Present when `mint_status` is `"failed"`, if a reason is available |
+| Field         | Description                                                                                                  |
+|---------------|--------------------------------------------------------------------------------------------------------------|
+| `poll_id`     | Polled job identifier                                                                                        |
+| `status`      | Overall status: `"pending"`, `"complete"`, or `"failed"`                                                     |
+| `mint_status` | Supplementary detail on `"pending"`/`"failed"`: `"complete"` indicates minted, but not yet wallet-confirmed  |
+| `tokens`      | Present once `status` is `"complete"`                                                                        |
+| `error`       | Present when `mint_status` is `"failed"`, if a reason is available                                           |
 
 #### Status: pending
 
 ```json
 {
   "poll_id": "0xabc123...:nft-buy:<siteId>:3pp:<tenantId>:pi_3pp_1234",
-  "mint_status": "pending",
-  "confirm_status": "pending"
+  "status": "pending",
+  "mint_status": "pending"
 }
 ```
 
@@ -290,8 +283,8 @@ Tenant admin bearer token.
 ```json
 {
   "poll_id": "0xabc123...:nft-buy:<siteId>:3pp:<tenantId>:pi_3pp_1234",
+  "status": "complete",
   "mint_status": "complete",
-  "confirm_status": "complete",
   "tokens": [
     {
       "contract_addr": "0xcontract123...",
@@ -306,8 +299,8 @@ Tenant admin bearer token.
 ```json
 {
   "poll_id": "0xabc123...:nft-buy:<siteId>:3pp:<tenantId>:pi_3pp_1234",
-  "mint_status": "failed",
-  "confirm_status": "failed"
+  "status": "failed",
+  "mint_status": "failed"
 }
 ```
 
