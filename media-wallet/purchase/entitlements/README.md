@@ -40,7 +40,7 @@ sequenceDiagram
 | Operation               | Endpoint                                        |
 |-------------------------|-------------------------------------------------|
 | Create entitlement      | `POST /tnt/:tid/entitlement/add`                |
-| Poll entitlememt status | `GET /tnt/:tid/entitlement/status/:poll_id`     |
+| Poll entitlement status | `GET /tnt/:tid/entitlement/status/:poll_id`     |
 | List entitlements       | `POST /tnt/:tid/entitlement/list/:addr`         |
 | Revoke by token         | `POST /tnt/:tid/entitlement/revoke`             |
 | Revoke by SKU           | `POST /tnt/:tid/entitlement/revoke_by_sku`      |
