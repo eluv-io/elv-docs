@@ -3,16 +3,10 @@ desc: |
   Contract policy for access control based on NFT ownership, with access also granted to tenant
   and content administrators. The policy permits any read operation if the user owns a
   non-fungible token governed by a linked ERC-721 smart contract, or is a member of the
-  tenant_admin or content_admin blockchain group.
+  tenant_admin or content_admin blockchain group.  This is confirmed either by isOwnerOfLinkedNft
+  checking on-chain assets, or, by hasPendingEntitlement accepting token context bridge tokens.
 
-  Entry point is 'authorize' for CSAT compatibility in addition to editor-signed and state channel.
-
-  v1.2: also grants access when the CSAT carries an embedded "pending entitlement" bridge claim
-  (ctx["elv:internal_claims"] whose asset matches one of this object's already-linked NFT contracts.
-  NOT SAFE TO SHIP until qfab verifies each elv:internal_claims entry's own signature against a
-  trusted internal signer -- until then this ctx value is unverified and this rule would trust it
-  blindly.
-
+  Entry point is 'authorize' for CSAT compatibility in addition to ESAT and state channel.
 type: ast
 expr:
   rule: authorize

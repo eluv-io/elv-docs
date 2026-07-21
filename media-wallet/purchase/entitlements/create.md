@@ -187,15 +187,19 @@ Returns HTTP 200, or HTTP 202 when `set_async` is used and the mint has not alre
 
 ### Fields
 
-| Field          | Description                                                            |
-|----------------|------------------------------------------------------------------------|
-| message        | Success message                                                        |
-| trans_id       | Full transaction ID - used with watch_start and entitlement/list       |
-| tenant_revenue | Revenue allocated to the tenant                                        |
-| platform_fee   | Platform fee amount                                                    |
-| user_addr      | User wallet address                                                    |
-| tokens         | All tokens minted in this transaction. Absent if `set_async` was used  |
-| poll_id        | Job identifier for [Poll Entitlement Status](#poll-entitlement-status) |
+| Field                      | Description                                                            |
+|----------------------------|------------------------------------------------------------------------|
+| message                    | Success message                                                        |
+| trans_id                   | Full transaction ID - used with watch_start and entitlement/list       |
+| tenant_revenue             | Revenue allocated to the tenant                                        |
+| platform_fee               | Platform fee amount                                                    |
+| user_addr                  | User wallet address                                                    |
+| tokens                     | All tokens minted in this transaction. Absent if `set_async` was used  |
+| poll_id                    | Job identifier for [Poll Entitlement Status](#poll-entitlement-status) |
+| pending_entitlement_tokens | Provide this in the next user token refresh.                           |
+
+See [Optimistic Access via Pending Entitlement Tokens](#optimistic-access-via-pending-entitlement-tokens) for details
+on the use of `pending_entitlement_tokens`.
 
 ### Example Success Response
 
@@ -227,9 +231,21 @@ Returns HTTP 200, or HTTP 202 when `set_async` is used and the mint has not alre
   "tenant_revenue": 2.75,
   "platform_fee": 0.51,
   "user_addr": "0xabc123...",
-  "poll_id": "0xabc123...:nft-buy:<siteId>:3pp:<tenantId>:pi_3pp_1234"
+  "poll_id": "0xabc123...:nft-buy:<siteId>:3pp:<tenantId>:pi_3pp_1234",
+  "pending_entitlement_tokens": ["acspjc..."]
 }
 ```
+
+---
+
+## Optimistic Access via Pending Entitlement Bridge Tokens
+
+In asynchronous mode, the create response will includes an array of short-lived signed assertions that the
+user holds the pending NFTs.  After making an entitlement, applications should copy the `pending_entitlement_tokens`
+array verbatim from an Entitlement Response into the `pending_entitlement_tokens` field of in a
+[Refresh Wallet CSAT](../../auth/refresh-token.md) call, and invoke the call, getting a new token.
+This new CSAT will have immediate access to the content, ignoring all global state distribution delays.
+
 
 ---
 

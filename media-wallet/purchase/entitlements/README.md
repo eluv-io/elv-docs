@@ -23,7 +23,7 @@ sequenceDiagram
     alt Synchronous (default)
         FabricAPI-->>TenantApp: 200 {trans_id, tokens[], poll_id}
     else Async (set_async)
-        FabricAPI-->>TenantApp: 202 {trans_id, poll_id}
+        FabricAPI-->>TenantApp: 202 {trans_id, poll_id, pending_entitlement_tokens[]}
         loop Poll until complete
             TenantApp->>FabricAPI: GET /tnt/:tid/entitlement/status/:poll_id
             FabricAPI-->>TenantApp: {status, mint_status[, tokens]}
@@ -72,6 +72,7 @@ Authentication: tenant admin bearer token for all operations.
 
 - [Create Entitlement](./create.md) -- submit a purchase or rental after payment confirmation;
   supports sync or async confirmation, see [poll status endpoint](./create.md#poll-entitlement-status)
+  and [optimistic access via pending entitlement tokens](./create.md#optimistic-access-via-pending-entitlement-tokens)
 - [List Entitlements](./list.md) -- retrieve and verify a user's entitlements, with pagination and rental state filtering
 - [Revoke Single Entitlement](./revoke.md) -- revoke a specific NFT token by contract address and token ID
 - [Revoke Entitlement by SKU](./revoke-by-sku.md) -- revoke all tokens for one or more SKUs from a user's wallet

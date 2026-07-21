@@ -19,10 +19,10 @@ Ready-to-use policies for common access control scenarios:
 * [NFT Owner + Minter Policy](common_policies/nft_owner_minter.yaml) -- Same as NFT Owner, but also grants access
   to a designated user address (e.g. a minter account).
 * [NFT Owner + Admin Policy](common_policies/nft_owner_or_admin.yaml) -- Same as NFT Owner, but also grants access
-  to any user who is a member of the `tenant_admin` or `content_admin` group for the object
+  to any user who is a member of the `tenant_admin` or `content_admin` group for the object.
 * [NFT Owner + Admin + Geo Allowlist Policy](common_policies/nft_admin_geo_allow.yaml) -- Same as NFT Owner + Admin,
   but restricts access to a listed set of countries (`authorizedCountryCodes`). Admins bypass geo entirely.
-  Use this for territory-specific passes (e.g. Italy-only, Ireland-only).
+  Use this for territory-specific passes.
 * [NFT Owner + Admin + Geo Denylist Policy](common_policies/nft_admin_geo_deny.yaml) -- Same as NFT Owner + Admin,
   but blocks a listed set of countries (`unauthorizedCountryCodes`); all other regions are permitted. Admins
   bypass geo entirely. Use this for "rest of world" passes that exclude specific territories with their own passes.
@@ -81,6 +81,11 @@ both CSAT policy examples and show this pattern.
 on-chain lookup rather than trusting anything carried in the token.  [NFT Owner Policy](common_policies/nft_owner.yaml) and
 [NFT Owner + Admin Policy](common_policies/nft_owner_or_admin.yaml) are examples of this.
 
+#### Embedded Internal Claims
+
+A CSAT may carry a reserved `ctx["elv:internal_claims"]` array, which is a fabric mechanism for
+optimistic confirmation of NFT ownership.  This is used by the media wallet
+[optimistic entitlement flow](../media-wallet/purchase/entitlements/create.md#optimistic-access-via-pending-entitlement-tokens).
 
 ### Appendix: Token Types and Policy Interaction
 
