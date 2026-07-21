@@ -81,9 +81,9 @@ both CSAT policy examples and show this pattern.
 on-chain lookup rather than trusting anything carried in the token.  [NFT Owner Policy](common_policies/nft_owner.yaml) and
 [NFT Owner + Admin Policy](common_policies/nft_owner_or_admin.yaml) are examples of this.
 
-#### Embedded Internal Claims
+#### Embedded Asset Claims
 
-A CSAT may carry a reserved `ctx["elv:internal_claims"]` array, which is a fabric mechanism for
+A CSAT may carry a reserved `ctx["elv:asset_claims"]` array, which is a fabric mechanism for
 optimistic confirmation of NFT ownership.  This is used by the media wallet
 [optimistic entitlement flow](../media-wallet/purchase/entitlements/create.md#optimistic-access-via-pending-entitlement-bridge-claims).
 

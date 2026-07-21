@@ -32,17 +32,17 @@ rules:
 
   hasPendingEntitlement:
     any:
-      src: {env: token/ctx/elv:internal_claims, def: []}
+      src: {env: token/ctx/elv:asset_claims, def: []}
       var: claim
       expr:
         and:
-          - ge: [var: claim/xc_msg/results/balance, 1]
+          - ge: [var: claim/asset_claim/results/balance, 1]
           - any:
               src: {fn.getContractMeta: ["_NFT_ACCESS"]}
               var: linkedAddr
               expr:
                 fn.strings.EndsWith:
-                  - var: claim/xc_msg/asset
+                  - var: claim/asset_claim/asset
                   - var: linkedAddr
 
   isAdminUser:
