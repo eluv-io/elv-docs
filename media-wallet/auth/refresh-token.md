@@ -78,7 +78,7 @@ curl -X POST "https://<fabric-authority-url>/wlt/refresh/csat" \
   -H "Accept: application/json" \
   -d '{
     "refresh_token": "abc123refresh",
-    "nonce": "unique-nonce-value",
+    "nonce": "unique-nonce-value"
   }'
 ```
 
