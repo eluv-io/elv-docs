@@ -1,12 +1,18 @@
-name: policy nft-owner-or-admin v1.1
+name: policy nft-owner-or-admin v1.2
 desc: |
   Contract policy for access control based on NFT ownership, with access also granted to tenant
   and content administrators. The policy permits any read operation if the user owns a
   non-fungible token governed by a linked ERC-721 smart contract, or is a member of the
   tenant_admin or content_admin blockchain group.
 
-  Entry point is named 'authorize' for CSAT compatibility
-  in addition to editor-signed and state channel tokens.
+  Entry point is 'authorize' for CSAT compatibility in addition to editor-signed and state channel.
+
+  v1.2: also grants access when the CSAT carries an embedded "pending entitlement" bridge claim
+  (ctx["elv:internal_claims"] whose asset matches one of this object's already-linked NFT contracts.
+  NOT SAFE TO SHIP until qfab verifies each elv:internal_claims entry's own signature against a
+  trusted internal signer -- until then this ctx value is unverified and this rule would trust it
+  blindly.
+
 type: ast
 expr:
   rule: authorize
@@ -21,6 +27,7 @@ rules:
     or:
       - fn.isOwnerOfLinkedNft:
           - env: call/subject
+      - rule: hasPendingEntitlement
       - and:
           - eq:
               - env: api_call/action
@@ -28,6 +35,21 @@ rules:
           - fn.ids.Equivalent:
               - env: call/node_id
               - env: call/subject
+
+  hasPendingEntitlement:
+    any:
+      src: {env: token/ctx/elv:internal_claims, def: []}
+      var: claim
+      expr:
+        and:
+          - ge: [var: claim/xc_msg/results/balance, 1]
+          - any:
+              src: {fn.getContractMeta: ["_NFT_ACCESS"]}
+              var: linkedAddr
+              expr:
+                fn.strings.EndsWith:
+                  - var: claim/xc_msg/asset
+                  - var: linkedAddr
 
   isAdminUser:
     or:
