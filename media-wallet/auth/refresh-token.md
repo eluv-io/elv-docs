@@ -44,7 +44,7 @@ Include the token in the request body.
 |----------------------------|----------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | refresh_token              | Yes      | CSAT refresh token issued earlier                                                                                                                                            |
 | nonce                      | Yes      | Unique value binding this refresh to the device_id                                                                                                                           |
-| exp                        | No       | Token expiration in seconds ( default 2 weeks)                                                                                                                               |
+| exp                        | No       | Token expiration in seconds (default 2 weeks)                                                                                                                                |
 | pending_entitlement_claims | No       | The `pending_entitlement_claims` array from a prior async [Create Entitlement](../purchase/entitlements/create.md#optimistic-access-via-pending-entitlement-bridge-claims) response |
 
 
