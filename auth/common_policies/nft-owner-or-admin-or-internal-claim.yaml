@@ -5,18 +5,10 @@ desc: |
   non-fungible token governed by a linked ERC-721 smart contract, or is a member of the
   tenant_admin or content_admin blockchain group.
 
-  Entry point is named 'authorize' for CSAT compatibility
-  in addition to editor-signed and state channel tokens.
+  Entry point is 'authorize' for CSAT compatibility in addition to editor-signed and state channel.
 
   v1.2: also grants access when the CSAT carries an embedded "pending entitlement" bridge claim
-  (ctx["elv:internal_claims"], see NOTES/entitlement-bridge-qfab-spec.md) whose asset matches one
-  of this object's already-linked NFT contracts. Reuses the SAME address list isOwnerOfLinkedNft
-  reads (contract metadata key "_NFT_ACCESS", set via nft_set_policy_permissions) instead of a
-  separately-maintained address list in this policy -- so the two checks never drift out of sync.
-  Matching is by address suffix since xc_msg.asset is a CAIP-19 string (chain-qualified, because
-  the bridge may assert ownership on a different chain than this object's own) while _NFT_ACCESS
-  is a plain address list; the contract address itself is the same across chains.
-
+  (ctx["elv:internal_claims"] whose asset matches one of this object's already-linked NFT contracts.
   NOT SAFE TO SHIP until qfab verifies each elv:internal_claims entry's own signature against a
   trusted internal signer -- until then this ctx value is unverified and this rule would trust it
   blindly.
