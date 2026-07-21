@@ -45,7 +45,7 @@ Include the token in the request body.
 | refresh_token              | Yes      | CSAT refresh token issued earlier                                                                                                                                            |
 | nonce                      | Yes      | Unique value binding this refresh to the device_id                                                                                                                           |
 | exp                        | No       | Token expiration in seconds ( default 2 weeks)                                                                                                                               |
-| pending_entitlement_tokens | No       | The `pending_entitlement_tokens` array from a prior async [Create Entitlement](../purchase/entitlements/create.md#optimistic-access-via-pending-entitlement-tokens) response |
+| pending_entitlement_claims | No       | The `pending_entitlement_claims` array from a prior async [Create Entitlement](../purchase/entitlements/create.md#optimistic-access-via-pending-entitlement-bridge-claims) response |
 
 
 ### Example Request
@@ -54,16 +54,16 @@ Include the token in the request body.
 {
   "refresh_token": "eyJ1c...",
   "nonce": "unique-device-id",
-  "pending_entitlement_tokens": ["acspjc..."]
+  "pending_entitlement_claims": ["acspjc..."]
 }
 ```
 
-### Pending Entitlement Tokens
+### Pending Entitlement Claims
 
-The `pending_entitlement_tokens` array is for use after an asynchronous
-[Create Entitlement](../purchase/entitlements/create.md#optimistic-access-via-pending-entitlement-tokens).
+The `pending_entitlement_claims` array is for use after an asynchronous
+[Create Entitlement](../purchase/entitlements/create.md#optimistic-access-via-pending-entitlement-bridge-claims).
 
-The create Response's `pending_entitlement_tokens` should be copied verbatim into this Request's field of the same name.
+The create Response's `pending_entitlement_claims` should be copied verbatim into this Request's field of the same name.
 (The field names are identical to make the matching clear.) This short circuits any state distribution delays,
 enabling immediate access to grants.
 
