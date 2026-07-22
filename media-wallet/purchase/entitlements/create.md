@@ -242,7 +242,7 @@ to allow immediate access to media controlled by these assets, a normal
 [Refresh Wallet CSAT](../../auth/refresh-token.md) call
 will automatically detect a user's recent pending purchases and grants immediate access to them.
 
-To enable this, simply initate a refresh after the asynchronous `entitlement/add` returns.
+To enable this, simply initiate a refresh after the asynchronous `entitlement/add` returns.
 The resulting CSAT will have immediate access to the content.
 
 
