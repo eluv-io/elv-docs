@@ -38,14 +38,13 @@ Include the token in the request body.
 
 ## Request Body
 
-### Required Fields
+### Fields
 
-| Field                      | Required | Description                                                                                                                                                                  |
-|----------------------------|----------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| refresh_token              | Yes      | CSAT refresh token issued earlier                                                                                                                                            |
-| nonce                      | Yes      | Unique value binding this refresh to the device_id                                                                                                                           |
-| exp                        | No       | Token expiration in seconds (default 2 weeks)                                                                                                                                |
-| pending_entitlement_claims | No       | The `pending_entitlement_claims` array from a prior async [Create Entitlement](../purchase/entitlements/create.md#optimistic-access-via-pending-entitlement-bridge-claims) response |
+| Field                      | Required | Description                                           |
+|----------------------------|----------|-------------------------------------------------------|
+| refresh_token              | Yes      | CSAT refresh token issued earlier                     |
+| nonce                      | Yes      | Unique value binding this refresh to the device_id    |
+| exp                        | No       | Token expiration in seconds (default 2 weeks)         |
 
 
 ### Example Request
@@ -53,20 +52,18 @@ Include the token in the request body.
 ```json
 {
   "refresh_token": "eyJ1c...",
-  "nonce": "unique-device-id",
-  "pending_entitlement_claims": ["acspjc..."]
+  "nonce": "unique-device-id"
 }
 ```
 
-### Pending Entitlement Claims
+### Access to Pending Mints
 
-The `pending_entitlement_claims` array is for use after an asynchronous
-[Create Entitlement](../purchase/entitlements/create.md#optimistic-access-via-pending-entitlement-bridge-claims).
+If the user has any asynch processing [Entitlement Creations](../purchase/entitlements/create.md) in flight,
+token refresh automatically detects them, and grants immediate access to them via inline signed grants in the new CSAT
+returned by the refresh.
 
-The create Response's `pending_entitlement_claims` should be copied verbatim into this Request's field of the same name.
-(The field names are identical to make the matching clear.) This short circuits any state distribution delays,
-enabling immediate access to grants.
-
+Thus, after any new entitlement, initiate a user refresh, and have the user start using the fresh CSAT.
+This enables immediate playout access.
 
 ---
 
