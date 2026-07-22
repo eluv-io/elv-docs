@@ -35,15 +35,13 @@ rules:
       src: {env: token/ctx/elv:asset_claims, def: []}
       var: claim
       expr:
-        and:
-          - ge: [var: claim/asset_claim/results/balance, 1]
-          - any:
-              src: {fn.getContractMeta: ["_NFT_ACCESS"]}
-              var: linkedAddr
-              expr:
-                fn.strings.EndsWith:
-                  - var: claim/asset_claim/asset
-                  - var: linkedAddr
+        any:
+          src: {fn.getContractMeta: ["_NFT_ACCESS"]}
+          var: linkedAddr
+          expr:
+            fn.strings.EndsWith:
+              - var: claim/asset_claim/asset
+              - var: linkedAddr
 
   isAdminUser:
     or:
