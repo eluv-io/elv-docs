@@ -196,7 +196,7 @@ Returns HTTP 200, or HTTP 202 when `set_async` is used and the mint has not alre
 | user_addr                  | User wallet address                                                    |
 | tokens                     | All tokens minted in this transaction. Absent if `set_async` was used  |
 | poll_id                    | Job identifier for [Poll Entitlement Status](#poll-entitlement-status) |
-| pending_entitlement_claims | Diagnostic information on pending claims                               |
+
 
 ### Example Success Response
 
