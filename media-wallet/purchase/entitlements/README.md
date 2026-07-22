@@ -72,7 +72,7 @@ Authentication: tenant admin bearer token for all operations.
 
 - [Create Entitlement](./create.md) -- submit a purchase or rental after payment confirmation;
   supports sync or async confirmation, see [poll status endpoint](./create.md#poll-entitlement-status)
-  and [optimistic access to pending mints](./create.md#optimistic-access-to-pending-mints)
+  and [optimistic access to pending entitlements](./create.md#optimistic-access-to-media)
 - [List Entitlements](./list.md) -- retrieve and verify a user's entitlements, with pagination and rental state filtering
 - [Revoke Single Entitlement](./revoke.md) -- revoke a specific NFT token by contract address and token ID
 - [Revoke Entitlement by SKU](./revoke-by-sku.md) -- revoke all tokens for one or more SKUs from a user's wallet

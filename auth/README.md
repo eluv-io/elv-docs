@@ -85,7 +85,7 @@ on-chain lookup rather than trusting anything carried in the token.  [NFT Owner 
 
 A CSAT may carry a reserved `ctx["elv:asset_claims"]` array, which is a fabric mechanism for
 optimistic confirmation of NFT ownership.  This is used by the media wallet
-[optimistic entitlement flow](../media-wallet/purchase/entitlements/create.md#optimistic-access-to-pending-mints).
+[optimistic entitlement flow](../media-wallet/purchase/entitlements/create.md#optimistic-access-to-media).
 
 ### Appendix: Token Types and Policy Interaction
 
