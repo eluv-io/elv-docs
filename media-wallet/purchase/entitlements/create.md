@@ -68,9 +68,9 @@ Authorization: Bearer <token>
 
 ### Optional Fields
 
-| Field                              | Required | Description                                                |
-|-------------------------------------|----------|-----------------------------------------------------------|
-| set_async                          | No       | If `true`, do not wait for the mint                        |
+| Field         | Required | Description                         |
+|---------------|----------|-------------------------------------|
+| set_async     | No       | If `true`, do not wait for the mint |
 
 See [Async Mode](#async-mode).
 
