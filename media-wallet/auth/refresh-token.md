@@ -58,7 +58,7 @@ Include the token in the request body.
 
 ### Access to Pending Mints
 
-If the user has any asynch processing [Entitlement Creations](../purchase/entitlements/create.md) in flight,
+If the user has any asynchronous [Entitlement Creations](../purchase/entitlements/create.md) in flight,
 token refresh automatically detects them, and grants immediate access to them via inline signed grants in the new CSAT
 returned by the refresh.
 
