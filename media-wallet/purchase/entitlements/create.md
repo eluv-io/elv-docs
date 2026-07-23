@@ -68,11 +68,11 @@ Authorization: Bearer <token>
 
 ### Optional Fields
 
-| Field      | Required | Description                          |
-|------------|----------|--------------------------------------|
-| set_async  | No       | If `true`, do not wait for the mint  |
+| Field         | Required | Description                         |
+|---------------|----------|-------------------------------------|
+| set_async     | No       | If `true`, do not wait for the mint |
 
-See [Async Mode](#async-mode)
+See [Async Mode](#async-mode).
 
 ---
 
@@ -196,10 +196,7 @@ Returns HTTP 200, or HTTP 202 when `set_async` is used and the mint has not alre
 | user_addr                  | User wallet address                                                    |
 | tokens                     | All tokens minted in this transaction. Absent if `set_async` was used  |
 | poll_id                    | Job identifier for [Poll Entitlement Status](#poll-entitlement-status) |
-| pending_entitlement_claims | Provide this in the next user token refresh.                           |
 
-See [Optimistic Access via Pending Entitlement Bridge Claims](#optimistic-access-via-pending-entitlement-bridge-claims) for details
-on the use of `pending_entitlement_claims`.
 
 ### Example Success Response
 
@@ -231,20 +228,22 @@ on the use of `pending_entitlement_claims`.
   "tenant_revenue": 2.75,
   "platform_fee": 0.51,
   "user_addr": "0xabc123...",
-  "poll_id": "0xabc123...:nft-buy:<siteId>:3pp:<tenantId>:pi_3pp_1234",
-  "pending_entitlement_claims": ["acspjc..."]
+  "poll_id": "0xabc123...:nft-buy:<siteId>:3pp:<tenantId>:pi_3pp_1234"
 }
 ```
 
 ---
 
-## Optimistic Access via Pending Entitlement Bridge Claims
+## Optimistic Access to Media
 
-In asynchronous mode, the create response will include an array of short-lived signed assertions that the
-user holds the pending NFTs.  After making an entitlement, applications should copy the `pending_entitlement_claims`
-array verbatim from an Entitlement Response into the `pending_entitlement_claims` field of a
-[Refresh Wallet CSAT](../../auth/refresh-token.md) call, and invoke the call, getting a new token.
-This new CSAT will have immediate access to the content, ignoring all global state distribution delays.
+In asynchronous mode, the entitled asset may not be minted / globally distributed for some time after
+`entitlement/add` returns.  Polling the status endpoint gives you information on this.  But, separately,
+to allow immediate access to media controlled by these assets, a normal
+[Refresh Wallet CSAT](../../auth/refresh-token.md) call
+will automatically detect a user's recent pending purchases and grants immediate access to them.
+
+To enable this, simply initiate a refresh after the asynchronous `entitlement/add` returns.
+The resulting CSAT will have immediate access to the content.
 
 
 ---
