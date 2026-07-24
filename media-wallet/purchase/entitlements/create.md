@@ -62,15 +62,20 @@ Authorization: Bearer <token>
 | Field            | Description                                                 |
 | ---------------- | ----------------------------------------------------------- |
 | transaction.id   | Unique payment ID from your payment provider                |
-| transaction_type | `purchase` or `rental`                                      |
+| transaction_type | `purchase`, `rental`, `est`, or `tvod`                      |
 | elv_addr         | User wallet address                                         |
 | skus             | Array of one or more product SKUs being purchased or rented |
+
+transaction_type `est` is an alias for `purchase`, `tvod` an alias for `rental`:
+- EST: Electronic Sell-Through
+- TVOS: Transactional Video On Demand
+
 
 ### Optional Fields
 
 | Field                  | Description                                                                                                        |
 |------------------------|--------------------------------------------------------------------------------------------------------------------|
-| set_async            w | If `true`, do not wait for the mint                                                                                |
+| set_async              | If `true`, do not wait for the mint                                                                                |
 | include_pending_claims | If `true`, include `asset_claims` in the response -- see [Optimistic Access to Media](#optimistic-access-to-media) |
 
 See [Async Mode](#async-mode).
@@ -92,10 +97,12 @@ See [Async Mode](#async-mode).
 
 ## Transaction Types
 
-| Value    | Description              |
-| -------- | ------------------------ |
-| purchase | Permanent entitlement    |
-| rental   | Time-limited entitlement |
+| Value    | Description                             |
+| -------- | ---------------------------------------- |
+| purchase | Permanent entitlement                    |
+| rental   | Time-limited entitlement                 |
+| est      | Alias for `purchase`                     |
+| tvod     | Alias for `rental`                       |
 
 ---
 
