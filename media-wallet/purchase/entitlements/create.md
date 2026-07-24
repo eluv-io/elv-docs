@@ -239,7 +239,7 @@ Returns HTTP 200, or HTTP 202 when `set_async` is used and the mint has not alre
 
 In asynchronous mode, the entitled asset may not be minted / globally distributed for some time after
 `entitlement/add` returns. Polling the status endpoint gives you information on this. But, separately,
-to allow immediate access to media controlled by these assets, 
+to allow immediate access to media controlled by these assets,
 request a [Refresh Wallet CSAT](../../auth/refresh-token.md#optimistic-access-to-media) (or
 [Generate User Access Token](../../auth/user-access-token.md#optimistic-access-to-media) on first
 sign-in) with `include_asset_claims: true`. This detects the user's recent pending purchases and
