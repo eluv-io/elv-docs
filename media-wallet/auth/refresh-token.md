@@ -40,11 +40,13 @@ Include the token in the request body.
 
 ### Fields
 
-| Field                      | Required | Description                                           |
-|----------------------------|----------|-------------------------------------------------------|
-| refresh_token              | Yes      | CSAT refresh token issued earlier                     |
-| nonce                      | Yes      | Unique value binding this refresh to the device_id    |
-| exp                        | No       | Token expiration in seconds (default 2 weeks)         |
+| Field                  | Required | Description                                                                             |
+|------------------------|----------|-----------------------------------------------------------------------------------------|
+| refresh_token          | Yes      | CSAT refresh token issued earlier                                                       |
+| nonce                  | Yes      | Unique value binding this refresh to the device_id                                      |
+| exp                    | No       | Token expiration in seconds (default 2 weeks)                                           |
+| include_asset_claims   | No       | If `true`, include any pending entitlements -- see [below](#optimistic-access-to-media) |
+| asset_claims           | No       | Signed claim token(s) to include directly -- see [below](#optimistic-access-to-media)   |
 
 
 ### Example Request
@@ -56,14 +58,20 @@ Include the token in the request body.
 }
 ```
 
-### Access Media With Pending Entitlements
+### Optimistic Access to Media
 
 If the user has any asynchronous [Entitlement Creations](../purchase/entitlements/create.md) in flight,
-token refresh automatically detects them, and grants immediate access to them via inline signed
-grants in the new CSAT returned by the refresh.
+they can get immediate access to that media.
 
-Thus, after any new entitlement, initiate a user refresh, and have the user start using the fresh CSAT.
-This enables immediate playout access.
+To enable this feature, after a new entitlement, initiate a user refresh with 
+`include_asset_claims: true` set on the POST body.  This looks up the user's recent 
+pending transactions and includes signed assertions in the response token about any it finds.
+
+Have the user start using the fresh CSAT -- these inline claim assertions enable 
+immediate playout access to the media.
+
+Only set this flag on a refresh that follows a entitlement/purchase/grant -- not on every routine token refresh.
+
 
 ---
 
