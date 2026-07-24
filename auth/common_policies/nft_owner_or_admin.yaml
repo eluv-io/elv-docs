@@ -17,6 +17,7 @@ rules:
     literal:
       authorized_asset_claims_signers:
         - "0x2b35120282a443e34D76b125F05be497365BDDBf"
+        - "0xdD0402bb72FA5554BB79a84ABC8a59E1b8Df4F45"
 
   authorize:
     or:
