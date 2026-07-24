@@ -23,7 +23,7 @@ sequenceDiagram
     alt Synchronous (default)
         FabricAPI-->>TenantApp: 200 {trans_id, tokens[], poll_id}
     else Async (set_async)
-        FabricAPI-->>TenantApp: 202 {trans_id, poll_id, pending_entitlement_claims[]}
+        FabricAPI-->>TenantApp: 202 {trans_id, poll_id, asset_claims[]}
         loop Poll until complete
             TenantApp->>FabricAPI: GET /tnt/:tid/entitlement/status/:poll_id
             FabricAPI-->>TenantApp: {status, mint_status[, tokens]}

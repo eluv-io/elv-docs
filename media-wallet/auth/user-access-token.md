@@ -49,12 +49,13 @@ The JWT must be issued by a trusted identity provider configured for your tenant
 
 ## Request Body
 
-| Field     | Type   | Required | Description                                                                            |
-| --------- | ------ | -------- | -------------------------------------------------------------------------------------- |
-| tid       | string | Yes      | Tenant ID                                                                              |
-| device_id | string | Yes      | Unique identifier for a user/device, to differentiate sessions; minimum 12 characters  |
-| ext       | object | No       | Arbitrary metadata fields                                                              |
-| exp       | int    | No       | Requested token TTL in seconds; clamped to a maximum of 1209600 (2 weeks)              |
+| Field                  | Type    | Required | Description                                                                                         |
+|------------------------|---------|----------|-----------------------------------------------------------------------------------------------------|
+| tid                    | string  | Yes      | Tenant ID                                                                                           |
+| device_id              | string  | Yes      | Unique identifier for a user/device, to differentiate sessions; minimum 12 characters               |
+| ext                    | object  | No       | Arbitrary metadata fields                                                                           |
+| exp                    | int     | No       | Requested token TTL in seconds; clamped to a maximum of 1209600 (2 weeks)                           |
+| include_asset_claims   | bool    | No       | If `true`, look up and include any pending entitlements -- see [below](#optimistic-access-to-media) |
 
 ### Example Request Body
 
@@ -66,6 +67,17 @@ The JWT must be issued by a trusted identity provider configured for your tenant
   "exp": 86400
 }
 ```
+
+---
+
+## Optimistic Access to Media
+
+If the user has any asynchronous [Entitlement Creations](../purchase/entitlements/create.md) in flight
+for this tenant, set `include_asset_claims: true` to look up the user's recent pending purchases
+and include them as inline signed grants in the returned `token`. This enables immediate playout access
+before the mint confirms.
+
+See [Refresh Wallet CSAT](refresh-token.md#optimistic-access-to-media) for the equivalent on token refresh.
 
 ---
 
@@ -182,3 +194,4 @@ curl -X POST "https://<fabric-authority-url>/wlt/login/jwt/csat" \
 * `refresh_token` may be used to extend the session without re-authentication
 * `limits` and `existing_tokens` help enforce session concurrency rules
 * The `exp` request field is clamped server-side to a maximum of 1209600 seconds (2 weeks)
+* `include_asset_claims` is off by default -- only set it after an `entitlement/add` call, not on every sign-in

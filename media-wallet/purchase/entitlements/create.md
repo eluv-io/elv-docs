@@ -59,18 +59,24 @@ Authorization: Bearer <token>
 
 ### Required Fields
 
-| Field            | Required | Description                                                 |
-| ---------------- | -------- | ----------------------------------------------------------- |
-| transaction.id   | Yes      | Unique payment ID from your payment provider                |
-| transaction_type | Yes      | `purchase` or `rental`                                      |
-| elv_addr         | Yes      | User wallet address                                         |
-| skus             | Yes      | Array of one or more product SKUs being purchased or rented |
+| Field            | Description                                                 |
+| ---------------- | ----------------------------------------------------------- |
+| transaction.id   | Unique payment ID from your payment provider                |
+| transaction_type | `purchase`, `rental`, `est`, or `tvod`                      |
+| elv_addr         | User wallet address                                         |
+| skus             | Array of one or more product SKUs being purchased or rented |
+
+transaction_type `est` is an alias for `purchase`, `tvod` an alias for `rental`:
+- EST: Electronic Sell-Through
+- TVOS: Transactional Video On Demand
+
 
 ### Optional Fields
 
-| Field         | Required | Description                         |
-|---------------|----------|-------------------------------------|
-| set_async     | No       | If `true`, do not wait for the mint |
+| Field                  | Description                                                                                                        |
+|------------------------|--------------------------------------------------------------------------------------------------------------------|
+| set_async              | If `true`, do not wait for the mint                                                                                |
+| include_pending_claims | If `true`, include `asset_claims` in the response -- see [Optimistic Access to Media](#optimistic-access-to-media) |
 
 See [Async Mode](#async-mode).
 
@@ -91,10 +97,12 @@ See [Async Mode](#async-mode).
 
 ## Transaction Types
 
-| Value    | Description              |
-| -------- | ------------------------ |
-| purchase | Permanent entitlement    |
-| rental   | Time-limited entitlement |
+| Value    | Description                             |
+| -------- | ---------------------------------------- |
+| purchase | Permanent entitlement                    |
+| rental   | Time-limited entitlement                 |
+| est      | Alias for `purchase`                     |
+| tvod     | Alias for `rental`                       |
 
 ---
 
@@ -237,13 +245,15 @@ Returns HTTP 200, or HTTP 202 when `set_async` is used and the mint has not alre
 ## Optimistic Access to Media
 
 In asynchronous mode, the entitled asset may not be minted / globally distributed for some time after
-`entitlement/add` returns.  Polling the status endpoint gives you information on this.  But, separately,
-to allow immediate access to media controlled by these assets, a normal
-[Refresh Wallet CSAT](../../auth/refresh-token.md) call
-will automatically detect a user's recent pending purchases and grants immediate access to them.
+`entitlement/add` returns. Polling the status endpoint gives you information on this. But, separately,
+to allow immediate access to media controlled by these assets,
+request a [Refresh Wallet CSAT](../../auth/refresh-token.md#optimistic-access-to-media) (or
+[Generate User Access Token](../../auth/user-access-token.md#optimistic-access-to-media) on first
+sign-in) with `include_asset_claims: true`. This detects the user's recent pending purchases and
+grants immediate access to them in the returned token.
 
-To enable this, simply initiate a refresh after the asynchronous `entitlement/add` returns.
-The resulting CSAT will have immediate access to the content.
+Only request it on the sign-in/refresh call that immediately follows an `entitlement/add`, not on every routine
+token refresh.
 
 
 ---
