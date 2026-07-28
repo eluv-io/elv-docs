@@ -261,7 +261,7 @@ See [Optimistic Access to Media](#optimistic-access-to-media) for details on `as
   "user_addr": "0xabc123...",
   "poll_id": "0xabc123...:nft-buy:<siteId>:3pp:<tenantId>:pi_3pp_1234",
   "asset_claims_tokens": {
-    "token": "new-csat-token",
+    "fabric_token": "new-csat-token",
     "refresh_token": "new-refresh-token"
   }
 }
@@ -272,7 +272,7 @@ See [Optimistic Access to Media](#optimistic-access-to-media) for details on `as
 ## Optimistic Access to Media
 
 In asynchronous mode, the entitled asset may not be minted / globally distributed for some time after
-`entitlement/add` returns. To allow immediate access to media controlled by these assets, 
+`entitlement/add` returns. To allow immediate access to media controlled by these assets,
 there are two ways to grant it:
 
 1. Request a [Token Refresh](../../auth/refresh-token.md#optimistic-access-to-media) (or
@@ -281,8 +281,8 @@ there are two ways to grant it:
    grants immediate access to them in the returned token.
 2. Set `asset_claimer: { nonce, refresh_token }` on this call, alongside `set_async: true`, using an
    existing session for the same user (`nonce` is the `device_id` originally bound to
-   `refresh_token`). This refreshes that session inline and returns the result as 
-   `asset_claims_tokens: { token, refresh_token }` -- equivalent to option 1, without a second HTTP roundd-trip.
+   `refresh_token`). This refreshes that session inline and returns the result as
+   `asset_claims_tokens: { fabric_token, refresh_token }` -- equivalent to option 1, without a second HTTP round-trip.
 
 
 ---
