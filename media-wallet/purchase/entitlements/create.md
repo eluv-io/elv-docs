@@ -73,12 +73,20 @@ transaction_type `est` is an alias for `purchase`, `tvod` an alias for `rental`:
 
 ### Optional Fields
 
-| Field                  | Description                                                                                                        |
-|------------------------|--------------------------------------------------------------------------------------------------------------------|
-| set_async              | If `true`, do not wait for the mint                                                                                |
-| include_pending_claims | If `true`, include `asset_claims` in the response -- see [Optimistic Access to Media](#optimistic-access-to-media) |
+| Field                  | Description                                       |
+|------------------------|---------------------------------------------------|
+| set_async              | If `true`, do not wait for the mint               |
+| include_pending_claims | If `true`, include `asset_claims` in the response |
+| asset_claimer          | If set, refreshes the given session inline        |
 
-See [Async Mode](#async-mode).
+See [Async Mode](#async-mode) and [Optimistic Access to Media](#optimistic-access-to-media) for details.
+
+#### asset_claimer object
+
+| Field         | Description                                                     |
+|---------------|-----------------------------------------------------------------|
+| nonce         | The `device_id`/nonce originally bound to `refresh_token`       |
+| refresh_token | An existing CSAT refresh token for the user in `elv_addr`       |
 
 ---
 
@@ -204,7 +212,9 @@ Returns HTTP 200, or HTTP 202 when `set_async` is used and the mint has not alre
 | user_addr                  | User wallet address                                                    |
 | tokens                     | All tokens minted in this transaction. Absent if `set_async` was used  |
 | poll_id                    | Job identifier for [Poll Entitlement Status](#poll-entitlement-status) |
+| asset_claims_tokens        | An update fabric_token and refresh_token for the entitled user         |
 
+See [Optimistic Access to Media](#optimistic-access-to-media) for details on `asset_claims_tokens`.
 
 ### Example Success Response
 
@@ -240,20 +250,39 @@ Returns HTTP 200, or HTTP 202 when `set_async` is used and the mint has not alre
 }
 ```
 
+#### Asynchronous with `asset_claimer`, HTTP 202
+
+```json
+{
+  "message": "3pp payment processed successfully",
+  "trans_id": "3pp:<tenantId>:pi_3pp_1234",
+  "tenant_revenue": 2.75,
+  "platform_fee": 0.51,
+  "user_addr": "0xabc123...",
+  "poll_id": "0xabc123...:nft-buy:<siteId>:3pp:<tenantId>:pi_3pp_1234",
+  "asset_claims_tokens": {
+    "token": "new-csat-token",
+    "refresh_token": "new-refresh-token"
+  }
+}
+```
+
 ---
 
 ## Optimistic Access to Media
 
 In asynchronous mode, the entitled asset may not be minted / globally distributed for some time after
-`entitlement/add` returns. Polling the status endpoint gives you information on this. But, separately,
-to allow immediate access to media controlled by these assets,
-request a [Refresh Wallet CSAT](../../auth/refresh-token.md#optimistic-access-to-media) (or
-[Generate User Access Token](../../auth/user-access-token.md#optimistic-access-to-media) on first
-sign-in) with `include_asset_claims: true`. This detects the user's recent pending purchases and
-grants immediate access to them in the returned token.
+`entitlement/add` returns. To allow immediate access to media controlled by these assets, 
+there are two ways to grant it:
 
-Only request it on the sign-in/refresh call that immediately follows an `entitlement/add`, not on every routine
-token refresh.
+1. Request a [Token Refresh](../../auth/refresh-token.md#optimistic-access-to-media) (or
+   [User Sign In](../../auth/user-access-token.md#optimistic-access-to-media) on first
+   sign-in) with `include_asset_claims: true`. This detects the user's recent pending purchases and
+   grants immediate access to them in the returned token.
+2. Set `asset_claimer: { nonce, refresh_token }` on this call, alongside `set_async: true`, using an
+   existing session for the same user (`nonce` is the `device_id` originally bound to
+   `refresh_token`). This refreshes that session inline and returns the result as 
+   `asset_claims_tokens: { token, refresh_token }` -- equivalent to option 1, without a second HTTP roundd-trip.
 
 
 ---
