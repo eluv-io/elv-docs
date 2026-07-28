@@ -212,7 +212,7 @@ Returns HTTP 200, or HTTP 202 when `set_async` is used and the mint has not alre
 | user_addr                  | User wallet address                                                    |
 | tokens                     | All tokens minted in this transaction. Absent if `set_async` was used  |
 | poll_id                    | Job identifier for [Poll Entitlement Status](#poll-entitlement-status) |
-| asset_claims_tokens        | An update fabric_token and refresh_token for the entitled user         |
+| asset_claims_tokens        | An updated fabric_token and refresh_token for the entitled user        |
 
 See [Optimistic Access to Media](#optimistic-access-to-media) for details on `asset_claims_tokens`.
 
