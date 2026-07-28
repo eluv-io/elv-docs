@@ -283,6 +283,8 @@ there are two ways to grant it:
    existing session for the same user (`nonce` is the `device_id` originally bound to
    `refresh_token`). This refreshes that session inline and returns the result as
    `asset_claims_tokens: { fabric_token, refresh_token }` -- equivalent to option 1, without a second HTTP round-trip.
+   (`fabric_token` here is the same CSAT that option 1 returns as `token` -- named differently because it's nested
+   in `asset_claims_tokens` rather than being the top-level refresh/login response.)
 
 
 ---
