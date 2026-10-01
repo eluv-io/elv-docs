@@ -14,8 +14,6 @@ Ready-to-use policies for common access control scenarios:
 * [Asset Permissions Policy](common_policies/asset-permissions-policy.yaml) -- Centralized site policy driven by a separate
   permission data model. Supports per-user/group permissions on assets and AV offerings, hierarchical delegation
   (e.g. season --> episodes), time-windowed access, and optional IP/geo restrictions.
-* [NFT Owner Policy](common_policies/nft_owner.yaml) -- Grants read access to any owner of a token governed by the
-  content object's linked ERC-721 smart contract.
 * [NFT Owner + Minter Policy](common_policies/nft_owner_minter.yaml) -- Same as NFT Owner, but also grants access
   to a designated user address (e.g. a minter account).
 * [NFT Owner + Admin Policy](common_policies/nft_owner_or_admin.yaml) -- Same as NFT Owner, but also grants access

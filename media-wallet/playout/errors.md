@@ -11,7 +11,7 @@ This document shares these details, and matching JavaScript code to detect them.
 
 ## No Entitlement -- Missing Access Pass
 
-The user does not own a qualifying NFT. Produced by, for example, `nft_owner.yaml` or `nft_owner_or_admin.yaml`.
+The user does not own a qualifying NFT. Produced by, for example, `nft_owner_or_admin.yaml`.
 The `trace` shows `isOwnerOfLinkedNft` failing.
 
 ```json
