@@ -14,10 +14,10 @@ Ready-to-use policies for common access control scenarios:
 * [Asset Permissions Policy](common_policies/asset-permissions-policy.yaml) -- Centralized site policy driven by a separate
   permission data model. Supports per-user/group permissions on assets and AV offerings, hierarchical delegation
   (e.g. season --> episodes), time-windowed access, and optional IP/geo restrictions.
-* [NFT Owner + Minter Policy](common_policies/nft_owner_minter.yaml) -- Same as NFT Owner, but also grants access
+* [NFT Owner + Admin Policy](common_policies/nft_owner_or_admin.yaml) -- Grants read access to any owner of a token governed by the
+  content object's linked ERC-721 smart contract, or any user who is a member of the `tenant_admin` or `content_admin` group for the object.
+* [NFT Owner + Minter Policy](common_policies/nft_owner_minter.yaml) -- Same as NFT Owner + Admin, but also grants access
   to a designated user address (e.g. a minter account).
-* [NFT Owner + Admin Policy](common_policies/nft_owner_or_admin.yaml) -- Same as NFT Owner, but also grants access
-  to any user who is a member of the `tenant_admin` or `content_admin` group for the object.
 * [NFT Owner + Admin + Geo Allowlist Policy](common_policies/nft_admin_geo_allow.yaml) -- Same as NFT Owner + Admin,
   but restricts access to a listed set of countries (`authorizedCountryCodes`). Admins bypass geo entirely.
   Use this for territory-specific passes.
@@ -76,8 +76,8 @@ The [IP/Geo Policy](sample_policies/policy-ip-geo.yaml) and [Cross-Chain NFT Pol
 both CSAT policy examples and show this pattern.
 
 `isValidTokenSigner` may be omitted when the policy independently verifies the user's identity via a
-on-chain lookup rather than trusting anything carried in the token.  [NFT Owner Policy](common_policies/nft_owner.yaml) and
-[NFT Owner + Admin Policy](common_policies/nft_owner_or_admin.yaml) are examples of this.
+on-chain lookup rather than trusting anything carried in the token.  [NFT Owner + Admin Policy](common_policies/nft_owner_or_admin.yaml)
+and [NFT Owner + Minter Policy](common_policies/nft_owner_minter.yaml) are examples of this.
 
 #### Embedded Asset Claims
 

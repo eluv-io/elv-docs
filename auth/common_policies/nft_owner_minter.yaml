@@ -1,20 +1,36 @@
-name: policy nft-owner-minter v1.2
+name: policy nft-owner-minter v1.3
 desc: |
-  Contract policy for access control based on NFT ownership or specific user address. The policy permits any read
-  operation if the user is the owner of a non-fungible token governed by a linked ERC-721 smart contract or has the
-  specified user ID (e.g. the user ID of a "minter").
+  Contract policy for access control based on NFT ownership, with access also granted to tenant
+  and content administrators and to a specific user address. The policy permits any read
+  operation if the user owns a non-fungible token governed by a linked ERC-721 smart contract,
+  is a member of the tenant_admin or content_admin blockchain group, or has the specified user
+  ID (e.g. the user ID of a "minter").  NFT ownership is confirmed either by isOwnerOfLinkedNft
+  checking on-chain assets, or, by hasAssetClaimForLinkedNft accepting an embedded, authority-signed
+  entitlement bridge claim (ctx["elv:asset_claims"]) asserting pending ownership.
+
+  Entry point is 'authorize' for CSAT compatibility in addition to ESAT and state channel.
 type: ast
 expr:
-  rule: main
+  rule: authorize
 rules:
+
+  settings:
+    literal:
+      authorized_asset_claims_signers:
+        - "0x2b35120282a443e34D76b125F05be497365BDDBf"
+        - "0xdD0402bb72FA5554BB79a84ABC8a59E1b8Df4F45"
+
+  authorize:
+    or:
+      - rule: isAdminUser
+      - rule: isMinterUser
+      - rule: main
 
   main:
     or:
       - fn.isOwnerOfLinkedNft:
           - env: call/subject
-      - eq:
-        - "iusr27hsDr6QtmWnJKVFkNzroSGEgjjq"
-        - env: call/subject
+      - fn.hasAssetClaimForLinkedNft:
       - and:
           - eq:
               - env: api_call/action
@@ -22,3 +38,13 @@ rules:
           - fn.ids.Equivalent:
               - env: call/node_id
               - env: call/subject
+
+  isAdminUser:
+    or:
+      - func: userIsTenantAdmin
+      - func: userIsContentAdmin
+
+  isMinterUser:
+    eq:
+      - "iusr27hsDr6QtmWnJKVFkNzroSGEgjjq"
+      - env: call/subject

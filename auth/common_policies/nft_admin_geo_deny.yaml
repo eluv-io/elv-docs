@@ -1,11 +1,14 @@
-name: policy nft-admin-geo-deny v1.0
+name: policy nft-admin-geo-deny v1.1
 desc: |
   Combined policy: geo denylist + NFT ownership + admin bypass.
 
   Users whose IP resolves to a country in unauthorizedCountryCodes are blocked.
   All other regions are permitted.
-  Admins (tenant_admin or content_admin group members) area allowed for any geo.
-  Non-admin users must pass the geo check AND own a qualifying NFT.
+  Admins (tenant_admin or content_admin group members) are allowed for any geo.
+  Non-admin users must pass the geo check AND own a qualifying NFT.  NFT ownership is confirmed
+  either by isOwnerOfLinkedNft checking on-chain assets, or, by hasAssetClaimForLinkedNft accepting
+  an embedded, authority-signed entitlement bridge claim (ctx["elv:asset_claims"]) asserting
+  pending ownership.
 
   Entry point is named 'authorize' for CSAT compatibility.
 type: ast
@@ -17,6 +20,9 @@ rules:
     literal:
       unauthorizedCountryCodes:
         - "US"
+      authorized_asset_claims_signers:
+        - "0x2b35120282a443e34D76b125F05be497365BDDBf"
+        - "0xdD0402bb72FA5554BB79a84ABC8a59E1b8Df4F45"
 
   authorize:
     or:
@@ -41,6 +47,7 @@ rules:
     or:
       - fn.isOwnerOfLinkedNft:
           - env: call/subject
+      - fn.hasAssetClaimForLinkedNft:
       - and:
           - eq:
               - env: api_call/action
