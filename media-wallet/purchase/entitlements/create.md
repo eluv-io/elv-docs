@@ -72,6 +72,9 @@ transaction_type `est` is an alias for `purchase`, `tvod` an alias for `rental`,
 - TVOD: Transactional Video On Demand
 - SVOD: Subscription Video On Demand
 
+An alias has exactly the same requirements as the type it stands for: `tvod` takes `rental_duration`, and `svod` requires
+`subscription_details` with `end_timestamp`.
+
 
 ### Optional Fields
 
@@ -123,7 +126,7 @@ and `subscription` requires an SVOD SKU. Likewise, TVOD requires `rental` and ES
 
 ## Rental Duration (Required for Rentals)
 
-If `transaction_type = rental`, include a `rental_duration` object with these optional fields:
+If `transaction_type` is `rental` (or its alias `tvod`), include a `rental_duration` object with these optional fields:
 
 | Field             | Type    | Description                                                                                      |
 | ----------------- | ------- | ------------------------------------------------------------------------------------------------ |
@@ -140,7 +143,7 @@ See [Rental Timing Model](./rental-timing.md) for the Rental Duration and Playba
 
 ## Subscription Details (Required for Subscriptions)
 
-If `transaction_type = subscription`, include a `subscription_details` object:
+If `transaction_type` is `subscription` (or its alias `svod`), a `subscription_details` object is required:
 
 | Field                 | Type   | Required | Description                                                                         |
 | --------------------- | ------ | -------- | ----------------------------------------------------------------------------------- |
@@ -197,8 +200,8 @@ curl -X POST "https://<fabric-authority-url>/tnt/<tenantId>/entitlement/add" \
     "transaction_type": "rental",
     "rental_duration": {
       "start_timestamp": "2026-03-11T21:10:00Z",
-      "start_watch":     172800,
-      "active_for":      2592000
+      "start_watch":     2592000,
+      "active_for":      172800
     },
     "elv_addr": "0xabc123...",
     "skus": ["<sku-1>"],
@@ -316,7 +319,7 @@ With `set_async`, `token_addr` and `token_id` are absent until the mint complete
       "token_id": "551"
     }
   ],
-  "poll_id": "0xabc123...:nft-buy:<siteId>:pi_3pp_1234"
+  "poll_id": "0xabc123...:nft-rent:<siteId>:pi_3pp_1234"
 }
 ```
 
@@ -329,7 +332,7 @@ With `set_async`, `token_addr` and `token_id` are absent until the mint complete
   "tenant_revenue": 2.75,
   "platform_fee": 0.51,
   "user_addr": "0xabc123...",
-  "poll_id": "0xabc123...:nft-buy:<siteId>:pi_3pp_1234"
+  "poll_id": "0xabc123...:nft-rent:<siteId>:pi_3pp_1234"
 }
 ```
 
@@ -381,7 +384,7 @@ With `set_async`, `token_addr` and `token_id` are absent until the mint complete
   "tenant_revenue": 2.75,
   "platform_fee": 0.51,
   "user_addr": "0xabc123...",
-  "poll_id": "0xabc123...:nft-buy:<siteId>:pi_3pp_1234",
+  "poll_id": "0xabc123...:nft-rent:<siteId>:pi_3pp_1234",
   "asset_claims_tokens": {
     "fabric_token": "new-csat-token",
     "refresh_token": "new-refresh-token"
@@ -450,7 +453,7 @@ Tenant admin bearer token.
 
 ```json
 {
-  "poll_id": "0xabc123...:nft-buy:<siteId>:pi_3pp_1234",
+  "poll_id": "0xabc123...:nft-rent:<siteId>:pi_3pp_1234",
   "status": "pending",
   "mint_status": "pending"
 }
@@ -460,7 +463,7 @@ Tenant admin bearer token.
 
 ```json
 {
-  "poll_id": "0xabc123...:nft-buy:<siteId>:pi_3pp_1234",
+  "poll_id": "0xabc123...:nft-rent:<siteId>:pi_3pp_1234",
   "status": "complete",
   "mint_status": "complete",
   "tokens": [
@@ -476,7 +479,7 @@ Tenant admin bearer token.
 
 ```json
 {
-  "poll_id": "0xabc123...:nft-buy:<siteId>:pi_3pp_1234",
+  "poll_id": "0xabc123...:nft-rent:<siteId>:pi_3pp_1234",
   "status": "failed",
   "mint_status": "failed"
 }
@@ -494,9 +497,10 @@ Returned when the request is invalid or cannot be processed.
 
 ```json
 {
-  "message": "Invalid transaction type",
+  "message": "3pp submit failed, error normalizing request",
   "error": {
-    "details": "transaction_type must be purchase or rental"
+    "op": "3pp submit failed: invalid transaction type: must be 'purchase', 'rental', 'subscription', or 'refund'",
+    "kind": "unclassified error"
   }
 }
 ```
@@ -512,7 +516,7 @@ Returned when the request is invalid or cannot be processed.
 | No marketplace for SKU                      | SKU is not recognized                                                  |
 | Marketplace does not match tenant           | SKU does not belong to your tenant                                     |
 | Refund not supported yet                    | Refund transaction type is not available                               |
-| Invalid transaction type                    | Must be `purchase` or `rental`                                         |
+| Invalid transaction type                    | Must be `purchase`, `rental`, or `subscription` (or an alias)          |
 | Missing or invalid poll_id                  | `poll_id` path parameter was omitted or malformed (status API)         |
 | Missing or invalid elv_addr query parameter | `elv_addr` query parameter was omitted or invalid (status API)         |
 | ... is required                             | required field  was omitted                                            |
