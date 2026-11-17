@@ -14,6 +14,7 @@ This endpoint is used when:
 
 * **Purchase**
 * **Rental**
+* **Subscription** (SVOD)
 
 ---
 
@@ -62,13 +63,14 @@ Authorization: Bearer <token>
 | Field            | Description                                                 |
 | ---------------- | ----------------------------------------------------------- |
 | transaction.id   | Unique payment ID from your payment provider                |
-| transaction_type | `purchase`, `rental`, `est`, or `tvod`                      |
+| transaction_type | `purchase`, `rental`, `subscription`, `est`, `tvod`, or `svod` |
 | elv_addr         | User wallet address                                         |
-| skus             | Array of one or more product SKUs being purchased or rented |
+| skus             | Array of one or more product SKUs being purchased or rented (exactly one for a subscription) |
 
-transaction_type `est` is an alias for `purchase`, `tvod` an alias for `rental`:
+transaction_type `est` is an alias for `purchase`, `tvod` an alias for `rental`, `svod` an alias for `subscription`:
 - EST: Electronic Sell-Through
-- TVOS: Transactional Video On Demand
+- TVOD: Transactional Video On Demand
+- SVOD: Subscription Video On Demand
 
 
 ### Optional Fields
@@ -107,10 +109,15 @@ See [Async Mode](#async-mode) and [Optimistic Access to Media](#optimistic-acces
 
 | Value    | Description                             |
 | -------- | ---------------------------------------- |
-| purchase | Permanent entitlement                    |
-| rental   | Time-limited entitlement                 |
-| est      | Alias for `purchase`                     |
-| tvod     | Alias for `rental`                       |
+| purchase     | Permanent entitlement                                  |
+| rental       | Time-limited entitlement                               |
+| subscription | Entitlement for a subscription period, kept up to date by you |
+| est          | Alias for `purchase`                                   |
+| tvod         | Alias for `rental`                                     |
+| svod         | Alias for `subscription`                               |
+
+Each SKU's offer type must match: an SVOD SKU (by title catalog offer or marketplace tag) requires `subscription`,
+and `subscription` requires an SVOD SKU. Likewise, TVOD requires `rental` and EST requires `purchase`.
 
 ---
 
@@ -128,6 +135,28 @@ If `transaction_type = rental`, include a `rental_duration` object with these op
 means the user has until April 10 9:10 PM UTC to start watching, and once they begin they have 2 days to finish.
 
 See [Rental Timing Model](./rental-timing.md) for the Rental Duration and Playback Duration model for rentals
+
+---
+
+## Subscription Details (Required for Subscriptions)
+
+If `transaction_type = subscription`, include a `subscription_details` object:
+
+| Field                 | Type   | Required | Description                                                                         |
+| --------------------- | ------ | -------- | ----------------------------------------------------------------------------------- |
+| `end_timestamp`       | string | Yes      | ISO8601 timestamp: the end of the paid period                                       |
+| `start_timestamp`     | string | No       | ISO8601 timestamp: the start of the paid period. Default is now                     |
+| `grace_end_timestamp` | string | No       | ISO8601 timestamp: when access is removed. Default is `end_timestamp` + 7 days      |
+
+* `end_timestamp` must be after `start_timestamp`, and `grace_end_timestamp` must not be before `end_timestamp`.
+* A new subscription is always `active`; `status` cannot be set here.
+* The user's token is revoked automatically at `grace_end_timestamp`. The grace period lets a renewal arrive late
+  without the user losing access.
+* Keep the subscription current as your billing system renews, cancels, or refunds it with
+  [Update Subscription](./subscription-update.md), using the `trans_id` from this call.
+
+**Example:** `end_timestamp` = `"2026-12-15T00:00:00Z"` with no `grace_end_timestamp` means the subscription is paid
+through December 15 and, unless renewed, the user keeps access until December 22.
 
 ---
 
@@ -179,6 +208,34 @@ curl -X POST "https://<fabric-authority-url>/tnt/<tenantId>/entitlement/add" \
   }'
 ```
 
+### Subscription Example
+
+```bash
+curl -X POST "https://<fabric-authority-url>/tnt/<tenantId>/entitlement/add" \
+  -H "Authorization: Bearer <token>" \
+  -H "Content-Type: application/json" \
+  -H "Accept: application/json" \
+  -d '{
+    "transaction": {
+      "id": "pi_3pp_sub_5678",
+      "customer_id": "cus_3pp_1234",
+      "total": 9.99,
+      "tax": 0.0,
+      "currency": "USD",
+      "country_code": "US"
+    },
+    "transaction_type": "subscription",
+    "subscription_details": {
+      "end_timestamp": "2026-12-15T00:00:00Z"
+    },
+    "elv_addr": "0xabc123...",
+    "skus": ["<svod-sku>"],
+    "metadata": {
+      "description": "Example monthly subscription"
+    }
+  }'
+```
+
 ---
 
 ## Async Mode
@@ -213,8 +270,34 @@ Returns HTTP 200, or HTTP 202 when `set_async` is used and the mint has not alre
 | tokens                     | All tokens minted in this transaction. Absent if `set_async` was used  |
 | poll_id                    | Job identifier for [Poll Entitlement Status](#poll-entitlement-status) |
 | asset_claims_tokens        | An updated fabric_token and refresh_token for the entitled user        |
+| subscription               | Subscriptions only: the subscription record, see below                 |
+
+Treat `poll_id` as opaque: pass it back unchanged to [Poll Entitlement Status](#poll-entitlement-status).
 
 See [Optimistic Access to Media](#optimistic-access-to-media) for details on `asset_claims_tokens`.
+
+### Subscription Record
+
+Returned as `subscription` by this call and by [Update Subscription](./subscription-update.md).
+
+| Field          | Description                                                                          |
+|----------------|--------------------------------------------------------------------------------------|
+| sub_id         | Subscription ID; the same as `trans_id`                                              |
+| user_addr      | User wallet address                                                                  |
+| tenant         | Tenant ID                                                                            |
+| description    | `metadata.description` from the request, or the product name                         |
+| status         | `active`, `canceled`, `expired`, or `refunded`                                       |
+| start_time     | Start of the paid period                                                             |
+| end_time       | End of the paid period                                                               |
+| paid_to        | Same as `end_time`                                                                   |
+| grace_end      | When access is removed                                                               |
+| token_addr     | Contract address of the user's token, once minted                                    |
+| token_id       | Token ID of the user's token, once minted                                            |
+| attributes     | Details such as `sku`, `customer_id`, `country`, and your `metadata`                 |
+| created        | When the record was created                                                          |
+| updated        | When the record last changed                                                         |
+
+With `set_async`, `token_addr` and `token_id` are absent until the mint completes.
 
 ### Example Success Response
 
@@ -233,7 +316,7 @@ See [Optimistic Access to Media](#optimistic-access-to-media) for details on `as
       "token_id": "551"
     }
   ],
-  "poll_id": "0xabc123...:nft-buy:<siteId>:3pp:<tenantId>:pi_3pp_1234"
+  "poll_id": "0xabc123...:nft-buy:<siteId>:pi_3pp_1234"
 }
 ```
 
@@ -246,7 +329,46 @@ See [Optimistic Access to Media](#optimistic-access-to-media) for details on `as
   "tenant_revenue": 2.75,
   "platform_fee": 0.51,
   "user_addr": "0xabc123...",
-  "poll_id": "0xabc123...:nft-buy:<siteId>:3pp:<tenantId>:pi_3pp_1234"
+  "poll_id": "0xabc123...:nft-buy:<siteId>:pi_3pp_1234"
+}
+```
+
+#### Subscription, HTTP 200
+
+```json
+{
+  "message": "3pp payment processed successfully",
+  "trans_id": "3pp:<tenantId>:pi_3pp_sub_5678",
+  "tenant_revenue": 9.38,
+  "platform_fee": 0.61,
+  "user_addr": "0xabc123...",
+  "tokens": [
+    {
+      "contract_addr": "0xcontract456...",
+      "token_id": "62"
+    }
+  ],
+  "subscription": {
+    "sub_id": "3pp:<tenantId>:pi_3pp_sub_5678",
+    "user_addr": "0xabc123...",
+    "token_addr": "0xcontract456...",
+    "token_id": "62",
+    "tenant": "<tenantId>",
+    "description": "Example monthly subscription",
+    "status": "active",
+    "start_time": "2026-11-15T00:00:00Z",
+    "end_time": "2026-12-15T00:00:00Z",
+    "paid_to": "2026-12-15T00:00:00Z",
+    "grace_end": "2026-12-22T00:00:00Z",
+    "attributes": {
+      "sku": ["<svod-sku>"],
+      "customer_id": ["cus_3pp_1234"],
+      "country": ["US"]
+    },
+    "created": "2026-11-15T00:00:01Z",
+    "updated": "2026-11-15T00:00:01Z"
+  },
+  "poll_id": "0xabc123...:nft-buy:<siteId>:pi_3pp_sub_5678"
 }
 ```
 
@@ -259,7 +381,7 @@ See [Optimistic Access to Media](#optimistic-access-to-media) for details on `as
   "tenant_revenue": 2.75,
   "platform_fee": 0.51,
   "user_addr": "0xabc123...",
-  "poll_id": "0xabc123...:nft-buy:<siteId>:3pp:<tenantId>:pi_3pp_1234",
+  "poll_id": "0xabc123...:nft-buy:<siteId>:pi_3pp_1234",
   "asset_claims_tokens": {
     "fabric_token": "new-csat-token",
     "refresh_token": "new-refresh-token"
@@ -328,7 +450,7 @@ Tenant admin bearer token.
 
 ```json
 {
-  "poll_id": "0xabc123...:nft-buy:<siteId>:3pp:<tenantId>:pi_3pp_1234",
+  "poll_id": "0xabc123...:nft-buy:<siteId>:pi_3pp_1234",
   "status": "pending",
   "mint_status": "pending"
 }
@@ -338,7 +460,7 @@ Tenant admin bearer token.
 
 ```json
 {
-  "poll_id": "0xabc123...:nft-buy:<siteId>:3pp:<tenantId>:pi_3pp_1234",
+  "poll_id": "0xabc123...:nft-buy:<siteId>:pi_3pp_1234",
   "status": "complete",
   "mint_status": "complete",
   "tokens": [
@@ -354,7 +476,7 @@ Tenant admin bearer token.
 
 ```json
 {
-  "poll_id": "0xabc123...:nft-buy:<siteId>:3pp:<tenantId>:pi_3pp_1234",
+  "poll_id": "0xabc123...:nft-buy:<siteId>:pi_3pp_1234",
   "status": "failed",
   "mint_status": "failed"
 }
@@ -393,4 +515,7 @@ Returned when the request is invalid or cannot be processed.
 | Invalid transaction type                    | Must be `purchase` or `rental`                                         |
 | Missing or invalid poll_id                  | `poll_id` path parameter was omitted or malformed (status API)         |
 | Missing or invalid elv_addr query parameter | `elv_addr` query parameter was omitted or invalid (status API)         |
+| ... is required                             | required field  was omitted                                            |
+| A subscription takes exactly one SKU        | `subscription` was sent with more than one SKU                         |
+| SKU ... is not SVOD                         | `subscription` was sent with a SKU that is not SVOD                    |
 

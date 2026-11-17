@@ -1,7 +1,8 @@
 # Entitlements API
 
 Use this path to grant a user access to content by submitting a fulfilled purchase or rental directly to the Eluvio
-Authority. Supports purchase and rental types with fine-grained rental window control.
+Authority. Supports purchase, rental, and subscription types, with fine-grained rental window control and
+subscriptions you keep in step with your billing system.
 
 ---
 
@@ -45,6 +46,7 @@ sequenceDiagram
 | Revoke by token         | `POST /tnt/:tid/entitlement/revoke`             |
 | Revoke by SKU           | `POST /tnt/:tid/entitlement/revoke_by_sku`      |
 | Record watch start      | `POST /tnt/:tid/entitlement/rental/watch_start` |
+| Update subscription     | `POST /tnt/:tid/entitlement/subscription/update` |
 
 Authentication: tenant admin bearer token for all operations.
 
@@ -63,8 +65,9 @@ Authentication: tenant admin bearer token for all operations.
 
 | Type     | Description                |
 | -------- | -------------------------- |
-| purchase | Permanent entitlement      |
-| rental   | Time-limited entitlement   |
+| purchase     | Permanent entitlement                                                  |
+| rental       | Time-limited entitlement                                               |
+| subscription | Entitlement for a paid period, renewed or ended through the update API |
 
 ---
 
@@ -78,3 +81,5 @@ Authentication: tenant admin bearer token for all operations.
 - [Revoke Entitlement by SKU](./revoke-by-sku.md) -- revoke all tokens for one or more SKUs from a user's wallet
 - [Rental Watch Start](./watch-start.md) -- record when a user first begins watching a rental, anchoring the active window
 - [Rental Timing Model](./rental-timing.md) -- describes the Rental Duration and Playback Duration model for rentals
+- [Update Subscription](./subscription-update.md) -- renew, cancel, expire, or refund a subscription, and set its
+  grace period and metadata
