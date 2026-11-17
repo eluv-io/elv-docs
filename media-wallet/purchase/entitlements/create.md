@@ -267,6 +267,7 @@ Returns HTTP 200, or HTTP 202 when `set_async` is used and the mint has not alre
 |----------------------------|------------------------------------------------------------------------|
 | message                    | Success message                                                        |
 | trans_id                   | Full transaction ID - used with watch_start and entitlement/list       |
+| op                         | `nft-buy` for a purchase or subscription, `nft-rent` for a rental      |
 | tenant_revenue             | Revenue allocated to the tenant                                        |
 | platform_fee               | Platform fee amount                                                    |
 | user_addr                  | User wallet address                                                    |
@@ -310,6 +311,7 @@ With `set_async`, `token_addr` and `token_id` are absent until the mint complete
 {
   "message": "3pp payment processed successfully",
   "trans_id": "3pp:<tenantId>:pi_3pp_1234",
+  "op": "nft-rent",
   "tenant_revenue": 2.75,
   "platform_fee": 0.51,
   "user_addr": "0xabc123...",
@@ -329,6 +331,7 @@ With `set_async`, `token_addr` and `token_id` are absent until the mint complete
 {
   "message": "3pp payment processed successfully",
   "trans_id": "3pp:<tenantId>:pi_3pp_1234",
+  "op": "nft-rent",
   "tenant_revenue": 2.75,
   "platform_fee": 0.51,
   "user_addr": "0xabc123...",
@@ -342,6 +345,7 @@ With `set_async`, `token_addr` and `token_id` are absent until the mint complete
 {
   "message": "3pp payment processed successfully",
   "trans_id": "3pp:<tenantId>:pi_3pp_sub_5678",
+  "op": "nft-buy",
   "tenant_revenue": 9.38,
   "platform_fee": 0.61,
   "user_addr": "0xabc123...",
@@ -381,6 +385,7 @@ With `set_async`, `token_addr` and `token_id` are absent until the mint complete
 {
   "message": "3pp payment processed successfully",
   "trans_id": "3pp:<tenantId>:pi_3pp_1234",
+  "op": "nft-rent",
   "tenant_revenue": 2.75,
   "platform_fee": 0.51,
   "user_addr": "0xabc123...",
