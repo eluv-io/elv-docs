@@ -297,6 +297,7 @@ Returned as `subscription` by this call and by [Update Subscription](./subscript
 | grace_end      | When access is removed                                                               |
 | token_addr     | Contract address of the user's token, once minted                                    |
 | token_id       | Token ID of the user's token, once minted                                            |
+| token_removed  | When the token was revoked, once it has been                                         |
 | attributes     | Details such as `sku`, `customer_id`, and `country`                                  |
 | metadata       | Your `metadata` from the request, as you sent it                                     |
 | created        | When the record was created                                                          |
