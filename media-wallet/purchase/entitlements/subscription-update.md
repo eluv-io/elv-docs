@@ -121,8 +121,10 @@ Returns the updated [Subscription Record](./create.md#subscription-record).
     "paid_to": "2027-01-15T00:00:00Z",
     "grace_end": "2027-01-22T00:00:00Z",
     "attributes": {
-      "sku": ["<svod-sku>"],
-      "metadata": ["{\"renewal_invoice\":\"in_9876\"}"]
+      "sku": ["<svod-sku>"]
+    },
+    "metadata": {
+      "renewal_invoice": "in_9876"
     },
     "created": "2026-11-15T00:00:01Z",
     "updated": "2026-12-14T09:12:40Z"

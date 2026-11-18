@@ -297,7 +297,8 @@ Returned as `subscription` by this call and by [Update Subscription](./subscript
 | grace_end      | When access is removed                                                               |
 | token_addr     | Contract address of the user's token, once minted                                    |
 | token_id       | Token ID of the user's token, once minted                                            |
-| attributes     | Details such as `sku`, `customer_id`, `country`, and your `metadata`                 |
+| attributes     | Details such as `sku`, `customer_id`, and `country`                                  |
+| metadata       | Your `metadata` from the request, as you sent it                                     |
 | created        | When the record was created                                                          |
 | updated        | When the record last changed                                                         |
 
@@ -371,6 +372,9 @@ With `set_async`, `token_addr` and `token_id` are absent until the mint complete
       "sku": ["<svod-sku>"],
       "customer_id": ["cus_3pp_1234"],
       "country": ["US"]
+    },
+    "metadata": {
+      "description": "Example monthly subscription"
     },
     "created": "2026-11-15T00:00:01Z",
     "updated": "2026-11-15T00:00:01Z"
