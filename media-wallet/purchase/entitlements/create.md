@@ -14,6 +14,7 @@ This endpoint is used when:
 
 * **Purchase**
 * **Rental**
+* **Subscription** (SVOD)
 
 ---
 
@@ -59,27 +60,40 @@ Authorization: Bearer <token>
 
 ### Required Fields
 
-| Field            | Description                                                 |
-| ---------------- | ----------------------------------------------------------- |
-| transaction.id   | Unique payment ID from your payment provider                |
-| transaction_type | `purchase`, `rental`, `est`, or `tvod`                      |
-| elv_addr         | User wallet address                                         |
-| skus             | Array of one or more product SKUs being purchased or rented |
+| Field            | Description                                                                                  |
+|------------------|----------------------------------------------------------------------------------------------|
+| transaction.id   | Unique payment ID from your payment provider                                                 |
+| transaction_type | `purchase`, `rental`, `subscription`, `est`, `tvod`, or `svod`                               |
+| elv_addr         | User wallet address                                                                          |
+| skus or sku      | `skus`: array of one or more product SKUs; or `sku`: a single SKU\*                          |
 
-transaction_type `est` is an alias for `purchase`, `tvod` an alias for `rental`:
+\* Send exactly one of `skus` or `sku`, not both. A subscription takes exactly one SKU.
+
+transaction_type `est` is an alias for `purchase`, `tvod` an alias for `rental`, `svod` an alias for `subscription`:
 - EST: Electronic Sell-Through
-- TVOS: Transactional Video On Demand
+- TVOD: Transactional Video On Demand
+- SVOD: Subscription Video On Demand
+
+An alias has exactly the same requirements as the type it stands for: `tvod` takes `rental_duration`, and `svod` requires
+`subscription_details` with `end_timestamp`.
 
 
 ### Optional Fields
 
-| Field                  | Description                                       |
-|------------------------|---------------------------------------------------|
-| set_async              | If `true`, do not wait for the mint               |
-| include_pending_claims | If `true`, include `asset_claims` in the response |
-| asset_claimer          | If set, refreshes the given session inline        |
+| Field                  | Description                                                                                              |
+|------------------------|----------------------------------------------------------------------------------------------------------|
+| set_async              | If `true`, do not wait for the mint                                                                      |
+| include_pending_claims | If `true`, include `asset_claims` in the response                                                        |
+| asset_claimer          | If set, refreshes the given session inline                                                               |
+| rental_duration        | Rental timing; see [Rental Duration](#rental-duration-required-for-rentals)                              |
+| subscription_details   | Required for subscriptions; see [Subscription Details](#subscription-details-required-for-subscriptions) |
+| metadata               | Your own fields, kept for reporting; see [Metadata](#metadata-optional)                                  |
+| search_index           | `iq__` ID of a title catalog search index to use instead of the tenant's configured one                  |
 
 See [Async Mode](#async-mode) and [Optimistic Access to Media](#optimistic-access-to-media) for details.
+
+`search_index` may also be passed as a query parameter (`?search_index=iq__...`), which takes precedence over the body
+field.
 
 #### asset_claimer object
 
@@ -105,18 +119,23 @@ See [Async Mode](#async-mode) and [Optimistic Access to Media](#optimistic-acces
 
 ## Transaction Types
 
-| Value    | Description                             |
-| -------- | ---------------------------------------- |
-| purchase | Permanent entitlement                    |
-| rental   | Time-limited entitlement                 |
-| est      | Alias for `purchase`                     |
-| tvod     | Alias for `rental`                       |
+| Value        | Description                                                   |
+|--------------|---------------------------------------------------------------|
+| purchase     | Permanent entitlement                                         |
+| rental       | Time-limited entitlement                                      |
+| subscription | Entitlement for a subscription period, kept up to date by you |
+| est          | Alias for `purchase`                                          |
+| tvod         | Alias for `rental`                                            |
+| svod         | Alias for `subscription`                                      |
+
+Each SKU's offer type must match: an SVOD SKU (by title catalog offer or marketplace tag) requires `subscription`,
+and `subscription` requires an SVOD SKU. Likewise, TVOD requires `rental` and EST requires `purchase`.
 
 ---
 
 ## Rental Duration (Required for Rentals)
 
-If `transaction_type = rental`, include a `rental_duration` object with these optional fields:
+If `transaction_type` is `rental` (or its alias `tvod`), include a `rental_duration` object with these optional fields:
 
 | Field             | Type    | Description                                                                                      |
 | ----------------- | ------- | ------------------------------------------------------------------------------------------------ |
@@ -128,6 +147,31 @@ If `transaction_type = rental`, include a `rental_duration` object with these op
 means the user has until April 10 9:10 PM UTC to start watching, and once they begin they have 2 days to finish.
 
 See [Rental Timing Model](./rental-timing.md) for the Rental Duration and Playback Duration model for rentals
+
+---
+
+## Subscription Details (Required for Subscriptions)
+
+If `transaction_type` is `subscription` (or its alias `svod`), a `subscription_details` object is required:
+
+| Field                 | Type   | Required | Description                                                                         |
+| --------------------- | ------ | -------- | ----------------------------------------------------------------------------------- |
+| `end_timestamp`       | string | Yes      | ISO8601 timestamp: the end of the paid period                                       |
+| `start_timestamp`     | string | No       | ISO8601 timestamp: the start of the paid period. Default is now                     |
+| `grace_end_timestamp` | string | No       | ISO8601 timestamp: when access is removed. Default is `end_timestamp` + 7 days      |
+
+* `end_timestamp` must be after `start_timestamp`, and `grace_end_timestamp` must not be before `end_timestamp`.
+* A new subscription is always `active`; `status` cannot be set here.
+* The user's token is revoked automatically at `grace_end_timestamp`. The grace period lets a renewal arrive late
+  without the user losing access.
+* Keep the subscription current as your billing system renews, cancels, or refunds it with
+  [Update Subscription](./subscription-update.md), using the `trans_id` from this call.
+* Resending the same request (same `transaction.id`, `elv_addr`, and SKU) is safe: it returns the existing
+  subscription rather than creating another. The same `transaction.id` with a different `elv_addr` or SKU is
+  rejected with HTTP 409.
+
+**Example:** `end_timestamp` = `"2026-12-15T00:00:00Z"` with no `grace_end_timestamp` means the subscription is paid
+through December 15 and, unless renewed, the user keeps access until December 22.
 
 ---
 
@@ -168,13 +212,41 @@ curl -X POST "https://<fabric-authority-url>/tnt/<tenantId>/entitlement/add" \
     "transaction_type": "rental",
     "rental_duration": {
       "start_timestamp": "2026-03-11T21:10:00Z",
-      "start_watch":     172800,
-      "active_for":      2592000
+      "start_watch":     2592000,
+      "active_for":      172800
     },
     "elv_addr": "0xabc123...",
     "skus": ["<sku-1>"],
     "metadata": {
       "description": "Example rental"
+    }
+  }'
+```
+
+### Subscription Example
+
+```bash
+curl -X POST "https://<fabric-authority-url>/tnt/<tenantId>/entitlement/add" \
+  -H "Authorization: Bearer <token>" \
+  -H "Content-Type: application/json" \
+  -H "Accept: application/json" \
+  -d '{
+    "transaction": {
+      "id": "pi_3pp_sub_5678",
+      "customer_id": "cus_3pp_1234",
+      "total": 9.99,
+      "tax": 0.0,
+      "currency": "USD",
+      "country_code": "US"
+    },
+    "transaction_type": "subscription",
+    "subscription_details": {
+      "end_timestamp": "2026-12-15T00:00:00Z"
+    },
+    "elv_addr": "0xabc123...",
+    "skus": ["<svod-sku>"],
+    "metadata": {
+      "description": "Example monthly subscription"
     }
   }'
 ```
@@ -207,14 +279,45 @@ Returns HTTP 200, or HTTP 202 when `set_async` is used and the mint has not alre
 |----------------------------|------------------------------------------------------------------------|
 | message                    | Success message                                                        |
 | trans_id                   | Full transaction ID - used with watch_start and entitlement/list       |
+| op                         | `nft-buy` for a purchase or subscription, `nft-rent` for a rental      |
 | tenant_revenue             | Revenue allocated to the tenant                                        |
 | platform_fee               | Platform fee amount                                                    |
 | user_addr                  | User wallet address                                                    |
 | tokens                     | All tokens minted in this transaction. Absent if `set_async` was used  |
 | poll_id                    | Job identifier for [Poll Entitlement Status](#poll-entitlement-status) |
 | asset_claims_tokens        | An updated fabric_token and refresh_token for the entitled user        |
+| asset_claims               | Pending-entitlement claims, if `include_pending_claims` was set        |
+| metadata                   | Title catalog fields for the SKU(s), if a title catalog is configured  |
+| subscription               | Subscriptions only: the subscription record, see below                 |
+
+Treat `poll_id` as opaque: pass it back unchanged to [Poll Entitlement Status](#poll-entitlement-status).
 
 See [Optimistic Access to Media](#optimistic-access-to-media) for details on `asset_claims_tokens`.
+
+### Subscription Record
+
+Returned as `subscription` by this call and by [Update Subscription](./subscription-update.md).
+
+| Field          | Description                                                                          |
+|----------------|--------------------------------------------------------------------------------------|
+| sub_id         | Subscription ID; the same as `trans_id`                                              |
+| user_addr      | User wallet address                                                                  |
+| tenant         | Tenant ID                                                                            |
+| description    | `metadata.description` from the request, or the product name                         |
+| status         | `active`, `canceled`, `expired`, or `refunded`                                       |
+| start_time     | Start of the paid period                                                             |
+| end_time       | End of the paid period                                                               |
+| paid_to        | Same as `end_time`                                                                   |
+| grace_end      | When access is removed                                                               |
+| token_addr     | Contract address of the user's token, once minted                                    |
+| token_id       | Token ID of the user's token, once minted                                            |
+| token_removed  | When the token was revoked, once it has been                                         |
+| attributes     | Details such as `sku`, `customer_id`, and `country`                                  |
+| metadata       | Your `metadata` from the request, as you sent it                                     |
+| created        | When the record was created                                                          |
+| updated        | When the record last changed                                                         |
+
+With `set_async`, `token_addr` and `token_id` are absent until the mint completes.
 
 ### Example Success Response
 
@@ -224,6 +327,7 @@ See [Optimistic Access to Media](#optimistic-access-to-media) for details on `as
 {
   "message": "3pp payment processed successfully",
   "trans_id": "3pp:<tenantId>:pi_3pp_1234",
+  "op": "nft-rent",
   "tenant_revenue": 2.75,
   "platform_fee": 0.51,
   "user_addr": "0xabc123...",
@@ -233,7 +337,7 @@ See [Optimistic Access to Media](#optimistic-access-to-media) for details on `as
       "token_id": "551"
     }
   ],
-  "poll_id": "0xabc123...:nft-buy:<siteId>:3pp:<tenantId>:pi_3pp_1234"
+  "poll_id": "0xabc123...:nft-rent:<siteId>:pi_3pp_1234"
 }
 ```
 
@@ -243,10 +347,54 @@ See [Optimistic Access to Media](#optimistic-access-to-media) for details on `as
 {
   "message": "3pp payment processed successfully",
   "trans_id": "3pp:<tenantId>:pi_3pp_1234",
+  "op": "nft-rent",
   "tenant_revenue": 2.75,
   "platform_fee": 0.51,
   "user_addr": "0xabc123...",
-  "poll_id": "0xabc123...:nft-buy:<siteId>:3pp:<tenantId>:pi_3pp_1234"
+  "poll_id": "0xabc123...:nft-rent:<siteId>:pi_3pp_1234"
+}
+```
+
+#### Subscription, HTTP 200
+
+```json
+{
+  "message": "3pp payment processed successfully",
+  "trans_id": "3pp:<tenantId>:pi_3pp_sub_5678",
+  "op": "nft-buy",
+  "tenant_revenue": 9.38,
+  "platform_fee": 0.61,
+  "user_addr": "0xabc123...",
+  "tokens": [
+    {
+      "contract_addr": "0xcontract456...",
+      "token_id": "62"
+    }
+  ],
+  "subscription": {
+    "sub_id": "3pp:<tenantId>:pi_3pp_sub_5678",
+    "user_addr": "0xabc123...",
+    "token_addr": "0xcontract456...",
+    "token_id": "62",
+    "tenant": "<tenantId>",
+    "description": "Example monthly subscription",
+    "status": "active",
+    "start_time": "2026-11-15T00:00:00Z",
+    "end_time": "2026-12-15T00:00:00Z",
+    "paid_to": "2026-12-15T00:00:00Z",
+    "grace_end": "2026-12-22T00:00:00Z",
+    "attributes": {
+      "sku": ["<svod-sku>"],
+      "customer_id": ["cus_3pp_1234"],
+      "country": ["US"]
+    },
+    "metadata": {
+      "description": "Example monthly subscription"
+    },
+    "created": "2026-11-15T00:00:01Z",
+    "updated": "2026-11-15T00:00:01Z"
+  },
+  "poll_id": "0xabc123...:nft-buy:<siteId>:pi_3pp_sub_5678"
 }
 ```
 
@@ -256,10 +404,11 @@ See [Optimistic Access to Media](#optimistic-access-to-media) for details on `as
 {
   "message": "3pp payment processed successfully",
   "trans_id": "3pp:<tenantId>:pi_3pp_1234",
+  "op": "nft-rent",
   "tenant_revenue": 2.75,
   "platform_fee": 0.51,
   "user_addr": "0xabc123...",
-  "poll_id": "0xabc123...:nft-buy:<siteId>:3pp:<tenantId>:pi_3pp_1234",
+  "poll_id": "0xabc123...:nft-rent:<siteId>:pi_3pp_1234",
   "asset_claims_tokens": {
     "fabric_token": "new-csat-token",
     "refresh_token": "new-refresh-token"
@@ -328,7 +477,7 @@ Tenant admin bearer token.
 
 ```json
 {
-  "poll_id": "0xabc123...:nft-buy:<siteId>:3pp:<tenantId>:pi_3pp_1234",
+  "poll_id": "0xabc123...:nft-rent:<siteId>:pi_3pp_1234",
   "status": "pending",
   "mint_status": "pending"
 }
@@ -338,7 +487,7 @@ Tenant admin bearer token.
 
 ```json
 {
-  "poll_id": "0xabc123...:nft-buy:<siteId>:3pp:<tenantId>:pi_3pp_1234",
+  "poll_id": "0xabc123...:nft-rent:<siteId>:pi_3pp_1234",
   "status": "complete",
   "mint_status": "complete",
   "tokens": [
@@ -354,7 +503,7 @@ Tenant admin bearer token.
 
 ```json
 {
-  "poll_id": "0xabc123...:nft-buy:<siteId>:3pp:<tenantId>:pi_3pp_1234",
+  "poll_id": "0xabc123...:nft-rent:<siteId>:pi_3pp_1234",
   "status": "failed",
   "mint_status": "failed"
 }
@@ -364,17 +513,19 @@ Poll every 1-2 seconds for up to a minute after `entitlement/add` returns.
 
 ---
 
-## Error Response (HTTP 400)
+## Error Response (HTTP 400, 409, 500)
 
-Returned when the request is invalid or cannot be processed.
+Returned when the request is invalid or cannot be processed: HTTP 400 for an invalid request, 409 when a
+subscription's `transaction.id` was already used for a different `elv_addr` or SKU, and 500 for a server failure.
 
 ### Example Error Response
 
 ```json
 {
-  "message": "Invalid transaction type",
+  "message": "3pp submit failed, error normalizing request",
   "error": {
-    "details": "transaction_type must be purchase or rental"
+    "op": "3pp submit failed: invalid user address",
+    "kind": "unclassified error"
   }
 }
 ```
@@ -383,14 +534,31 @@ Returned when the request is invalid or cannot be processed.
 
 ## Common Error Messages
 
-| Message                                     | Meaning                                                                |
-|---------------------------------------------|------------------------------------------------------------------------|
-| Invalid request                             | Request body is malformed                                              |
-| Invalid user address                        | `elv_addr` is not a valid wallet address                               |
-| No marketplace for SKU                      | SKU is not recognized                                                  |
-| Marketplace does not match tenant           | SKU does not belong to your tenant                                     |
-| Refund not supported yet                    | Refund transaction type is not available                               |
-| Invalid transaction type                    | Must be `purchase` or `rental`                                         |
-| Missing or invalid poll_id                  | `poll_id` path parameter was omitted or malformed (status API)         |
-| Missing or invalid elv_addr query parameter | `elv_addr` query parameter was omitted or invalid (status API)         |
+| Message                                                     | Meaning                                                                     |
+|-------------------------------------------------------------|-----------------------------------------------------------------------------|
+| Invalid request                                             | Request body is malformed                                                   |
+| Invalid user address                                        | `elv_addr` is not a valid wallet address                                    |
+| No marketplace for SKU                                      | SKU is not recognized                                                       |
+| Marketplace does not match tenant                           | SKU does not belong to your tenant                                          |
+| Refund not supported yet                                    | `refund` is not a supported `transaction_type`; see below                   |
+| Invalid transaction type                                    | Must be `purchase`, `rental`, or `subscription` (or an alias)               |
+| Missing or invalid poll_id                                  | `poll_id` path parameter was omitted or malformed (status API)              |
+| Missing or invalid elv_addr query parameter                 | `elv_addr` query parameter was omitted or invalid (status API)              |
+| No SKU provided                                             | Neither `sku` nor `skus` was sent                                           |
+| Use either 'sku' or 'skus', not both                        | Both `sku` and `skus` were sent                                             |
+| All SKUs must belong to the same marketplace                | The SKUs span more than one marketplace                                     |
+| SKU ... requires transaction_type ...                       | The SKU's offer type (TVOD, EST, SVOD) needs a different `transaction_type` |
+| Invalid search_index                                        | `search_index` is not an `iq__` ID                                          |
+| asset_claimer.refresh_token / nonce cannot be empty         | `asset_claimer` was sent without both fields                                |
+| subscription_details.end_timestamp is required              | `subscription` was sent without `end_timestamp`                             |
+| end_timestamp must be after start_timestamp                 | `end_timestamp` is at or before `start_timestamp` (default now)             |
+| grace_end_timestamp must not be before end_timestamp        | `grace_end_timestamp` is earlier than `end_timestamp`                       |
+| subscription_details.status cannot be set on create         | Send `status` only to [Update Subscription](./subscription-update.md)       |
+| A subscription takes exactly one SKU                        | `subscription` was sent with more than one SKU                              |
+| SKU ... is not SVOD                                         | `subscription` was sent with a SKU that is not SVOD                         |
+| Transaction id already used for a different elv_addr or sku | HTTP 409: a resent subscription doesn't match the original                  |
+
+Refunds are not submitted through `entitlement/add`, even though some error messages list `refund` as a type. To refund
+a subscription, use [Update Subscription](./subscription-update.md) with `status: refunded`. To take back a purchase or
+rental, use [Revoke](./revoke.md) or [Revoke by SKU](./revoke-by-sku.md).
 

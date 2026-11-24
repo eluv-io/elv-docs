@@ -57,6 +57,7 @@ Authorization: Bearer <access_token>
 | `count`    | integer | No       | Maximum results to return                        |
 | `start_ts` | integer | No       | Start time (Unix timestamp). Default: 0          |
 | `end_ts`   | integer | No       | End time (Unix timestamp). Default: current time |
+| `search_index` | string | No    | `iq__` ID of a title catalog search index to use instead of the tenant's configured one; takes precedence over the body field |
 
 ## Request Body
 
@@ -66,6 +67,7 @@ Authorization: Bearer <access_token>
 | `skus`            | array of string | No       | If non-empty, only return entitlements containing any of these SKUs                |
 | `rental_states`   | array of string | No       | Filter by rental state (`upcoming`, `playable`, `expired`)                         |
 | `actions`         | array of string | No       | Restrict to specific operation types (e.g. `nft-rent`, `nft-buy`); omit for all    |
+| `search_index`    | string          | No       | `iq__` ID of a title catalog search index; the query parameter takes precedence    |
 
 ---
 
@@ -182,6 +184,10 @@ curl -X POST "https://<fabric-authority-url>/tnt/<tenantId>/entitlement/list/<ad
 | `minted`      | NFTs minted during this operation                              |
 | `rental`      | Rental lifecycle data -- present only for `nft-rent` entries   |
 
+A subscription's token is listed as an `nft-buy` entry with no subscription status. A subscription's status, end, and
+grace period are returned by [Create Entitlement](./create.md#subscription-record) and
+[Update Subscription](./subscription-update.md).
+
 ---
 
 ## Minted NFTs (`minted[]`)
@@ -236,7 +242,7 @@ Present only when `op` is `nft-rent`. Describes the current lifecycle state of t
 | ----------------- | ----------------- | ---------------------------------------------------------------- |
 | `state`           | string            | See rental states table below                                    |
 | `start`           | ISO8601 timestamp | When the rental window opened                                    |
-| `expiry`          | ISO8601 timestamp | When the rental expires (effective watch start + active_for)     |
+| `expiry`          | ISO8601 timestamp | When the rental expires; see below                               |
 | `first_played_at` | ISO8601 timestamp | When the user first began watching; omitted if not yet recorded  |
 
 ### Rental States
@@ -264,8 +270,8 @@ Multiple values may be combined: `["upcoming", "expired"]`.
 Omit the field or pass an empty array to return all states.
 When a rental state filter is active, non-rental entitlements are excluded from the results.
 
-`expiry` is computed as: `first_played_at + active_for` if `first_played_at` is set and before the deadline;
-otherwise `deadline + active_for` (where `deadline = start + start_watch`).
+`expiry` is `first_played_at + active_for` once `first_played_at` is set; otherwise it is the watch deadline,
+`start + start_watch`, because a rental not started by its deadline expires there with no playback window.
 
 ---
 
@@ -274,4 +280,5 @@ otherwise `deadline + active_for` (where `deadline = start + start_watch`).
 | Message              | Meaning                             |
 | -------------------- | ----------------------------------- |
 | `invalid time range` | The provided timestamps are invalid |
+| `invalid search_index: must be an iq__ id` | `search_index` is not an `iq__` ID |
 | `invalid address`    | The wallet address is not valid     |

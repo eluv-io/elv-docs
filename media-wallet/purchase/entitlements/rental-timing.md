@@ -2,17 +2,14 @@
 
 A rental has two time windows:
 
-| Window            | Field         | Expiry   | Behavior |
-|-------------------|---------------|----------|----------|
+| Window            | Field         | Expiry   | Behavior                                                                                                                                                                                                                                   |
+|-------------------|---------------|----------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | Rental Duration   | `start_watch` | **Soft** | How long after the rental start the user can begin watching. If the deadline passes without a recorded `first_played_at`, the rental expires immediately — no PD window opens. Once initiated, the PD window can extend past the deadline. |
-| Playback Duration | `active_for`  | **Hard** | How long access is open once the playback window starts. Anchored to `first_played_at`, or the RD deadline if never set. Permanently revoked at expiry. |
+| Playback Duration | `active_for`  | **Hard** | How long access is open once the playback window starts. Anchored to `first_played_at`; never opens if `first_played_at` is not recorded by the RD deadline. Permanently revoked at expiry.                                                |
 
-**Expiry formula:** `effective_watch_start + active_for`
+**Expiry:** `first_played_at + active_for` once watching has started; the RD deadline (`start + start_watch`) if
+`first_played_at` was never recorded.
 
-`effective_watch_start` is `first_played_at` if set and on or before the RD deadline, otherwise the deadline itself.
-
-> **Wall-clock, not minutes.** Expiry is a point in time, not accumulated viewing minutes.
-> Pausing and resuming within the expiry window is always allowed.
 
 ---
 
@@ -54,7 +51,8 @@ B4   ························▶──·▶────�
 
 ### No watch_start call — expires at RD deadline
 
-If `first_played_at` is never recorded, no PD window opens. The rental expires at the RD deadline.
+If `first_played_at` is never recorded, no PD window opens. The rental expires at the RD deadline, and its token is
+revoked about 15 minutes later (a late `watch_start` for a play before the deadline is accepted until then).
 
 ```
      d0  d1  d2  d3  d4  d5  d6  d7  d8  d9
@@ -65,6 +63,6 @@ C1   ································▶····
 
 ---
 
-The **rental duration deadline is soft** for users who initiated playback — the PD window can extend past it.  
-The **rental duration deadline is hard** if `watch_start` was never called — no access after the deadline.  
+The **rental duration deadline is soft** for users who initiated playback — the PD window can extend past it.
+The **rental duration deadline is hard** if `watch_start` was never called — no access after the deadline.
 The **playback duration expiry is always hard** — access is permanently revoked and the rental token is swept.

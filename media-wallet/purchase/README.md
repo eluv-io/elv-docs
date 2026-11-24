@@ -52,7 +52,8 @@ for the full flow, including geo restriction behavior and what to show when no p
 
 ## Entitlements API
 
-Tenant submits a fulfilled purchase or rental directly. Supports purchase and rental types with fine-grained rental window control.
+Tenant submits a fulfilled purchase, rental, or subscription directly. Supports purchase, rental, and subscription types,
+with fine-grained rental window control and subscriptions kept in step with the tenant's billing system.
 
 ```mermaid
 sequenceDiagram
@@ -61,7 +62,7 @@ sequenceDiagram
     participant PaymentProvider
     participant FabricAPI
 
-    User->>TenantApp: Initiates purchase or rental
+    User->>TenantApp: Initiates purchase, rental, or subscription
     TenantApp->>PaymentProvider: Process payment
     PaymentProvider-->>TenantApp: Payment confirmed
     TenantApp->>FabricAPI: POST /tnt/:tid/entitlement/add<br/>(admin token, transaction, SKUs[], elv_addr)
@@ -70,4 +71,5 @@ sequenceDiagram
     TenantApp->>User: Confirm access granted
 ```
 
-See [Entitlements API](entitlements/README.md) for the full endpoint reference including list, revoke, and rental watch-start operations.
+See [Entitlements API](entitlements/README.md) for the full endpoint reference including list, revoke, rental watch-start,
+and subscription update operations.
