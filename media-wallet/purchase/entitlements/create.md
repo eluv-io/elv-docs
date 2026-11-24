@@ -65,7 +65,9 @@ Authorization: Bearer <token>
 | transaction.id   | Unique payment ID from your payment provider                                                 |
 | transaction_type | `purchase`, `rental`, `subscription`, `est`, `tvod`, or `svod`                               |
 | elv_addr         | User wallet address                                                                          |
-| skus             | Array of one or more product SKUs being purchased or rented (exactly one for a subscription) |
+| skus or sku      | `skus`: array of one or more product SKUs; or `sku`: a single SKU\*                          |
+
+\* Send exactly one of `skus` or `sku`, not both. A subscription takes exactly one SKU.
 
 transaction_type `est` is an alias for `purchase`, `tvod` an alias for `rental`, `svod` an alias for `subscription`:
 - EST: Electronic Sell-Through
@@ -87,7 +89,6 @@ An alias has exactly the same requirements as the type it stands for: `tvod` tak
 | subscription_details   | Required for subscriptions; see [Subscription Details](#subscription-details-required-for-subscriptions) |
 | metadata               | Your own fields, kept for reporting; see [Metadata](#metadata-optional)                                  |
 | search_index           | `iq__` ID of a title catalog search index to use instead of the tenant's configured one                  |
-| sku                    | A single SKU, in place of `skus`; send one or the other, not both                                        |
 
 See [Async Mode](#async-mode) and [Optimistic Access to Media](#optimistic-access-to-media) for details.
 
@@ -523,7 +524,7 @@ subscription's `transaction.id` was already used for a different `elv_addr` or S
 {
   "message": "3pp submit failed, error normalizing request",
   "error": {
-    "op": "3pp submit failed: invalid transaction type: must be 'purchase', 'rental', 'subscription', or 'refund'",
+    "op": "3pp submit failed: invalid user address",
     "kind": "unclassified error"
   }
 }
@@ -539,7 +540,7 @@ subscription's `transaction.id` was already used for a different `elv_addr` or S
 | Invalid user address                                        | `elv_addr` is not a valid wallet address                                    |
 | No marketplace for SKU                                      | SKU is not recognized                                                       |
 | Marketplace does not match tenant                           | SKU does not belong to your tenant                                          |
-| Refund not supported yet                                    | Refund transaction type is not available                                    |
+| Refund not supported yet                                    | `refund` is not a supported `transaction_type`; see below                   |
 | Invalid transaction type                                    | Must be `purchase`, `rental`, or `subscription` (or an alias)               |
 | Missing or invalid poll_id                                  | `poll_id` path parameter was omitted or malformed (status API)              |
 | Missing or invalid elv_addr query parameter                 | `elv_addr` query parameter was omitted or invalid (status API)              |
@@ -556,4 +557,8 @@ subscription's `transaction.id` was already used for a different `elv_addr` or S
 | A subscription takes exactly one SKU                        | `subscription` was sent with more than one SKU                              |
 | SKU ... is not SVOD                                         | `subscription` was sent with a SKU that is not SVOD                         |
 | Transaction id already used for a different elv_addr or sku | HTTP 409: a resent subscription doesn't match the original                  |
+
+Refunds are not submitted through `entitlement/add`, even though some error messages list `refund` as a type. To refund
+a subscription, use [Update Subscription](./subscription-update.md) with `status: refunded`. To take back a purchase or
+rental, use [Revoke](./revoke.md) or [Revoke by SKU](./revoke-by-sku.md).
 
