@@ -60,11 +60,11 @@ Authorization: Bearer <token>
 
 ### Required Fields
 
-| Field            | Description                                                 |
-| ---------------- | ----------------------------------------------------------- |
-| transaction.id   | Unique payment ID from your payment provider                |
-| transaction_type | `purchase`, `rental`, `subscription`, `est`, `tvod`, or `svod` |
-| elv_addr         | User wallet address                                         |
+| Field            | Description                                                                                  |
+|------------------|----------------------------------------------------------------------------------------------|
+| transaction.id   | Unique payment ID from your payment provider                                                 |
+| transaction_type | `purchase`, `rental`, `subscription`, `est`, `tvod`, or `svod`                               |
+| elv_addr         | User wallet address                                                                          |
 | skus             | Array of one or more product SKUs being purchased or rented (exactly one for a subscription) |
 
 transaction_type `est` is an alias for `purchase`, `tvod` an alias for `rental`, `svod` an alias for `subscription`:
@@ -78,16 +78,16 @@ An alias has exactly the same requirements as the type it stands for: `tvod` tak
 
 ### Optional Fields
 
-| Field                  | Description                                       |
-|------------------------|---------------------------------------------------|
-| set_async              | If `true`, do not wait for the mint               |
-| include_pending_claims | If `true`, include `asset_claims` in the response |
-| asset_claimer          | If set, refreshes the given session inline        |
-| rental_duration        | Rental timing; see [Rental Duration](#rental-duration-required-for-rentals) |
+| Field                  | Description                                                                                              |
+|------------------------|----------------------------------------------------------------------------------------------------------|
+| set_async              | If `true`, do not wait for the mint                                                                      |
+| include_pending_claims | If `true`, include `asset_claims` in the response                                                        |
+| asset_claimer          | If set, refreshes the given session inline                                                               |
+| rental_duration        | Rental timing; see [Rental Duration](#rental-duration-required-for-rentals)                              |
 | subscription_details   | Required for subscriptions; see [Subscription Details](#subscription-details-required-for-subscriptions) |
-| metadata               | Your own fields, kept for reporting; see [Metadata](#metadata-optional) |
-| search_index           | `iq__` ID of a title catalog search index to use instead of the tenant's configured one |
-| sku                    | A single SKU, in place of `skus`; send one or the other, not both |
+| metadata               | Your own fields, kept for reporting; see [Metadata](#metadata-optional)                                  |
+| search_index           | `iq__` ID of a title catalog search index to use instead of the tenant's configured one                  |
+| sku                    | A single SKU, in place of `skus`; send one or the other, not both                                        |
 
 See [Async Mode](#async-mode) and [Optimistic Access to Media](#optimistic-access-to-media) for details.
 
@@ -118,14 +118,14 @@ field.
 
 ## Transaction Types
 
-| Value    | Description                             |
-| -------- | ---------------------------------------- |
-| purchase     | Permanent entitlement                                  |
-| rental       | Time-limited entitlement                               |
+| Value        | Description                                                   |
+|--------------|---------------------------------------------------------------|
+| purchase     | Permanent entitlement                                         |
+| rental       | Time-limited entitlement                                      |
 | subscription | Entitlement for a subscription period, kept up to date by you |
-| est          | Alias for `purchase`                                   |
-| tvod         | Alias for `rental`                                     |
-| svod         | Alias for `subscription`                               |
+| est          | Alias for `purchase`                                          |
+| tvod         | Alias for `rental`                                            |
+| svod         | Alias for `subscription`                                      |
 
 Each SKU's offer type must match: an SVOD SKU (by title catalog offer or marketplace tag) requires `subscription`,
 and `subscription` requires an SVOD SKU. Likewise, TVOD requires `rental` and EST requires `purchase`.
@@ -533,27 +533,27 @@ subscription's `transaction.id` was already used for a different `elv_addr` or S
 
 ## Common Error Messages
 
-| Message                                     | Meaning                                                                |
-|---------------------------------------------|------------------------------------------------------------------------|
-| Invalid request                             | Request body is malformed                                              |
-| Invalid user address                        | `elv_addr` is not a valid wallet address                               |
-| No marketplace for SKU                      | SKU is not recognized                                                  |
-| Marketplace does not match tenant           | SKU does not belong to your tenant                                     |
-| Refund not supported yet                    | Refund transaction type is not available                               |
-| Invalid transaction type                    | Must be `purchase`, `rental`, or `subscription` (or an alias)          |
-| Missing or invalid poll_id                  | `poll_id` path parameter was omitted or malformed (status API)         |
-| Missing or invalid elv_addr query parameter | `elv_addr` query parameter was omitted or invalid (status API)         |
-| No SKU provided                             | Neither `sku` nor `skus` was sent                                      |
-| Use either 'sku' or 'skus', not both        | Both `sku` and `skus` were sent                                        |
-| All SKUs must belong to the same marketplace | The SKUs span more than one marketplace                               |
-| SKU ... requires transaction_type ...       | The SKU's offer type (TVOD, EST, SVOD) needs a different `transaction_type` |
-| Invalid search_index                        | `search_index` is not an `iq__` ID                                     |
-| asset_claimer.refresh_token / nonce cannot be empty | `asset_claimer` was sent without both fields                   |
-| subscription_details.end_timestamp is required | `subscription` was sent without `end_timestamp`                     |
-| end_timestamp must be after start_timestamp | `end_timestamp` is at or before `start_timestamp` (default now)        |
-| grace_end_timestamp must not be before end_timestamp | `grace_end_timestamp` is earlier than `end_timestamp`         |
-| subscription_details.status cannot be set on create | Send `status` only to [Update Subscription](./subscription-update.md) |
-| A subscription takes exactly one SKU        | `subscription` was sent with more than one SKU                         |
-| SKU ... is not SVOD                         | `subscription` was sent with a SKU that is not SVOD                    |
-| Transaction id already used for a different elv_addr or sku | HTTP 409: a resent subscription doesn't match the original |
+| Message                                                     | Meaning                                                                     |
+|-------------------------------------------------------------|-----------------------------------------------------------------------------|
+| Invalid request                                             | Request body is malformed                                                   |
+| Invalid user address                                        | `elv_addr` is not a valid wallet address                                    |
+| No marketplace for SKU                                      | SKU is not recognized                                                       |
+| Marketplace does not match tenant                           | SKU does not belong to your tenant                                          |
+| Refund not supported yet                                    | Refund transaction type is not available                                    |
+| Invalid transaction type                                    | Must be `purchase`, `rental`, or `subscription` (or an alias)               |
+| Missing or invalid poll_id                                  | `poll_id` path parameter was omitted or malformed (status API)              |
+| Missing or invalid elv_addr query parameter                 | `elv_addr` query parameter was omitted or invalid (status API)              |
+| No SKU provided                                             | Neither `sku` nor `skus` was sent                                           |
+| Use either 'sku' or 'skus', not both                        | Both `sku` and `skus` were sent                                             |
+| All SKUs must belong to the same marketplace                | The SKUs span more than one marketplace                                     |
+| SKU ... requires transaction_type ...                       | The SKU's offer type (TVOD, EST, SVOD) needs a different `transaction_type` |
+| Invalid search_index                                        | `search_index` is not an `iq__` ID                                          |
+| asset_claimer.refresh_token / nonce cannot be empty         | `asset_claimer` was sent without both fields                                |
+| subscription_details.end_timestamp is required              | `subscription` was sent without `end_timestamp`                             |
+| end_timestamp must be after start_timestamp                 | `end_timestamp` is at or before `start_timestamp` (default now)             |
+| grace_end_timestamp must not be before end_timestamp        | `grace_end_timestamp` is earlier than `end_timestamp`                       |
+| subscription_details.status cannot be set on create         | Send `status` only to [Update Subscription](./subscription-update.md)       |
+| A subscription takes exactly one SKU                        | `subscription` was sent with more than one SKU                              |
+| SKU ... is not SVOD                                         | `subscription` was sent with a SKU that is not SVOD                         |
+| Transaction id already used for a different elv_addr or sku | HTTP 409: a resent subscription doesn't match the original                  |
 
