@@ -1,5 +1,7 @@
 # Title Playout Clear API
 
+> **Deprecated:** this page has moved to [https://docs.eluv.io/docs/media-wallet/api-guide/playout/clear/](https://docs.eluv.io/docs/media-wallet/api-guide/playout/clear/) and is no longer maintained here.
+
 ## Overview
 
 This API retrieves playout options for a media item **without DRM (clear playback)**.

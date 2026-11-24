@@ -1,5 +1,7 @@
 # Media Playback
 
+> **Deprecated:** this page has moved to [https://docs.eluv.io/docs/media-wallet/api-guide/playout/](https://docs.eluv.io/docs/media-wallet/api-guide/playout/) and is no longer maintained here.
+
 These APIs retrieve playback URLs for media items after a user's entitlement has been verified. The same endpoint
 serves both clear and DRM-protected content -- the response keys differ based on the content protection configured
 for the offering.

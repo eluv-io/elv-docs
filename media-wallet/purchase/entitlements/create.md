@@ -1,5 +1,7 @@
 # Create Entitlement API
 
+> **Deprecated:** this page has moved to [https://docs.eluv.io/docs/media-wallet/api-guide/purchase/entitlements/create/](https://docs.eluv.io/docs/media-wallet/api-guide/purchase/entitlements/create/) and is no longer maintained here.
+
 ## Overview
 
 The **Create Entitlement API** allows your application to submit externally processed payments (such as Stripe,

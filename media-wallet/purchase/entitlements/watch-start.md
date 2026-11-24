@@ -1,5 +1,7 @@
 # Rental Watch Start API
 
+> **Deprecated:** this page has moved to [https://docs.eluv.io/docs/media-wallet/api-guide/purchase/entitlements/watch-start/](https://docs.eluv.io/docs/media-wallet/api-guide/purchase/entitlements/watch-start/) and is no longer maintained here.
+
 ## Overview
 
 The **Rental Watch Start API** records the moment a user first presses play on a rental.

@@ -1,5 +1,7 @@
 # Authentication
 
+> **Deprecated:** this page has moved to [https://docs.eluv.io/docs/media-wallet/api-guide/auth/](https://docs.eluv.io/docs/media-wallet/api-guide/auth/) and is no longer maintained here.
+
 These APIs cover user session management for tenant-integrated applications: exchanging a trusted JWT for a Fabric
 user access token (CSAT), refreshing that token without re-login, and managing user access wallets.
 

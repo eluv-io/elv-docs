@@ -1,5 +1,7 @@
 # Discovering What to Purchase
 
+> **Deprecated:** this page has moved to [https://docs.eluv.io/docs/media-wallet/api-guide/purchase/pass-discovery/](https://docs.eluv.io/docs/media-wallet/api-guide/purchase/pass-discovery/) and is no longer maintained here.
+
 When a user cannot play content, the tenant app needs to determine what pass or SKU to offer them.
 This document covers how to find the right purchase option and how geo restrictions affect what is shown.
 

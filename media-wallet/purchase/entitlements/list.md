@@ -1,5 +1,7 @@
 # List Entitlement API
 
+> **Deprecated:** this page has moved to [https://docs.eluv.io/docs/media-wallet/api-guide/purchase/entitlements/list/](https://docs.eluv.io/docs/media-wallet/api-guide/purchase/entitlements/list/) and is no longer maintained here.
+
 ## Overview
 
 The **Entitlement List API** allows a client application to retrieve a user's NFT-based entitlements for a specific tenant.

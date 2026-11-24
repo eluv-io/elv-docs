@@ -1,5 +1,7 @@
 # Refresh Wallet CSAT API
 
+> **Deprecated:** this page has moved to [https://docs.eluv.io/docs/media-wallet/api-guide/auth/refresh-token/](https://docs.eluv.io/docs/media-wallet/api-guide/auth/refresh-token/) and is no longer maintained here.
+
 ## Overview
 
 The **Refresh Wallet CSAT API** allows your application to refresh a user's CSAT using a valid refresh token.

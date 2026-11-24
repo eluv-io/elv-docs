@@ -1,5 +1,7 @@
 # Media Wallet APIs
 
+> **Deprecated:** this page has moved to [https://docs.eluv.io/docs/media-wallet/api-guide/](https://docs.eluv.io/docs/media-wallet/api-guide/) and is no longer maintained here.
+
 The Eluvio Media Wallet covers the user-facing content access layer of the Content Fabric -- authentication, content browsing, and purchase.
 
 Full API reference documentation is published at: [docs.eluv.io](https://docs.eluv.io/) under **Media Wallet API**, which covers

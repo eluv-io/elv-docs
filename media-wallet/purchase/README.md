@@ -1,5 +1,7 @@
 # Purchase & Entitlement Paths
 
+> **Deprecated:** this page has moved to [https://docs.eluv.io/docs/media-wallet/api-guide/purchase/](https://docs.eluv.io/docs/media-wallet/api-guide/purchase/) and is no longer maintained here.
+
 The Eluvio Content Fabric supports several ways for tenants and affiliates to grant users access to content. Each
 path suits a different integration model.
 

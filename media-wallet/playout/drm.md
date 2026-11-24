@@ -1,5 +1,7 @@
 # Title Playout DRM API
 
+> **Deprecated:** this page has moved to [https://docs.eluv.io/docs/media-wallet/api-guide/playout/drm/](https://docs.eluv.io/docs/media-wallet/api-guide/playout/drm/) and is no longer maintained here.
+
 ## Overview
 
 This API retrieves playout options for a media item with **Widevine DRM protection**.
