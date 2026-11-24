@@ -1,5 +1,7 @@
 # Update Subscription API
 
+> **Deprecated:** this page has moved to [https://docs.eluv.io/docs/media-wallet/api-guide/purchase/entitlements/subscription-update/](https://docs.eluv.io/docs/media-wallet/api-guide/purchase/entitlements/subscription-update/) and is no longer maintained here.
+
 ## Overview
 
 The **Update Subscription API** keeps a subscription created with [Create Entitlement](./create.md) in step with

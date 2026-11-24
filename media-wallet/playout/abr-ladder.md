@@ -1,5 +1,7 @@
 # Eluvio VOD ABR Ladder Specification
 
+> **Deprecated:** this page has moved to [https://docs.eluv.io/docs/media-wallet/api-guide/playout/abr-ladder/](https://docs.eluv.io/docs/media-wallet/api-guide/playout/abr-ladder/) and is no longer maintained here.
+
 
 ## HEVC 25/30 fps SDR
 

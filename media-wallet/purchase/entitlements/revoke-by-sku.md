@@ -1,5 +1,7 @@
 # Revoke Entitlement by SKU
 
+> **Deprecated:** this page has moved to [https://docs.eluv.io/docs/media-wallet/api-guide/purchase/entitlements/revoke-by-sku/](https://docs.eluv.io/docs/media-wallet/api-guide/purchase/entitlements/revoke-by-sku/) and is no longer maintained here.
+
 ## Overview
 
 The **Tenant Entitlement Revoke by SKU API** allows a tenant administrator to revoke a user's NFT-based entitlement for one or more SKUs in a single call.

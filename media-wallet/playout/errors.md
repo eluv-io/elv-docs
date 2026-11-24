@@ -1,5 +1,7 @@
 # Playout Authorization Errors
 
+> **Deprecated:** this page has moved to [https://docs.eluv.io/docs/media-wallet/api-guide/playout/errors/](https://docs.eluv.io/docs/media-wallet/api-guide/playout/errors/) and is no longer maintained here.
+
 The playout endpoint (`/q/{objectId}/rep/playout/{offering}/options.json`) returns **HTTP 403** for all
 authorization failures. There are two variations to disambiguate: geographic restrictions and missing
 entitlements (no access pass). The error responses share the same outer structure and are distinguished by function

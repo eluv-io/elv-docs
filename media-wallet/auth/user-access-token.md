@@ -1,5 +1,7 @@
 # Generate User Access Token API
 
+> **Deprecated:** this page has moved to [https://docs.eluv.io/docs/media-wallet/api-guide/auth/user-access-token/](https://docs.eluv.io/docs/media-wallet/api-guide/auth/user-access-token/) and is no longer maintained here.
+
 ## Overview
 
 This API generates a **User Access Token (CSAT)** using a valid JWT.

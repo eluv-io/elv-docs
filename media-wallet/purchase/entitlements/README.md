@@ -1,5 +1,7 @@
 # Entitlements API
 
+> **Deprecated:** this page has moved to [https://docs.eluv.io/docs/media-wallet/api-guide/purchase/entitlements/](https://docs.eluv.io/docs/media-wallet/api-guide/purchase/entitlements/) and is no longer maintained here.
+
 Use this path to grant a user access to content by submitting a fulfilled purchase, rental, or subscription directly to
 the Eluvio Authority. Supports purchase, rental, and subscription types, with fine-grained rental window control and
 subscriptions you keep in step with your billing system.

@@ -1,5 +1,7 @@
 # Create User Access Wallet API
 
+> **Deprecated:** this page has moved to [https://docs.eluv.io/docs/media-wallet/api-guide/auth/create-user-wallet/](https://docs.eluv.io/docs/media-wallet/api-guide/auth/create-user-wallet/) and is no longer maintained here.
+
 ## Overview
 
 The **Create User Access Wallet API** is required for allowing users to be added into tenant groups in the Fabric

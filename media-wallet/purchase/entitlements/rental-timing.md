@@ -1,5 +1,7 @@
 # Rental Timing Model
 
+> **Deprecated:** this page has moved to [https://docs.eluv.io/docs/media-wallet/api-guide/purchase/entitlements/rental-timing/](https://docs.eluv.io/docs/media-wallet/api-guide/purchase/entitlements/rental-timing/) and is no longer maintained here.
+
 A rental has two time windows:
 
 | Window            | Field         | Expiry   | Behavior                                                                                                                                                                                                                                   |

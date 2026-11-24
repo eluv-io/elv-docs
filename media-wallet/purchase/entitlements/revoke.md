@@ -1,5 +1,7 @@
 # Revoke Single Entitlement
 
+> **Deprecated:** this page has moved to [https://docs.eluv.io/docs/media-wallet/api-guide/purchase/entitlements/revoke/](https://docs.eluv.io/docs/media-wallet/api-guide/purchase/entitlements/revoke/) and is no longer maintained here.
+
 ## Overview
 
 The **Tenant Entitlement Revoke API** allows a tenant administrator to revoke a user's NFT-based entitlement.

@@ -1,5 +1,7 @@
 # Get User Info API
 
+> **Deprecated:** this page has moved to [https://docs.eluv.io/docs/media-wallet/api-guide/auth/get-user-info/](https://docs.eluv.io/docs/media-wallet/api-guide/auth/get-user-info/) and is no longer maintained here.
+
 ## Overview
 
 The **Get User Info API** allows an authenticated caller to retrieve information about themselves based on their

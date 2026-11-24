@@ -1,5 +1,7 @@
 # Hosted Checkout
 
+> **Deprecated:** this page has moved to [https://docs.eluv.io/docs/media-wallet/api-guide/purchase/hosted-checkout/](https://docs.eluv.io/docs/media-wallet/api-guide/purchase/hosted-checkout/) and is no longer maintained here.
+
 The Hosted Checkout API lets your application initiate a Stripe-hosted checkout page on behalf of a user, without
 building any payment UI yourself.  Eluvio handles the Stripe session, the webhook, and the NFT mint. You redirect
 the user and poll for completion.
