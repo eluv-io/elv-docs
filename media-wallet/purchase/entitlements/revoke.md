@@ -4,6 +4,10 @@
 
 The **Tenant Entitlement Revoke API** allows a tenant administrator to revoke a user's NFT-based entitlement.
 
+To end a subscription, use [Update Subscription](./subscription-update.md) (for example `status: expired` or
+`status: refunded`) rather than this API. This API removes the token but leaves the subscription `active`, so a
+later renewal would succeed for a user who no longer holds the token.
+
 ---
 
 ## Endpoint

@@ -13,8 +13,13 @@ A subscription has three times:
 | `end_timestamp`       | End of the paid period                                                     |
 | `grace_end_timestamp` | When the user's token is revoked; default `end_timestamp` + 7 days         |
 
-The token is revoked automatically at `grace_end_timestamp`. Grace applies only while the subscription is `active`:
-for any other status the token is revoked at `end_timestamp`, unless you set `grace_end_timestamp` explicitly.
+The token is revoked automatically at `grace_end_timestamp` (checked every few minutes, so allow up to about 10
+minutes). Grace applies only while the subscription is `active`: for any other status the token is revoked at
+`end_timestamp`, unless you set `grace_end_timestamp` explicitly. An update that ends access now revokes the token
+during the call.
+
+Always end a subscription with this API, not with [Revoke](./revoke.md) or [Revoke by SKU](./revoke-by-sku.md):
+those remove the token but leave the subscription `active`.
 
 ---
 
@@ -137,6 +142,15 @@ automatically shortly after. The `message` then begins with `updated; token revo
 
 ### Errors
 
+Errors are returned as `{"error": "<message>"}`. For the invalid-value errors, the message is embedded in a longer
+string, so match on the text in the table rather than the whole string:
+
+```json
+{
+  "error": "op [Resolve] kind [invalid] reason [keep_token only applies to status refunded]"
+}
+```
+
 | HTTP | Message                                                                               | Meaning                                                        |
 | ---- | ------------------------------------------------------------------------------------- | -------------------------------------------------------------- |
 | 400  | `trans_id is required`                                                                | `trans_id` was omitted                                         |
@@ -147,3 +161,5 @@ automatically shortly after. The `message` then begins with `updated; token revo
 | 400  | `end_timestamp must be after the subscription start`                                  | `end_timestamp` is at or before the start                      |
 | 400  | `grace_end_timestamp must not be before the end`                                      | `grace_end_timestamp` is earlier than the end                  |
 | 400  | `subscription has ended and its token was revoked; use entitlement/add to re-entitle` | See [After the Token Is Revoked](#after-the-token-is-revoked) |
+| 400  | `invalid metadata`                                                                    | `metadata` could not be stored                                 |
+| 500  | `update failed: ...`                                                                  | A server failure; retry the request                            |

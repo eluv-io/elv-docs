@@ -83,8 +83,16 @@ An alias has exactly the same requirements as the type it stands for: `tvod` tak
 | set_async              | If `true`, do not wait for the mint               |
 | include_pending_claims | If `true`, include `asset_claims` in the response |
 | asset_claimer          | If set, refreshes the given session inline        |
+| rental_duration        | Rental timing; see [Rental Duration](#rental-duration-required-for-rentals) |
+| subscription_details   | Required for subscriptions; see [Subscription Details](#subscription-details-required-for-subscriptions) |
+| metadata               | Your own fields, kept for reporting; see [Metadata](#metadata-optional) |
+| search_index           | `iq__` ID of a title catalog search index to use instead of the tenant's configured one |
+| sku                    | A single SKU, in place of `skus`; send one or the other, not both |
 
 See [Async Mode](#async-mode) and [Optimistic Access to Media](#optimistic-access-to-media) for details.
+
+`search_index` may also be passed as a query parameter (`?search_index=iq__...`), which takes precedence over the body
+field.
 
 #### asset_claimer object
 
@@ -157,6 +165,9 @@ If `transaction_type` is `subscription` (or its alias `svod`), a `subscription_d
   without the user losing access.
 * Keep the subscription current as your billing system renews, cancels, or refunds it with
   [Update Subscription](./subscription-update.md), using the `trans_id` from this call.
+* Resending the same request (same `transaction.id`, `elv_addr`, and SKU) is safe: it returns the existing
+  subscription rather than creating another. The same `transaction.id` with a different `elv_addr` or SKU is
+  rejected with HTTP 409.
 
 **Example:** `end_timestamp` = `"2026-12-15T00:00:00Z"` with no `grace_end_timestamp` means the subscription is paid
 through December 15 and, unless renewed, the user keeps access until December 22.
@@ -274,6 +285,8 @@ Returns HTTP 200, or HTTP 202 when `set_async` is used and the mint has not alre
 | tokens                     | All tokens minted in this transaction. Absent if `set_async` was used  |
 | poll_id                    | Job identifier for [Poll Entitlement Status](#poll-entitlement-status) |
 | asset_claims_tokens        | An updated fabric_token and refresh_token for the entitled user        |
+| asset_claims               | Pending-entitlement claims, if `include_pending_claims` was set        |
+| metadata                   | Title catalog fields for the SKU(s), if a title catalog is configured  |
 | subscription               | Subscriptions only: the subscription record, see below                 |
 
 Treat `poll_id` as opaque: pass it back unchanged to [Poll Entitlement Status](#poll-entitlement-status).
@@ -499,9 +512,10 @@ Poll every 1-2 seconds for up to a minute after `entitlement/add` returns.
 
 ---
 
-## Error Response (HTTP 400)
+## Error Response (HTTP 400, 409, 500)
 
-Returned when the request is invalid or cannot be processed.
+Returned when the request is invalid or cannot be processed: HTTP 400 for an invalid request, 409 when a
+subscription's `transaction.id` was already used for a different `elv_addr` or SKU, and 500 for a server failure.
 
 ### Example Error Response
 
@@ -529,7 +543,17 @@ Returned when the request is invalid or cannot be processed.
 | Invalid transaction type                    | Must be `purchase`, `rental`, or `subscription` (or an alias)          |
 | Missing or invalid poll_id                  | `poll_id` path parameter was omitted or malformed (status API)         |
 | Missing or invalid elv_addr query parameter | `elv_addr` query parameter was omitted or invalid (status API)         |
-| ... is required                             | required field  was omitted                                            |
+| No SKU provided                             | Neither `sku` nor `skus` was sent                                      |
+| Use either 'sku' or 'skus', not both        | Both `sku` and `skus` were sent                                        |
+| All SKUs must belong to the same marketplace | The SKUs span more than one marketplace                               |
+| SKU ... requires transaction_type ...       | The SKU's offer type (TVOD, EST, SVOD) needs a different `transaction_type` |
+| Invalid search_index                        | `search_index` is not an `iq__` ID                                     |
+| asset_claimer.refresh_token / nonce cannot be empty | `asset_claimer` was sent without both fields                   |
+| subscription_details.end_timestamp is required | `subscription` was sent without `end_timestamp`                     |
+| end_timestamp must be after start_timestamp | `end_timestamp` is at or before `start_timestamp` (default now)        |
+| grace_end_timestamp must not be before end_timestamp | `grace_end_timestamp` is earlier than `end_timestamp`         |
+| subscription_details.status cannot be set on create | Send `status` only to [Update Subscription](./subscription-update.md) |
 | A subscription takes exactly one SKU        | `subscription` was sent with more than one SKU                         |
 | SKU ... is not SVOD                         | `subscription` was sent with a SKU that is not SVOD                    |
+| Transaction id already used for a different elv_addr or sku | HTTP 409: a resent subscription doesn't match the original |
 
